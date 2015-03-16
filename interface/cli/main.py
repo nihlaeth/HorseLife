@@ -16,5 +16,5 @@ class Main():
             print str(self.i)+") "+action
             self.i+=1
         
-        choice = e.input(self.i)
+        choice = e.getInt(self.i)
         return actions[choice]

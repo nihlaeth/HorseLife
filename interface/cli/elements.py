@@ -19,9 +19,17 @@ def title(text):
     return frame + "\n" + header + "\n" + frame
 
 
-def input(limit):
-    response = int(raw_input("Choice: "))
+def getInt(limit, prompt="Choice: "):
+    response = int(raw_input(prompt))
     while(response < 0 or response >= limit):
         print "Invalid choice, try again."
-        response = int(raw_input("Choice: "))
+        response = int(raw_input(prompt))
+    return response
+
+
+def getString(minlength, prompt):
+    response = raw_input(prompt)
+    while(len(response)<minlength):
+        print "I need at least " + str(minlength) + " characters."
+        response = raw_input(prompt)
     return response
