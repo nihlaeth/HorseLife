@@ -60,6 +60,28 @@ class TestDisplay():
         print "-- handling of n<0"
         assert_equals(self.display._repeat("a", -1), "")
 
+    def test_wrap_text(self):
+        self.display._screen_width = 10
+        print "Testing Display._wrap_text(text)"
+        print "-- single paragraph"
+        text1 = "wrap this text"
+        assert_equals(self.display._wrap_text(text1), "wrap this\ntext\n")
+        print "-- multiple paragraphs"
+        text2 = ("Paragraph one is really not much to look at\n\n"
+                 "Can't say that the second is much better.")
+        wrappedtext = ("Paragraph\n"
+                       "one is\n"
+                       "really not\n"
+                       "much to\n"
+                       "look at\n"
+                       "\n"
+                       "Can't say\n"
+                       "that the\n"
+                       "second is\n"
+                       "much\n"
+                       "better.\n")
+        assert_equals(self.display._wrap_text(text2), wrappedtext)
+
     def test_display(self):
         print "Test Display.display()"
         data = ["option zero", "option one"]
