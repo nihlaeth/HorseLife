@@ -9,13 +9,15 @@ class Display():
         self._title = "You should not be seeing this"
         self._description = "This class is not to be called directly."
 
-    def init(self, data):
+    def init(self, data, menu):
         """ Initialize with (database) data.
 
         Arguments:
         data -- list of classes to be displayed
+        menu -- menu options (quit, back to main, etc)
         """
         self._data = data
+        self._menu = menu
 
     def display(self):
         """ Display screen and return user choice (class)."""
@@ -26,11 +28,21 @@ class Display():
         self._i = 0
 
         for action in self._data:
-            print ''.join([str(self._i)+") ", action])
+            print ''.join([str(self._i), ") ", action])
+            self._i += 1
+
+        print ''.join(["\n\n", self._separator, "\n\n"])
+
+        for item in self._menu:
+            print ''.join([str(self._i), ") ", item])
             self._i += 1
 
         choice = self._get_int(self._i)
-        return self._data[choice]
+
+        if choice < len(self._data):
+            return self._data[choice]
+        else:
+            return self._menu[choice-len(self._data)]
 
     def _repeat(self, string, n):
         """ Repeat string n times and return it."""

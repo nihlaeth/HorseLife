@@ -63,10 +63,13 @@ class TestDisplay():
     def test_display(self):
         print "Test Display.display()"
         data = ["option zero", "option one"]
-        self.display.init(data)
+        menu = ["quit", "save"]
+        self.display.init(data, menu)
         self.display._title = "test"
         self.display._screen_width = 20
 
-        print "--basic testing"
-        with mock.patch('__builtin__.raw_input', side_effect=["0"]):
+        with mock.patch('__builtin__.raw_input', side_effect=["0", "3"]):
+            print "-- basic testing"
             assert_equals(self.display.display(), "option zero")
+            print "-- menu"
+            assert_equals(self.display.display(), "save")
