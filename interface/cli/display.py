@@ -18,7 +18,7 @@ class Display():
         """ Display screen and return user choice (class)."""
         print self._format_title()
 
-        print .join([self._description, "\n\n"])
+        print ''.join([self._description, "\n\n"])
 
         self._i = 0
 
