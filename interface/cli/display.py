@@ -3,10 +3,10 @@ from textwrap import wrap
 class Display():
     def __init__(self):
         """ Initiate with only static data."""
-        self._screen_width = 80
+        self._screen_width = 70
         self._separator = self._repeat('-', self._screen_width)
-        self._title = "Main"
-        self._description = ""
+        self._title = "You should not be seeing this"
+        self._description = "This class is not to be called directly."
 
     def init(self, data):
         """ Initialize with (database) data.
