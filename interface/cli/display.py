@@ -44,6 +44,10 @@ class Display():
         else:
             return self._menu[choice-len(self._data)]
 
+    def hide(self):
+        """Just a placeholder"""
+        pass
+
     def _repeat(self, string, n):
         """ Repeat string n times and return it."""
         return ''.join([str(string) for i in range(n)])
