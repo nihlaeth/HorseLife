@@ -34,5 +34,8 @@ Database structure. Since we use object relational mapping, this is also where y
 ### saves
 The databases (read: saved games) will go here.
 
+### support
+Some support classes and tools that don't really fit into either interface, core or backend.
+
 ### tests
 Well... Tests.
