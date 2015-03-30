@@ -1,7 +1,7 @@
 from display import Display
 
 
-class Main(Display):
+class MainDisplay(Display):
     def __init__(self):
         Display.__init__(self)
         self._title = "HorseLife"
