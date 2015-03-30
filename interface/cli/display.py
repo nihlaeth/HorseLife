@@ -1,4 +1,4 @@
-from textwrap import wrap, fill
+from textwrap import fill
 
 
 class Display():
@@ -10,7 +10,7 @@ class Display():
         self._description = "This class is not to be called directly."
 
     def init(self, data, menu):
-        """ Initialize with (database) data.
+        """ Initialize with backend data.
 
         Arguments:
         data -- list of classes to be displayed
