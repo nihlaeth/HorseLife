@@ -1,5 +1,6 @@
 from textwrap import wrap
 
+
 class Display():
     def __init__(self):
         """ Initiate with only static data."""
@@ -20,9 +21,7 @@ class Display():
         """ Display screen and return user choice (class)."""
         print self._format_title()
 
-        print ''.join([
-            '\n'.join(wrap(self._description, self._screen_width)),
-            "\n\n"])
+        print ''.join([self._wrap_text(self._description), "\n"])
 
         self._i = 0
 
@@ -80,3 +79,14 @@ class Display():
                 " characters."])
             response = raw_input(prompt)
         return response
+
+    def _wrap_text(self, text):
+        """ Wrap text to screen width while preserving paragraphs."""
+        paragraphs = text.split("\n")
+        result = ""
+        for p in paragraphs:
+            result = ''.join([
+                result,
+                '\n'.join(wrap(p, self._screen_width)),
+                "\n"])
+        return result
