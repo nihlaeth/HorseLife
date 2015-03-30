@@ -65,7 +65,7 @@ class TestDisplay():
         print "Testing Display._wrap_text(text)"
         print "-- single paragraph"
         text1 = "wrap this text"
-        assert_equals(self.display._wrap_text(text1), "wrap this\ntext\n")
+        assert_equals(self.display._wrap_text(text1), "wrap this\ntext")
         print "-- multiple paragraphs"
         text2 = ("Paragraph one is really not much to look at\n\n"
                  "Can't say that the second is much better.")
@@ -79,7 +79,7 @@ class TestDisplay():
                        "that the\n"
                        "second is\n"
                        "much\n"
-                       "better.\n")
+                       "better.")
         assert_equals(self.display._wrap_text(text2), wrappedtext)
 
     def test_display(self):
