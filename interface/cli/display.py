@@ -12,55 +12,61 @@ class Display():
         data -- list of classes to be displayed
         """
         self._data = data
-        self._i = 0
 
     def display(self):
         """ Display screen and return user choice (class)."""
         print self._format_title()
 
-        for action in self.actions:
-            print str(self.i)+") "+action
-            self.i+=1
-        
-        choice = e.getInt(self.i)
-        return actions[choice]
+        self._i = 0
+
+        for action in self._data:
+            print ''.join([str(self._i)+") ", action])
+            self._i += 1
+
+        choice = self._get_int(self._i)
+        return self._data[choice]
 
     def _repeat(self, string, n):
         """ Repeat string n times and return it."""
-        return ''.join([string for i in range(n)])
-    
+        return ''.join([str(string) for i in range(n)])
+
     def _format_title(self):
         """ Format the page title and return it."""
-        frame = repeat("=", self._screen_width)
+        frame = self._repeat("=", self._screen_width)
         whitespace = len(frame) - 6 - len(self._title)
         leading_whitespace = whitespace / 2
-        trailing_whitespace = whitespace / 2 if whitespace%2 == 0 else whitespace/2 + 1
-        header = ''.join(["===", self._repeat(" ", leading_whitespace), self._title, self._repeat(" ", trailing_whitespace), "==="])
+        trailing_whitespace = (whitespace / 2 if whitespace % 2 == 0
+                               else whitespace / 2 + 1)
+        header = ''.join([
+            "===",
+            self._repeat(" ", leading_whitespace),
+            self._title,
+            self._repeat(" ", trailing_whitespace),
+            "==="])
         return ''.join([frame, "\n", header, "\n", frame])
-    
-    def _getInt(self, limit, prompt="Choice: "):
+
+    def _get_int(self, limit, prompt="Choice: "):
         """ Get an integer between 0 and limit from the user and return it.
 
         Arguments:
-        limit -- the upper limit (inlusive)
+        limit -- the upper limit (exclusive)
         promt -- text to be displayed to the user
         """
         response = int(raw_input(prompt))
         while(response < 0 or response >= limit):
             print "Invalid choice, try again."
             response = int(raw_input(prompt))
-            return response
-    
-    def _getString(self, minlength, prompt):
-        """ Get a string of minimum minlength characters from the user and return it.
+        return response
+
+    def _get_string(self, min_length, prompt):
+        """ Get a str of min min_length characters from user and return it.
 
         Arguments:
-        minlength -- the minimum string length
+        min_length -- the minimum string length
         promt -- text to be displayed to the user
         """
         response = raw_input(prompt)
-        while(len(response)<minlength):
-            print "I need at least " + str(minlength) + " characters."
+        while(len(response) < min_length):
+            print "I need at least " + str(min_length) + " characters."
             response = raw_input(prompt)
-            return response
-
+        return response
