@@ -1,4 +1,4 @@
-from textwrap import wrap
+from textwrap import wrap, fill
 
 
 class Display():
@@ -23,7 +23,7 @@ class Display():
         """ Display screen and return user choice (class)."""
         print self._format_title()
 
-        print ''.join([self._wrap_text(self._description), "\n"])
+        print ''.join([self._wrap_text(self._description), "\n\n"])
 
         self._i = 0
 
@@ -95,10 +95,4 @@ class Display():
     def _wrap_text(self, text):
         """ Wrap text to screen width while preserving paragraphs."""
         paragraphs = text.split("\n")
-        result = ""
-        for p in paragraphs:
-            result = ''.join([
-                result,
-                '\n'.join(wrap(p, self._screen_width)),
-                "\n"])
-        return result
+        return '\n'.join([fill(p, self._screen_width) for p in paragraphs])
