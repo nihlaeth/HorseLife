@@ -1,3 +1,5 @@
+from textwrap import wrap
+
 class Display():
     def __init__(self):
         """ Initiate with only static data."""
@@ -18,7 +20,9 @@ class Display():
         """ Display screen and return user choice (class)."""
         print self._format_title()
 
-        print ''.join([self._description, "\n\n"])
+        print ''.join([
+            '\n'.join(wrap(self._description, self._screen_width)),
+            "\n\n"])
 
         self._i = 0
 
