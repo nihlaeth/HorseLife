@@ -4,6 +4,7 @@ class Display():
         self._screen_width = 80
         self._separator = self._repeat('-', self._screen_width)
         self._title = "Main"
+        self._description = ""
 
     def init(self, data):
         """ Initialize with (database) data.
@@ -16,6 +17,8 @@ class Display():
     def display(self):
         """ Display screen and return user choice (class)."""
         print self._format_title()
+
+        print .join([self._description, "\n\n"])
 
         self._i = 0
 
@@ -67,6 +70,9 @@ class Display():
         """
         response = raw_input(prompt)
         while(len(response) < min_length):
-            print "I need at least " + str(min_length) + " characters."
+            print ''.join([
+                "I need at least ",
+                str(min_length),
+                " characters."])
             response = raw_input(prompt)
         return response
