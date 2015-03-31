@@ -80,7 +80,7 @@ class Display():
             response = int(raw_input(prompt))
         return response
 
-    def _get_string(self, min_length, prompt):
+    def get_string(self, min_length, prompt):
         """ Get a str of min min_length characters from user and return it.
 
         Arguments:

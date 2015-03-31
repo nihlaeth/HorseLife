@@ -29,12 +29,12 @@ class TestDisplay():
         print "-- basic functionality"
         with mock.patch("__builtin__.raw_input",
                         side_effect=["test"]):
-            assert_equals(self.display._get_string(2, "gimme a string: "),
+            assert_equals(self.display.get_string(2, "gimme a string: "),
                           "test")
         print "-- minimum string length"
         with mock.patch("__builtin__.raw_input",
                         side_effect=["no", "yes", "Even better!"]):
-            assert_equals(self.display._get_string(3, "gimme a string: "),
+            assert_equals(self.display.get_string(3, "gimme a string: "),
                           "yes")
 
     def test_format_title(self):
