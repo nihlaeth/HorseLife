@@ -20,6 +20,9 @@ traits and wages of employees, etc.
 The middle layer between the interface and the backend. Here is where the game logic
 lives.
 
+### generators
+Content generators. They read the config files and use them to construct new objects, buildings, animals, people, etc.
+
 ### interface
 The available interfaces are housed here. This is code that deals with the pesky graphical stuff.
 
