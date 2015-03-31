@@ -28,13 +28,13 @@ class Display():
         self._i = 0
 
         for action in self._data:
-            print ''.join([str(self._i), ") ", action])
+            print ''.join([str(self._i), ") ", str(action)])
             self._i += 1
 
         print ''.join(["\n\n", self._separator, "\n\n"])
 
         for item in self._menu:
-            print ''.join([str(self._i), ") ", item])
+            print ''.join([str(self._i), ") ", str(item)])
             self._i += 1
 
         choice = self._get_int(self._i)
