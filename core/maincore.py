@@ -1,5 +1,6 @@
 from interface.cli.maindisplay import MainDisplay
 from core import Core
+from buildingcore import BuildingCore
 from support.action import Action
 from support.messages.quit import Quit
 from backend.buildingsbackend import BuildingsBackend
