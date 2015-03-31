@@ -6,6 +6,7 @@ from core.loadcore import LoadCore
 from core.maincore import MainCore
 from support.messages.newgame import NewGame
 from support.messages.savedgame import SavedGame
+from support.messages.quit import Quit
 
 
 class HorseLife():
@@ -45,6 +46,8 @@ class HorseLife():
 
         Base = declarative_base()
         Base.metadata.create_all(self.engine)
+        
+        # TODO populate database if new
 
         m = MainCore()
         choice = m.run()
