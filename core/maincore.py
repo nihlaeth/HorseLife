@@ -14,7 +14,7 @@ class MainCore(Core):
         actions = []
         for b in buildings:
             actions.append(Action(BuildingCore(), [b]))
-        
+
         menu = []
         menu.append(Action(Quit()))
 

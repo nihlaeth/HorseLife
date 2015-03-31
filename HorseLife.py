@@ -9,6 +9,7 @@ from support.messages.quit import Quit
 from models.base import Base
 from models.building import Building
 from models.buildingproperties import BuildingProperties
+from generators.buildinggenerator import BuildingGenerator
 
 
 class HorseLife():
@@ -16,15 +17,16 @@ class HorseLife():
         # figure out which interface to use - for now there's only cli
         # later on, the default will be ncurses or opengl. This can
         # be overwritten with a command-line argument
-        #self.gui = "cli"
-        #if(self.gui == "cli"):
+        # self.gui = "cli"
+        # if(self.gui == "cli"):
         #    from interface.cli.main import Main
-        #elif(self.gui == "ncurses"):
-        #    from interface.ncurses.main import Main
-        #elif(self.gui == "opengl"):
+        # elif(self.gui == "ncurses"):
+        #    from interface.ncurses.main import Maine
+        # elif(self.gui == "opengl"):
         #    from interface.opengl.main import Main
-        #else:
-        #    self.error("Invalid interface, available modules are 'cli', 'ncurses' and 'opengl'")
+        # else:
+        #    self.error("Invalid interface, available modules are "
+        #    "'cli', 'ncurses' and 'opengl'")
         #    self.quit()
 
         # now get some user input about which db to load
@@ -47,8 +49,10 @@ class HorseLife():
         s.Session.configure(bind=self.engine)
 
         Base.metadata.create_all(self.engine)
-        
-        # TODO populate database if new
+
+        if new:
+            with s.session_scope() as session:
+                BuildingGenerator.gen_many(session, 3, "Stable")
 
         m = MainCore()
         choice = m.run()
