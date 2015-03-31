@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 
 import backend.session as s
 from core.loadcore import LoadCore
@@ -7,7 +6,8 @@ from core.maincore import MainCore
 from support.messages.newgame import NewGame
 from support.messages.savedgame import SavedGame
 from support.messages.quit import Quit
-
+from models.base import Base
+from models.building import Building
 
 class HorseLife():
     def __init__(self):
@@ -44,7 +44,6 @@ class HorseLife():
         self.engine = create_engine('sqlite:///:memory:', echo=True)
         s.Session.configure(bind=self.engine)
 
-        Base = declarative_base()
         Base.metadata.create_all(self.engine)
         
         # TODO populate database if new

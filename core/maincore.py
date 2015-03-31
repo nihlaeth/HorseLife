@@ -2,6 +2,7 @@ from interface.cli.maindisplay import MainDisplay
 from core import Core
 from support.action import Action
 from support.messages.quit import Quit
+from backend.buildingsbackend import BuildingsBackend
 
 
 class MainCore(Core):
@@ -9,8 +10,7 @@ class MainCore(Core):
         self._display = MainDisplay()
 
     def run(self):
-        buildings = []
-        # TODO: fetch buildings from backend
+        buildings = BuildingsBackend.all()
         actions = []
         for b in buildings:
             actions.append(Action(BuildingCore(), [b]))
