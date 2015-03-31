@@ -4,14 +4,14 @@ from support.messages.quit import Quit
 #from stablecore import StableCore
 
 class BuildingCore(Core):
-    def __init__(self):
+    def __init__(self, building):
         # No display class here, since this core class only relays
         # to a more specific building class
-        pass
+        self._building = building
 
-    def run(self, building):
-        if building.building_type == "Stable" :
-            next_ = StableCore()
+    def run(self):
+        if self._building.building_type == "Stable" :
+            next_ = StableCore(self._building)
         else:
             # unimplemented building type
             next_ = None
@@ -23,4 +23,4 @@ class BuildingCore(Core):
         return choice
 
     def __str__(self):
-        return "problem - building hasn't been passed in init"
+        return self._building.name

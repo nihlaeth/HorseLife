@@ -33,11 +33,11 @@ class HorseLife():
         l = LoadCore()
         choice = l.run()
 
-        if isinstance(choice.cls, NewGame):
-            self.loadGame(choice.cls.file_name, True)
-        elif isinstance(choice.cls, SavedGame):
-            self.loadGame(choics.cls.file_name)
-        elif isinstance(choice.cls, Quit):
+        if isinstance(choice, NewGame):
+            self.loadGame(choice.file_name, True)
+        elif isinstance(choice, SavedGame):
+            self.loadGame(choics.file_name)
+        elif isinstance(choice, Quit):
             self.quit()
 
     def loadGame(self, database, new=False):
@@ -57,7 +57,7 @@ class HorseLife():
         m = MainCore()
         choice = m.run()
 
-        if isinstance(choice.cls, Quit):
+        if isinstance(choice, Quit):
             self.quit()
 
     def error(self, text):

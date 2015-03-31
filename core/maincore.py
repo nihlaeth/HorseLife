@@ -1,7 +1,6 @@
 from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
-from support.action import Action
 from support.messages.quit import Quit
 from backend.buildingsbackend import BuildingsBackend
 
@@ -14,10 +13,10 @@ class MainCore(Core):
         buildings = BuildingsBackend.all()
         actions = []
         for b in buildings:
-            actions.append(Action(BuildingCore(), [b]))
+            actions.append(BuildingCore(b))
 
         menu = []
-        menu.append(Action(Quit()))
+        menu.append(Quit())
 
         self._display.init(actions, menu)
         choice = self._display.display()
