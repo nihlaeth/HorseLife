@@ -15,3 +15,6 @@ class Action():
         """
         self.cls = cls
         self.arguments = arguments
+
+    def __str__(self):
+        return str(self.cls)
