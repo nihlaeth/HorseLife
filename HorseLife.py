@@ -8,6 +8,8 @@ from support.messages.savedgame import SavedGame
 from support.messages.quit import Quit
 from models.base import Base
 from models.building import Building
+from models.buildingproperties import BuildingProperties
+
 
 class HorseLife():
     def __init__(self):
