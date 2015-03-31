@@ -1,5 +1,5 @@
 class Action():
-    def __init__(self, cls, arguments):
+    def __init__(self, cls, arguments=[]):
         """ Container class.
 
         Action acts as a kind of messenger between classes. This results in
