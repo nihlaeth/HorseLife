@@ -25,7 +25,7 @@ class LoadCore(Core):
         choice = self._display.display()
         if isinstance(choice.cls, NewGame):
             name = self._display.get_string(4, "Name your game: ")
-            choice.cls.name = name
+            choice.cls.file_name = name
         return choice
 
     def __str__(self):
