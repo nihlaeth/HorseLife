@@ -1,0 +1,2 @@
+class UnknownBuildingType(Exception):
+    pass

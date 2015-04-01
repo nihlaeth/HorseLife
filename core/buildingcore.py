@@ -1,6 +1,7 @@
 from core import Core
 from support.action import Action
 from support.messages.quit import Quit
+from errors.unknownbuildingtype import UnknownBuildingType
 #from stablecore import StableCore
 
 
@@ -15,8 +16,7 @@ class BuildingCore(Core):
             if self._building.building_type == "Stable":
                 next_ = StableCore(self._building)
             else:
-                # unimplemented building type
-                next_ = None
+                raise UnknownBuildingType(self._building.building_type)
 
             choice = next_.run()
             if isinstance(choice, Back) or isinstance(choice, Quit):
