@@ -23,8 +23,14 @@ class MainCore(Core):
             choice = self._display.display()
             if isinstance(choice, Quit):
                 return choice
-            # If it's anything else, just display
-            # the main screen again.
+            elif isinstance(choice, BuildingCore):
+                result = choice.run()
+
+            if result is not None:
+                if isinstance(result, Quit):
+                    return result
+                # if it's of type Back, just display
+                # this screen again - continue loop.
 
     def __str__(self):
         return "Main"
