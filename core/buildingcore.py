@@ -1,5 +1,4 @@
 from core import Core
-from support.action import Action
 from support.messages.quit import Quit
 from errors.unknownbuildingtype import UnknownBuildingType
 #from stablecore import StableCore
