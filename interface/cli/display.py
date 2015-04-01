@@ -9,21 +9,28 @@ class Display():
         self._title = "You should not be seeing this"
         self._description = "This class is not to be called directly."
 
-    def init(self, data, menu):
+    def init(self, data, menu, info=[]):
         """ Initialize with backend data.
 
         Arguments:
         data -- list of classes to be displayed
         menu -- menu options (quit, back to main, etc)
+        info -- list of strings to display
         """
         self._data = data
         self._menu = menu
+        self._info = info
 
     def display(self):
         """ Display screen and return user choice (class)."""
         print self._format_title()
 
         print ''.join([self._wrap_text(self._description), "\n\n"])
+
+        for string in self._info:
+            print str(string)
+
+        print "\n\n"
 
         self._i = 0
 
