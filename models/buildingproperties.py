@@ -14,3 +14,11 @@ class BuildingProperties(Base):
 
     building = relationship("Building",
                             backref=backref('buildings', order_by=id))
+
+    def __repr__(self):
+        return ''.join([
+            "[",
+            self.name,
+            ", ",
+            str(self.value),
+            "]"])
