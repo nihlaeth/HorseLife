@@ -24,6 +24,7 @@ class Horse(Base):
     hygiene = Column(Integer)
     stimulation = Column(Integer)
     environment = Column(Integer)
+    social = Column(Integer)
 
     # passive stats - change slowly
     endurance = Column(Integer)
