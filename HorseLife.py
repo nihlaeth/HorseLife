@@ -11,6 +11,7 @@ from models.stable import Stable
 from models.stableitem import StableItem
 from models.horse import Horse
 from generators.stablegenerator import StableGenerator
+from generators.horsegenerator import HorseGenerator
 
 
 class HorseLife():
@@ -53,8 +54,9 @@ class HorseLife():
 
         if new:
             with s.session_scope() as session:
-                StableGenerator().gen_many(session, 1, "Shed")
-
+                stables = StableGenerator().gen_many(session, 1, "Shed")
+                horses = HorseGenerator().gen_many(session, 1, "Mixed breed")
+                stables[0].horses = [horses[0]]
         m = MainCore()
         choice = m.run()
 

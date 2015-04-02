@@ -1,22 +1,86 @@
+from sqlalchemy import inspect
+
 from core import Core
 from support.messages.quit import Quit
 from support.messages.back import Back
+from support.messages.meter import Meter
+from support.messages.action import Action
 from interface.cli.stabledisplay import StableDisplay
+
 
 class StableCore(Core):
     def __init__(self, stable):
         self._stable = stable
         self._display = StableDisplay()
+        if len(self._stable.horses) == 1:
+            self._horse = self._stable.horses[0]
+        else:
+            self._horse = None
 
     def run(self):
         while True:
-            info = []
+            info = ["Cleanliness:",
+                    Meter(self._stable.cleanliness)]
+
+            if self._horse is not None:
+                info.append("")
+                info.append(''.join(["Name: ", self._horse.name]))
+                info.append("Happiness:")
+                info.append(Meter(self._horse.happiness))
+                info.append("Health:")
+                info.append(Meter(self._horse.health))
+                info.append("Food:")
+                info.append(Meter(self._horse.food))
+                info.append("Water:")
+                info.append(Meter(self._horse.water))
+                info.append("Energy:")
+                info.append(Meter(self._horse.energy))
+                info.append("Exercise:")
+                info.append(Meter(self._horse.energy))
+                info.append("Hygiene:")
+                info.append(Meter(self._horse.hygiene))
+                info.append("Stimulation:")
+                info.append(Meter(self._horse.stimulation))
+                info.append("Environment:")
+                info.append(Meter(self._horse.environment))
+                info.append("Social:")
+                info.append(Meter(self._horse.social))
+
             actions = []
-            menu = [Quit(), Back()]
+            actions.append(Action("clean", "Clean stable"))
+            if self._horse is not None:
+                actions.append(Action("groom", "Groom horse"))
+                actions.append(Action("feed", "Feed horse"))
+                actions.append(Action("water", "Water horse"))
+                actions.append(Action("pet", "Pet horse"))
+                actions.append(Action("treat", "Feed treat"))
+                actions.append(Action("training journal",
+                                      "View training journal"))
+                actions.append(Action("pedigree", "View pedigree papers"))
+                actions.append(Action("change name", "Change name"))
+
+            if len(self._stable.horses) > 1:
+                for horse in self._stable.horses:
+                    if horse != self._horse:
+                        actions.append(Action(
+                            "fetch",
+                            ''.join(["Fetch ", horse.name]),
+                            [horse]))
+
+            menu = [Back(), Quit()]
             self._display.init(actions, menu, info)
             choice = self._display.display()
             if isinstance(choice, Quit) or isinstance(choice, Back):
                 return choice
+            elif isinstance(choice, Action):
+                    if choice.action == "clean":
+                        self._stable.clean()
+                        inspect(self._stable).session.flush()
+                    if choice.action == "change name":
+                        self._horse.name = self._display.get_string(
+                                4,
+                                "Name: ")
+                        inspect(self._horse).session.flush()
 
     def __str__(self):
         return self._stable.name

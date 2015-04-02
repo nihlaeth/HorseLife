@@ -3,6 +3,7 @@ from contextlib import contextmanager
 
 Session = sessionmaker()
 
+
 @contextmanager
 def session_scope():
     """Provide a transactional scope around a series of operations."""

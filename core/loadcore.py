@@ -7,6 +7,7 @@ from support.messages.savedgame import SavedGame
 from support.messages.newgame import NewGame
 from support.messages.quit import Quit
 
+
 class LoadCore(Core):
     def __init__(self):
         self._display = LoadDisplay()

@@ -13,14 +13,13 @@ class TestStableGenerator():
         assert_equals(repr(StableGenerator()._gen_one("Shed")),
                       repr(Stable(
                                name="Shed",
-                               surface = 9,
-                               light = 0,
-                               outside_surface = 0,
-                               capacity = 1,
-                               cleanliness = 100,
-                               items = [],
-                               horses = [])))
-
+                               surface=9,
+                               light=0,
+                               outside_surface=0,
+                               capacity=1,
+                               cleanliness=100,
+                               items=[],
+                               horses=[])))
 
     def test_gen_many(self):
         print "Test StableGenerator.gen_many(session, n, b_type)"

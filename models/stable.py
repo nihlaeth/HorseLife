@@ -17,6 +17,9 @@ class Stable(Base):
     items = relationship("StableItem", backref="stableitems")
     horses = relationship("Horse", backref="stable")
 
+    def clean(self):
+        self.cleanliness = 100
+
     def __repr__(self):
         return ''.join([
             "[",
@@ -48,4 +51,4 @@ class Stable(Base):
         return ''.join([
                 self.name,
                 ": ",
-                repr(self.horses)])
+                str([str(horse) for horse in self.horses])])

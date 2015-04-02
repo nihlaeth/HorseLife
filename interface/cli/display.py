@@ -1,5 +1,7 @@
 from textwrap import fill
 
+from support.messages.meter import Meter
+
 
 class Display():
     def __init__(self):
@@ -28,20 +30,23 @@ class Display():
         print ''.join([self._wrap_text(self._description), "\n\n"])
 
         for string in self._info:
-            print str(string)
+            if isinstance(string, Meter):
+                print self._meter(string)
+            else:
+                print self._wrap_text(str(string))
 
         print "\n\n"
 
         self._i = 0
 
         for action in self._data:
-            print ''.join([str(self._i), ") ", str(action)])
+            print self._wrap_text(''.join([str(self._i), ") ", str(action)]))
             self._i += 1
 
         print ''.join(["\n\n", self._separator, "\n\n"])
 
         for item in self._menu:
-            print ''.join([str(self._i), ") ", str(item)])
+            print self._wrap_text(''.join([str(self._i), ") ", str(item)]))
             self._i += 1
 
         choice = self._get_int(self._i)
@@ -81,10 +86,16 @@ class Display():
         limit -- the upper limit (exclusive)
         promt -- text to be displayed to the user
         """
-        response = int(raw_input(prompt))
+        try:
+            response = int(raw_input(prompt))
+        except ValueError:
+            response = -1
         while(response < 0 or response >= limit):
             print "Invalid choice, try again."
-            response = int(raw_input(prompt))
+            try:
+                response = int(raw_input(prompt))
+            except ValueError:
+                pass
         return response
 
     def get_string(self, min_length, prompt):
@@ -107,3 +118,12 @@ class Display():
         """ Wrap text to screen width while preserving paragraphs."""
         paragraphs = text.split("\n")
         return '\n'.join([fill(p, self._screen_width) for p in paragraphs])
+
+    def _meter(self, meter):
+        percent_filled = meter.percent / 100.
+        columnsfilled = int((self._screen_width - 2) * percent_filled)
+        return ''.join([
+            "[",
+            self._repeat("=", columnsfilled),
+            self._repeat(" ", self._screen_width - columnsfilled - 2),
+            "]"])

@@ -1,6 +1,7 @@
 from base import Base
 from sqlalchemy import Column, Integer, String, ForeignKey
 
+
 class Horse(Base):
     __tablename__ = 'horses'
 
@@ -12,15 +13,16 @@ class Horse(Base):
     race = Column(String)
     color = Column(String)
     name = Column(String)
-    location = Column(Integer)
+    location = Column(String)
     health_status = Column(String)
 
     # active stats - change quickly
     health = Column(Integer)
     food = Column(Integer)
-    drink = Column(Integer)
-    mood = Column(Integer)
+    water = Column(Integer)
+    happiness = Column(Integer)
     energy = Column(Integer)
+    exercise = Column(Integer)
     hygiene = Column(Integer)
     stimulation = Column(Integer)
     environment = Column(Integer)
@@ -43,7 +45,7 @@ class Horse(Base):
 
     # traits (don't change over time, genetics)
     character = Column(String)
-    gen_enducance = Column(Integer)
+    gen_endurance = Column(Integer)
     gen_strength = Column(Integer)
     gen_speed = Column(Integer)
     gen_jumping = Column(Integer)
@@ -51,5 +53,9 @@ class Horse(Base):
     gen_western = Column(Integer)
     gen_racing = Column(Integer)
     gen_harness = Column(Integer)
+    gen_horsemanship = Column(Integer)
 
     stable_id = Column(Integer, ForeignKey('stables.id'))
+
+    def __str__(self):
+        return self.name

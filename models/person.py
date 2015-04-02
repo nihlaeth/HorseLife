@@ -1,6 +1,7 @@
 from base import Base
 from sqlalchemy import Column, Integer, String
 
+
 class Person(Base):
     __tablename__ = 'people'
 
@@ -8,4 +9,3 @@ class Person(Base):
 
     name = Column(String)
     age = Column(Integer)
-

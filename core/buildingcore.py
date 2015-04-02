@@ -5,6 +5,7 @@ from errors.unknownbuildingtype import UnknownBuildingType
 from stablecore import StableCore
 from models.stable import Stable
 
+
 class BuildingCore(Core):
     def __init__(self, building):
         # No display class here, since this core class only relays

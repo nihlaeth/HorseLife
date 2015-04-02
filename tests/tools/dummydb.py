@@ -9,6 +9,7 @@ from models.setting import Setting
 from models.stable import Stable
 from models.stableitem import StableItem
 
+
 class DummyDB():
     def __init__(self):
         self._Session = sessionmaker()
@@ -27,5 +28,3 @@ class DummyDB():
         else:
             self._session.commit()
         self._session.close()
-        
-
