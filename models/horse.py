@@ -1,5 +1,5 @@
 from base import Base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 
 class Horse(Base):
     __tablename__ = 'horses'
@@ -52,4 +52,4 @@ class Horse(Base):
     gen_racing = Column(Integer)
     gen_harness = Column(Integer)
 
-
+    stable_id = Column(Integer, ForeignKey('stables.id'))

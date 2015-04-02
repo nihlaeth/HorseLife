@@ -7,9 +7,10 @@ from support.messages.newgame import NewGame
 from support.messages.savedgame import SavedGame
 from support.messages.quit import Quit
 from models.base import Base
-from models.building import Building
-from models.buildingproperties import BuildingProperties
-from generators.buildinggenerator import BuildingGenerator
+from models.stable import Stable
+from models.stableitem import StableItem
+from models.horse import Horse
+from generators.stablegenerator import StableGenerator
 
 
 class HorseLife():
@@ -52,7 +53,7 @@ class HorseLife():
 
         if new:
             with s.session_scope() as session:
-                BuildingGenerator.gen_many(session, 3, "Stable")
+                StableGenerator().gen_many(session, 1, "Shed")
 
         m = MainCore()
         choice = m.run()

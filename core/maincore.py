@@ -2,7 +2,7 @@ from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
 from support.messages.quit import Quit
-from backend.buildingsbackend import BuildingsBackend
+from backend.stablesbackend import StablesBackend
 
 
 class MainCore(Core):
@@ -11,10 +11,10 @@ class MainCore(Core):
 
     def run(self):
         while True:
-            buildings = BuildingsBackend.all()
+            stables = StablesBackend.all()
             actions = []
-            for b in buildings:
-                actions.append(BuildingCore(b))
+            for s in stables:
+                actions.append(BuildingCore(s))
 
             menu = []
             menu.append(Quit())

@@ -1,14 +1,14 @@
 from backend import Backend
 from session import session_scope
-from models.building import Building
+from models.stable import Stable
 
-class BuildingsBackend(Backend):
+class StablesBackend(Backend):
     @classmethod
     def all(cls):
         with session_scope() as session:
-            return session.query(Building).order_by(Building.location)
+            return session.query(Stable).order_by(Stable.name)
 
     @classmethod
     def one(cls, id):
         with session_scope() as session:
-            return session.query(Building).filter_by(Building.id==id)
+            return session.query(Stable).filter_by(Stable.id==id)

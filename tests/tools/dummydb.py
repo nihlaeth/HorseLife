@@ -3,16 +3,16 @@ from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
 from models.base import Base
-from models.building import Building
-from models.buildingproperties import BuildingProperties
 from models.horse import Horse
 from models.person import Person
 from models.setting import Setting
+from models.stable import Stable
+from models.stableitem import StableItem
 
 class DummyDB():
     def __init__(self):
         self._Session = sessionmaker()
-        self._engine = create_engine('sqlite:///memory:', echo=True)
+        self._engine = create_engine('sqlite:///:memory:', echo=True)
         self._Session.configure(bind=self._engine)
         Base.metadata.create_all(self._engine)
 
