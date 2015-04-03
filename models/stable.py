@@ -1,6 +1,8 @@
-from base import Base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, Float, String
 from sqlalchemy.orm import relationship, backref
+
+from base import Base
+from models.stableitem import StableItem
 
 
 class Stable(Base):
@@ -13,12 +15,23 @@ class Stable(Base):
     outside_surface = Column(Integer)
     light = Column(Integer)
     capacity = Column(Integer)
-    cleanliness = Column(Integer)
+    cleanliness = Column(Float)
     items = relationship("StableItem", backref="stableitems")
     horses = relationship("Horse", backref="stable")
 
     def clean(self):
+        from backend.time import time
+        time.pass_time(15)
         self.cleanliness = 100
+
+    def pass_time(self, minutes, night):
+        if len(self.horses) > 0:
+            # Decay no matter if the horse(s) is/are actually in
+            # the stable. It's needlessly complicated to account
+            # for their whereabouts, and a stable needs to be mucked
+            # out every day anyway.
+            minutes_per_decay = 28
+            self.cleanliness -= minutes / minutes_per_decay
 
     def __repr__(self):
         return ''.join([

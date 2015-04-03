@@ -120,7 +120,7 @@ class Display():
         return '\n'.join([fill(p, self._screen_width) for p in paragraphs])
 
     def _meter(self, meter):
-        percent_filled = meter.percent / 100.
+        percent_filled = float(meter.percent) / 100.
         columnsfilled = int((self._screen_width - 2) * percent_filled)
         return ''.join([
             "[",

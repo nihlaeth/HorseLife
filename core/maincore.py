@@ -2,6 +2,7 @@ from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
 from support.messages.quit import Quit
+from backend.session import session_scope
 from backend.stablesbackend import StablesBackend
 
 
@@ -11,26 +12,32 @@ class MainCore(Core):
 
     def run(self):
         while True:
-            stables = StablesBackend.all()
-            actions = []
-            for s in stables:
-                actions.append(BuildingCore(s))
+            with session_scope() as session:
+                stables = StablesBackend.all(session)
 
-            menu = []
-            menu.append(Quit())
+                from backend.time import time
+                info = [" ".join(["Time", time.get_time()])]
 
-            self._display.init(actions, menu)
-            choice = self._display.display()
-            if isinstance(choice, Quit):
-                return choice
-            elif isinstance(choice, BuildingCore):
-                result = choice.run()
+                actions = []
+                for s in stables:
+                    actions.append(BuildingCore(s))
 
-            if result is not None:
-                if isinstance(result, Quit):
-                    return result
-                # if it's of type Back, just display
-                # this screen again - continue loop.
+                menu = []
+                menu.append(Quit())
+
+                self._display.init(actions, menu, info)
+                choice = self._display.display()
+                if isinstance(choice, Quit):
+                    return choice
+                elif isinstance(choice, BuildingCore):
+                    result = choice.run()
+
+                if result is not None:
+                    if isinstance(result, Quit):
+                        return result
+                    # if it's of type Back, just display
+                    # this screen again - continue loop.
+                session.commit()
 
     def __str__(self):
         return "Main"

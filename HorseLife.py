@@ -10,8 +10,10 @@ from models.base import Base
 from models.stable import Stable
 from models.stableitem import StableItem
 from models.horse import Horse
+from models.setting import Setting
 from generators.stablegenerator import StableGenerator
 from generators.horsegenerator import HorseGenerator
+from generators.settingsgenerator import SettingsGenerator
 
 
 class HorseLife():
@@ -57,6 +59,12 @@ class HorseLife():
                 stables = StableGenerator().gen_many(session, 1, "Shed")
                 horses = HorseGenerator().gen_many(session, 1, "Mixed breed")
                 stables[0].horses = [horses[0]]
+                SettingsGenerator.gen_many(
+                        session,
+                        { 
+                            "Date": [0, ""],
+                            "Time": [420, ""]})
+
         m = MainCore()
         choice = m.run()
 

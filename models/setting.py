@@ -8,4 +8,5 @@ class Setting(Base):
     id = Column(Integer, primary_key=True)
 
     name = Column(String)
-    value = Column(String)
+    numeric = Column(Integer)
+    text = Column(String)
