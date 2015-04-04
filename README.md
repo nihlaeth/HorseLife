@@ -19,6 +19,7 @@ of a game.
 * older horses are unable to compete on a high level, don't have as much energy, etc. Option to send them to a retirement home for a fee.
 * horses interact and have a social need. Some horses they dislike, others they like. This influence riding lessons and pasture behavior (and injuries)
 * features are progressively unlocked to ease the player into them
+* different types of food are more suited for rigorous exercise or light workouts
 
 ## Included features
 Right now, none. The game is little more than a single stable
