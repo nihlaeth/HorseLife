@@ -3,7 +3,7 @@ from nose.tools import assert_equals
 from tests.tools.dummydb import DummyDB
 from generators.stablegenerator import StableGenerator
 from models.stable import Stable
-
+from models.stableitem import StableItem
 
 class TestStableGenerator():
     def test_gen_one(self):
@@ -18,7 +18,8 @@ class TestStableGenerator():
                                outside_surface=0,
                                capacity=1,
                                cleanliness=100,
-                               items=[],
+                               items=[StableItem(name="food", value=0),
+                                      StableItem(name="water", value=0)],
                                horses=[])))
 
     def test_gen_many(self):
