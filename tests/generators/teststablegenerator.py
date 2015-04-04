@@ -5,6 +5,7 @@ from generators.stablegenerator import StableGenerator
 from models.stable import Stable
 from models.stableitem import StableItem
 
+
 class TestStableGenerator():
     def test_gen_one(self):
         print "Test StableGenerator._gen_one(location, b_type)"

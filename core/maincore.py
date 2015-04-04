@@ -1,6 +1,7 @@
 from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
+from towncore import TownCore
 from support.messages.quit import Quit
 from support.messages.command import Command
 from backend.session import session_scope
@@ -19,7 +20,7 @@ class MainCore(Core):
                 from backend.time import time
                 info = [" ".join(["Time", time.get_time()])]
 
-                actions = []
+                actions = [TownCore()]
                 for s in stables:
                     actions.append(BuildingCore(s))
 
@@ -31,6 +32,8 @@ class MainCore(Core):
                 if isinstance(choice, Quit):
                     return choice
                 elif isinstance(choice, BuildingCore):
+                    result = choice.run()
+                elif isinstance(choice, TownCore):
                     result = choice.run()
                 elif isinstance(choice, Command):
                     exec(choice.command)
