@@ -20,6 +20,7 @@ of a game.
 * horses interact and have a social need. Some horses they dislike, others they like. This influence riding lessons and pasture behavior (and injuries)
 * features are progressively unlocked to ease the player into them
 * different types of food are more suited for rigorous exercise or light workouts
+* education system so the player can perform certain jobs themselves (e.g. learn to teach, become a vet, etc.)
 
 ## Included features
 Right now, none. The game is little more than a single stable
