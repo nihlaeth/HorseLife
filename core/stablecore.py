@@ -99,6 +99,8 @@ class StableCore(Core):
                             # TODO fetch food from storage
                         if choice.action == "water":
                             self._stable.water()
+                        if choice.action == "pet":
+                            self._horse.pet()
                 session.commit()
 
     def __str__(self):
