@@ -1,6 +1,7 @@
 from textwrap import fill
 
 from support.messages.meter import Meter
+from support.messages.command import Command
 
 
 class Display():
@@ -40,7 +41,10 @@ class Display():
         self._i = 0
 
         for action in self._data:
-            print self._wrap_text(''.join([str(self._i), ") ", str(action)]))
+            print self._wrap_text(''.join([
+                    str(self._i),
+                    ") ",
+                    str(action)]))
             self._i += 1
 
         print ''.join(["\n\n", self._separator, "\n\n"])
@@ -51,7 +55,10 @@ class Display():
 
         choice = self._get_int(self._i)
 
-        if choice < len(self._data):
+        if choice == 555:
+            # debug console
+            return Command(self.get_string(0, "Command: "))
+        elif choice < len(self._data):
             return self._data[choice]
         else:
             return self._menu[choice-len(self._data)]
@@ -90,7 +97,7 @@ class Display():
             response = int(raw_input(prompt))
         except ValueError:
             response = -1
-        while(response < 0 or response >= limit):
+        while((response < 0 or response >= limit) and response != 555):
             print "Invalid choice, try again."
             try:
                 response = int(raw_input(prompt))

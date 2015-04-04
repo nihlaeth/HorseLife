@@ -5,6 +5,7 @@ from generator import Generator
 from models.stable import Stable
 from models.stableitem import StableItem
 
+
 class StableGenerator(Generator):
     def __init__(self):
         self._config = ConfigParser.SafeConfigParser()

@@ -78,9 +78,8 @@ class Horse(Base):
         if night and self.location == "Stable":
             self.energy += minutes / float(energy_increase_time)
 
-
         items = self.stable.items
-        if not night and self.location=="Stable":
+        if not night and self.location == "Stable":
             # Horses get bored when they're
             # penned up all day. If they have
             # a toy, or another horse nearby,
@@ -90,14 +89,14 @@ class Horse(Base):
             for item in items:
                 if item.name == "toy":
                     toy = True
-            if not toy and len(self.stable.horses)<2:
+            if not toy and len(self.stable.horses) < 2:
                 # TODO check if other horse is actually in stable
                 self.stimulation -= minutes / float(stimulation_decay_time)
             else:
                 # There is something to stimulate the horse!
                 # Increase stimulation.
                 self.stimulation += minutes / float(stimulation_decay_time)
-        if self.food < 75 and self.location=="Stable":
+        if self.food < 75 and self.location == "Stable":
             # Try to eat.
             for item in items:
                 if item.name == "food":
@@ -108,7 +107,7 @@ class Horse(Base):
                     else:
                         item.value -= to_eat
                         self.food = 100
-        if self.water < 75 and self.location=="Stable":
+        if self.water < 75 and self.location == "Stable":
             # Try to drink.
             for item in items:
                 if item.name == "auto-water":

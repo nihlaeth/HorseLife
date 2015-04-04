@@ -2,6 +2,7 @@ from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
 from support.messages.quit import Quit
+from support.messages.command import Command
 from backend.session import session_scope
 from backend.stablesbackend import StablesBackend
 
@@ -31,6 +32,9 @@ class MainCore(Core):
                     return choice
                 elif isinstance(choice, BuildingCore):
                     result = choice.run()
+                elif isinstance(choice, Command):
+                    exec(choice.command)
+                    result = None
 
                 if result is not None:
                     if isinstance(result, Quit):

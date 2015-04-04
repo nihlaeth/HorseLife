@@ -3,6 +3,7 @@ from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.meter import Meter
 from support.messages.action import Action
+from support.messages.command import Command
 from interface.cli.stabledisplay import StableDisplay
 from backend.session import session_scope
 from backend.stablesbackend import StablesBackend
@@ -85,6 +86,8 @@ class StableCore(Core):
                 choice = self._display.display()
                 if isinstance(choice, Quit) or isinstance(choice, Back):
                     return choice
+                elif isinstance(choice, Command):
+                    exec(choice.command)
                 elif isinstance(choice, Action):
                         if choice.action == "clean":
                             self._stable.clean()

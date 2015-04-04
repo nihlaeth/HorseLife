@@ -61,7 +61,7 @@ class HorseLife():
                 stables[0].horses = [horses[0]]
                 SettingsGenerator.gen_many(
                         session,
-                        { 
+                        {
                             "Date": [0, ""],
                             "Time": [420, ""]})
 
