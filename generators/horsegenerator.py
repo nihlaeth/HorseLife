@@ -29,6 +29,7 @@ class HorseGenerator(Generator):
             energy=100,
             hygiene=100,
             stimulation=100,
+            exercise=100,
             environment=100,
             social=100,
             endurance=0,

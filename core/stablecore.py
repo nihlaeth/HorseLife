@@ -60,10 +60,10 @@ class StableCore(Core):
 
                 actions = []
                 actions.append(Action("clean", "Clean stable"))
+                actions.append(Action("feed", "Fill food tray"))
+                actions.append(Action("water", "Fill waterbucket"))
                 if self._horse is not None:
                     actions.append(Action("groom", "Groom horse"))
-                    actions.append(Action("feed", "Feed horse"))
-                    actions.append(Action("water", "Water horse"))
                     actions.append(Action("pet", "Pet horse"))
                     actions.append(Action("treat", "Feed treat"))
                     actions.append(Action("training journal",
@@ -94,6 +94,11 @@ class StableCore(Core):
                                     "Name: ")
                         if choice.action == "groom":
                             self._horse.groom()
+                        if choice.action == "feed":
+                            self._stable.food()
+                            # TODO fetch food from storage
+                        if choice.action == "water":
+                            self._stable.water()
                 session.commit()
 
     def __str__(self):

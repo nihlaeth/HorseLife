@@ -18,6 +18,20 @@ class Stable(Base):
     cleanliness = Column(Float)
     items = relationship("StableItem", backref="stableitems")
     horses = relationship("Horse", backref="stable")
+    
+    def food(self):
+        from backend.time import time
+        for item in self.items:
+            if item.name == "food":
+                item.value += 100
+        time.pass_time(5)
+    
+    def water(self):
+        from backend.time import time
+        for item in self.items:
+            if item.name == "water":
+                item.value = 100
+        time.pass_time(5)
 
     def clean(self):
         from backend.time import time

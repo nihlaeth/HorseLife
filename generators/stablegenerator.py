@@ -3,7 +3,7 @@ import ConfigParser
 
 from generator import Generator
 from models.stable import Stable
-
+from models.stableitem import StableItem
 
 class StableGenerator(Generator):
     def __init__(self):
@@ -11,6 +11,8 @@ class StableGenerator(Generator):
         self._config.read("config/stables.cfg")
 
     def _gen_one(self, stable_type):
+        items = [StableItem(name="food", value=0),
+                 StableItem(name="water", value=0)]
         return Stable(
                 name=stable_type,
                 surface=self._config.getint(stable_type, 'surface'),
@@ -20,7 +22,7 @@ class StableGenerator(Generator):
                     'outside_surface'),
                 capacity=self._config.getint(stable_type, 'capacity'),
                 cleanliness=100,
-                items=[],
+                items=items,
                 horses=[])
 
     def gen_many(self, session, n, stable_type):

@@ -1,5 +1,7 @@
-from base import Base
 from sqlalchemy import Column, Integer, Float, String, ForeignKey
+
+from base import Base
+from models.stable import Stable
 
 
 class Horse(Base):
@@ -64,14 +66,16 @@ class Horse(Base):
         hygiene_decay_time = 15
         social_decay_time = 20
         energy_increase_time = 3
+        exercise_decay_time = 10
 
-        self.food -= minutes / food_decay_time
-        self.water -= minutes / water_decay_time
-        self.hygiene -= minutes / hygiene_decay_time
-        self.social -= minutes / social_decay_time
+        self.food -= minutes / float(food_decay_time)
+        self.water -= minutes / float(water_decay_time)
+        self.hygiene -= minutes / float(hygiene_decay_time)
+        self.social -= minutes / float(social_decay_time)
+        self.exercise -= minutes / float(exercise_decay_time)
 
-        if night:
-            self.energy += minutes / energy_increase_time
+        if night and self.location == "Stable":
+            self.energy += minutes / float(energy_increase_time)
 
         # boundary checks
         if self.energy > 100:
@@ -85,12 +89,35 @@ class Horse(Base):
         if self.social < 0:
             self.social = 0
 
+        items = self.stable.items
+        if self.food < 75 and self.location=="Stable":
+            # Try to eat.
+            for item in items:
+                if item.name == "food":
+                    to_eat = 100 - self.food
+                    if item.value < to_eat:
+                        self.food += item.value
+                        item.value = 0
+                    else:
+                        item.value -= to_eat
+                        self.food = 100
+        if self.water < 75 and self.location=="Stable":
+            # Try to drink.
+            for item in items:
+                if item.name == "auto-water":
+                    self.water = 100
+                elif item.name == "water":
+                    to_drink = 100 - self.water
+                    if item.value < to_drink:
+                        self.water += item.value
+                        item.value = 0
+                    else:
+                        item.value -= to_drink
+                        self.water = 100
+
         # TODO exercise need is dependent on a couple of things
         # TODO update health as some needs drop too low
         # TODO update happiness according to needs
-        # TODO check if horse is actually in a stable during
-        # the night
-        # TODO have horse eat and drink when it's available
 
     def groom(self, skill="normal"):
         from backend.time import time
