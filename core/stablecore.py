@@ -92,6 +92,8 @@ class StableCore(Core):
                             self._horse.name = self._display.get_string(
                                     4,
                                     "Name: ")
+                        if choice.action == "groom":
+                            self._horse.groom()
                 session.commit()
 
     def __str__(self):

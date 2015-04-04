@@ -61,7 +61,7 @@ class Horse(Base):
 
         food_decay_time = 10
         water_decay_time = 5
-        hygiene_decay_time = 20
+        hygiene_decay_time = 15
         social_decay_time = 20
         energy_increase_time = 3
 
@@ -90,6 +90,12 @@ class Horse(Base):
         # TODO update happiness according to needs
         # TODO check if horse is actually in a stable during
         # the night
+        # TODO have horse eat and drink when it's available
+
+    def groom(self, skill="normal"):
+        from backend.time import time
+        time.pass_time(30)
+        self.hygiene = 100
 
     def __str__(self):
         return self.name
