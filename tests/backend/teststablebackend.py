@@ -19,20 +19,6 @@ class TestStableBackend():
             assert_equals(backends[0]._id, 1)
             assert_equals(backends[2]._id, 3)
 
-    def test_one(self):
-        print "Testing StableBackend.one(session, name)"
-        with DummyDB() as session:
-            stables = StableFactory.build_batch(2)
-            session.add_all(stables)
-            print "-- basic functionality"
-            # This test is a bit idiotic, since we only fetch
-            # stables by id. But I guess it'll expose bugs
-            # nonetheless.
-            backend = StableBackend.one(session, 1)
-            assert_equals(backend._id, 1)
-            backend = StableBackend.one(session, 2)
-            assert_equals(backend._id, 2)
-
     def test_one_id(self):
         print "Testing StableBackend._one_id(session, id)"
         with DummyDB() as session:

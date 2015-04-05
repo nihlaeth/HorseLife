@@ -9,11 +9,6 @@ class StableBackend(Backend):
         return [StableBackend(stable.id) for stable in stables]
 
     @classmethod
-    def one(cls, session, id):
-        # This method is here for consistency's sake.
-        return StableBackend(id)
-
-    @classmethod
     def _one_id(cls, session, id):
         return session.query(Stable).filter_by(id=id)[0]
 
