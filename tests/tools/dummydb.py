@@ -11,9 +11,9 @@ from models.stableitem import StableItem
 
 
 class DummyDB():
-    def __init__(self):
+    def __init__(self, debug=False):
         self._Session = sessionmaker()
-        self._engine = create_engine('sqlite:///:memory:', echo=True)
+        self._engine = create_engine('sqlite:///:memory:', echo=debug)
         self._Session.configure(bind=self._engine)
         Base.metadata.create_all(self._engine)
 
