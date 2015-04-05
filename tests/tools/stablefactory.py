@@ -15,16 +15,12 @@ class StableFactory(factory.Factory):
 
     @factory.post_generation
     def horses(self, create, extracted, **kwargs):
-        if not create:
-            return
         if extracted:
             for horse in extracted:
-                self.horses.add(horse)
+                self.horses.append(horse)
 
     @factory.post_generation
     def items(self, create, extracted, **kwargs):
-        if not create:
-            return
         if extracted:
             for item in extracted:
-                self.items.add(item)
+                self.items.append(item)
