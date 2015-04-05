@@ -1,12 +1,10 @@
 from nose.tools import assert_equals, assert_less
-import mock
 
 from backend.stablebackend import StableBackend
 from tests.tools.dummydb import DummyDB
 from tests.tools.stablefactory import StableFactory
 from tests.tools.horsefactory import HorseFactory
 from tests.tools.stableitemfactory import StableItemFactory
-from models.stable import Stable
 
 
 class TestStableBackend():
