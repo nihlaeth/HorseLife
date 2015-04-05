@@ -1,0 +1,16 @@
+#!/bin/zsh
+pep8 *.py
+pep8 backend/*.py
+pep8 core/*.py
+pep8 errors/*.py
+pep8 generators/*.py
+pep8 interface/cli/*.py
+pep8 models/*.py
+pep8 support/*.py
+pep8 support/messages/*.py
+pep8 tests/*.py
+pep8 tests/backend/*.py
+pep8 tests/core/*.py
+pep8 tests/generators/*.py
+pep8 tests/interface/*.py
+pep8 tests/tools/*.py
