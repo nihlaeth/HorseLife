@@ -2,9 +2,9 @@ from enum import Enum
 from sqlalchemy import inspect
 
 from session import session_scope
-from settingsbackend import SettingsBackend
+from settingbackend import SettingBackend
 from horsesbackend import HorsesBackend
-from stablesbackend import StablesBackend
+from stablebackend import StableBackend
 
 
 day = Enum(
@@ -20,17 +20,17 @@ day = Enum(
 class Time():
     def __init__(self):
         with session_scope() as session:
-            self._date = SettingsBackend.one(session, "Date")
-            self._time = SettingsBackend.one(session, "Time")
+            self._date = SettingBackend.one(session, "Date")
+            self._time = SettingBackend.one(session, "Time")
 
     def get_day(self):
         with session_scope() as session:
-            self._date = SettingsBackend.one(session, "Date")
+            self._date = SettingBackend.one(session, "Date")
             return day[self._date.numeric % 7]
 
     def get_time(self):
         with session_scope() as session:
-            self._time = SettingsBackend.one(session, "Time")
+            self._time = SettingBackend.one(session, "Time")
             hours = self._time.numeric / 60
             minutes = self._time.numeric % 60
             return ":".join([
@@ -43,14 +43,14 @@ class Time():
             for horse in horses:
                 horse.pass_time(minutes, night)
 
-            stables = StablesBackend.all(session)
+            stables = StableBackend.all(session)
             for stable in stables:
                 stable.pass_time(minutes, night)
 
             # TODO move session out of the *backend files and up one layer
             # to prevent expired objects and such
-            self._date = SettingsBackend.one(session, "Date")
-            self._time = SettingsBackend.one(session, "Time")
+            self._date = SettingBackend.one(session, "Date")
+            self._time = SettingBackend.one(session, "Time")
 
             self._time.numeric += minutes
             if self._time.numeric >= 1440:

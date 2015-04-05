@@ -2,14 +2,14 @@ from nose.tools import assert_equals
 import mock
 
 from models.setting import Setting
-from backend.settingsbackend import SettingsBackend
+from backend.settingbackend import SettingBackend
 from backend.session import session_scope
 
 
 class TestTime():
     def test_get_day(self):
         print "Test Time._get_day()"
-        with mock.patch.object(SettingsBackend, "one") as mock_multi:
+        with mock.patch.object(SettingBackend, "one") as mock_multi:
             mock_multi.return_value = Setting(
                                             name="Date",
                                             numeric=0,
@@ -25,7 +25,7 @@ class TestTime():
 
     def test_get_time(self):
         print "Test Time._get_time()"
-        with mock.patch.object(SettingsBackend, "one") as mock_multi:
+        with mock.patch.object(SettingBackend, "one") as mock_multi:
             mock_multi.return_value = Setting(
                                             name="Time",
                                             numeric=0,
