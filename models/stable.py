@@ -20,22 +20,22 @@ class Stable(Base):
     horses = relationship("Horse", backref="stable")
 
     def food(self):
-        from backend.time import time
+        # from backend.time import time
         for item in self.items:
             if item.name == "food":
-                item.value += 100
-        time.pass_time(5)
+                item.value = 100
+        # time.pass_time(5)
 
     def water(self):
-        from backend.time import time
+        # from backend.time import time
         for item in self.items:
             if item.name == "water":
                 item.value = 100
-        time.pass_time(5)
+        # time.pass_time(5)
 
     def clean(self):
-        from backend.time import time
-        time.pass_time(15)
+        # from backend.time import time
+        # time.pass_time(15)
         self.cleanliness = 100
 
     def pass_time(self, minutes, night):

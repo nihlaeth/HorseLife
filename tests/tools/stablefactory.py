@@ -2,6 +2,7 @@ import factory
 
 from models.stable import Stable
 
+
 class StableFactory(factory.Factory):
     class Meta:
         model = Stable
