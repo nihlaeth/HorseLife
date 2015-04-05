@@ -1,5 +1,6 @@
 from interface.cli.towndisplay import TownDisplay
 from core import Core
+from contractercore import ContracterCore
 from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.command import Command
@@ -21,7 +22,7 @@ class TownCore(Core):
                 actions = [
                         Action("bank", "Bank"),
                         Action("horses", "Horse market"),
-                        Action("buildings", "Contracter"),
+                        Action("contracter", "Contracter"),
                         Action("tack", "Saddle maker"),
                         Action("food", "Horse supplies"),
                         Action("newspaper", "News agency"),
@@ -35,11 +36,17 @@ class TownCore(Core):
 
                 self._display.init(actions, menu, info)
                 choice = self._display.display()
-                if isinstance(choice, Quit):
+                if isinstance(choice, Quit) or isinstance(choice, Back):
                     return choice
                 elif isinstance(choice, Command):
                     exec(choice.command)
+                    result = None
+                elif isinstance(choice, Action):
+                    if choice.action == "contracter":
+                        result = ContracterCore().run()
 
+                if isinstance(result, Quit):
+                    return result
                 session.commit()
 
     def __str__(self):
