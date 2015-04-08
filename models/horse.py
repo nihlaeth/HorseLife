@@ -144,8 +144,8 @@ class Horse(Base):
 
     def groom(self, skill="normal"):
         # TODO have skill factor into grooming
-        from backend.time import time
-        time.pass_time(30)
+        # from backend.time import time
+        # time.pass_time(30)
         self.stimulation += 40
         self.hygiene = 100
         if self.stimulation > 100:
@@ -153,8 +153,8 @@ class Horse(Base):
 
     def pet(self, person=None):
         # TODO increase relationship with person petting horse
-        from backend.time import time
-        time.pass_time(5)
+        # from backend.time import time
+        # time.pass_time(5)
         self.stimulation += 10
         if self.stimulation > 100:
             self.stimulation = 100

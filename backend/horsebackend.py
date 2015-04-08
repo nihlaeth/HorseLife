@@ -11,7 +11,7 @@ class HorseBackend(Backend):
     @classmethod
     def _one_id(cls, session, id):
         return session.query(Horse).filter_by(id=id)[0]
-    
+
     def __init__(self, id):
         self._id = id
 
@@ -26,3 +26,11 @@ class HorseBackend(Backend):
     def pass_time(self, session, minutes, night):
         horse = self._one_id(session, self._id)
         horse.pass_time(minutes, night)
+
+    def groom(self, session):
+        horse = self._one_id(session, self._id)
+        horse.groom()
+
+    def pet(self, session):
+        horse = self._one_id(session, self._id)
+        horse.pet()

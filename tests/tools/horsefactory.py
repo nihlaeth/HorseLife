@@ -3,6 +3,7 @@ import factory
 from models.horse import Horse
 from stablefactory import StableFactory
 
+
 class HorseFactory(factory.Factory):
     class Meta:
         model = Horse

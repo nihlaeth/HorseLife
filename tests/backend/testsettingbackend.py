@@ -35,7 +35,7 @@ class TestSettingBackend():
         print "Testing SettingBackend._one_id(session, id)"
         with DummyDB() as session:
             SettingFactory.reset_sequence()
-            settings = SettingFactory.build_batch(3) 
+            settings = SettingFactory.build_batch(3)
             session.add_all(settings)
             setting = SettingBackend._one_id(session, 2)
             assert_equals(setting.name, "Test1")

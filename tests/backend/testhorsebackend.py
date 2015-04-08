@@ -1,8 +1,9 @@
-from nose.tools import assert_equals, assert_less
+from nose.tools import assert_equals, assert_less, assert_greater
 
 from backend.horsebackend import HorseBackend
 from tests.tools.dummydb import DummyDB
 from tests.tools.horsefactory import HorseFactory
+
 
 class TestHorseBackend():
     def test_init(self):
@@ -39,3 +40,18 @@ class TestHorseBackend():
             backend = HorseBackend(1)
             backend.pass_time(session, 200, False)
             assert_less(backend.get(session, "hygiene"), 100)
+
+    def test_groom(self):
+        with DummyDB() as session:
+            session.add(HorseFactory.build(hygiene=0, stimulation=0))
+            backend = HorseBackend(1)
+            backend.groom(session)
+            assert_equals(backend.get(session, "hygiene"), 100)
+            assert_greater(backend.get(session, "stimulation"), 0)
+
+    def test_pet(self):
+        with DummyDB() as session:
+            session.add(HorseFactory.build(stimulation=0))
+            backend = HorseBackend(1)
+            backend.pet(session)
+            assert_greater(backend.get(session, "stimulation"), 0)
