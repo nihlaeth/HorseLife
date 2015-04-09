@@ -1,3 +1,4 @@
+from operator import attrgetter
 from enum import Enum
 from sqlalchemy import inspect
 
@@ -5,6 +6,7 @@ from session import session_scope
 from settingbackend import SettingBackend
 from horsesbackend import HorsesBackend
 from stablebackend import StableBackend
+from support.messages.event import Event
 
 
 day = Enum(
@@ -19,55 +21,67 @@ day = Enum(
 
 class Time():
     def __init__(self):
-        with session_scope() as session:
-            self._date = SettingBackend.one(session, "Date")
-            self._time = SettingBackend.one(session, "Time")
+        self._events = []
 
-    def get_day(self):
-        with session_scope() as session:
-            self._date = SettingBackend.one(session, "Date")
-            return day[self._date.numeric % 7]
+    def get_day(self, session):
+        self._date = SettingBackend.one(session, "Date")
+        return day[self._date.get(session, "numeric") % 7]
 
-    def get_time(self):
-        with session_scope() as session:
-            self._time = SettingBackend.one(session, "Time")
-            hours = self._time.numeric / 60
-            minutes = self._time.numeric % 60
-            return ":".join([
+    def get_time(self, session):
+        self._time = SettingBackend.one(session, "Time")
+        hours = self._time.get(session, "numeric") / 60
+        minutes = self._time.get(session, "numeric") % 60
+        return ":".join([
                 str(hours) if hours > 9 else "0" + str(hours),
                 str(minutes) if minutes > 9 else "0" + str(minutes)])
 
-    def pass_time(self, minutes, night=False):
-        with session_scope() as session:
-            horses = HorsesBackend.all(session)
-            for horse in horses:
-                horse.pass_time(minutes, night)
+    def pass_time(self, session, minutes, night=False):
+        if minutes == 0:
+            return True
+        time_obj = SettingBackend.one(session, "Time")
+        date_obj = SettingBackend.one(session, "Date")
+        time = time_obj.get(session, "numeric")
+        date = date_obj.get(session, "numeric")
 
-            stables = StableBackend.all(session)
-            for stable in stables:
-                stable.pass_time(minutes, night)
+        time += minutes
+        if time >= 1440:
+            time -= 1440
+            date += 1
+        time_obj.set(session, "numeric", time)
+        date_obj.set(session, "numeric", date)
 
-            # TODO move session out of the *backend files and up one layer
-            # to prevent expired objects and such
-            self._date = SettingBackend.one(session, "Date")
-            self._time = SettingBackend.one(session, "Time")
+        now = Event(date, time, None)
+        if len(self._events) > 0:
+            event = self._events.pop()
+        else:
+            event = None
 
-            self._time.numeric += minutes
-            if self._time.numeric >= 1440:
-                self._time.numeric -= 1440
-                self._date.numeric += 1
+        # Now has to come first, because of how I implemented
+        # comparison with None!
+        while now >= event:
+            event.callback()
+            if len(self._events) > 0:
+                event = self._events.pop()
+            else:
+                event = None
+        if event is not None:
+            self._events.append(event)
 
-            session.commit()
-            if self._time.numeric >= 1320 or self._time.numeric < 420:
-                # It's between 22:00 and 07:00 - night time!
-                # If you managed to get past midnight, you're seriously
-                # depriving your horses of sleep...
-                # TODO emit some event so the user gets feedback about
-                # the date change!
-                if self._time.numeric >= 1320:
-                    minutes_to_pass = 420 + 1440 - self._time.numeric
-                else:
-                    minutes_to_pass = 420 - self._time.numeric
-                self.pass_time(minutes_to_pass, night=True)
+        if time >= 1320 or time < 420:
+            # It's between 22:00 and 07:00 - night time!
+            # If you managed to get past midnight, you're seriously
+            # depriving your horses of sleep...
+            # TODO emit some event so the user gets feedback about
+            # the date change!
+            if time >= 1320:
+                minutes_to_pass = 420 + 1440 - time
+            else:
+                minutes_to_pass = 420 - time
+            self.pass_time(session, minutes_to_pass, True)
 
-time = Time()
+    def event(self, new_event):
+        self._events.append(new_event)
+        # sort list
+        self._events.sort(key=attrgetter("date", "time"), reverse=True)
+
+# time = Time()
