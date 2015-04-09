@@ -1,5 +1,7 @@
 from backend import Backend
+from time import time
 from models.horse import Horse
+from support.messages.event import Event
 
 
 class HorseBackend(Backend):
@@ -34,3 +36,25 @@ class HorseBackend(Backend):
     def pet(self, session):
         horse = self._one_id(session, self._id)
         horse.pet()
+
+    def get_events(self, session, now):
+        """Fetch events from model - one event for every
+        type of occurence (need based)."""
+        horse = self._one_id(session, self._id)
+
+        events = []
+        result = horse.get_events(now)
+        for e in result:
+            events.append(Event(
+                e[1].date,
+                e[1].time,
+                self.event_callback,
+                e[0]))
+
+        time.add_event_multi(events)
+
+    def event_callback(self, session, event):
+        """Execute event, and place the returned next occurence
+        in the event queue."""
+        horse = self._one_id(session, self._id)
+        horse.event(event)

@@ -1,8 +1,10 @@
 from nose.tools import assert_equals, assert_less, assert_greater
 
 from backend.horsebackend import HorseBackend
+from backend.time import time
 from tests.tools.dummydb import DummyDB
 from tests.tools.horsefactory import HorseFactory
+from tests.tools.settingfactory import SettingFactory
 
 
 class TestHorseBackend():
@@ -55,3 +57,21 @@ class TestHorseBackend():
             backend = HorseBackend(1)
             backend.pet(session)
             assert_greater(backend.get(session, "stimulation"), 0)
+
+    def test_get_events(self):
+        with DummyDB() as session:
+            session.add(
+                    HorseFactory.build(
+                        food=100,
+                        food_date=0,
+                        food_time=0,
+                        water=100,
+                        water_date=0,
+                        water_time=0))
+            session.add_all([
+                SettingFactory(name="Date"),
+                SettingFactory(name="Time", numeric=60)])
+            backend = HorseBackend(1)
+            now = time.get_time_stamp(session)
+            backend.get_events(session, now)
+            assert_greater(len(time._events), 0)

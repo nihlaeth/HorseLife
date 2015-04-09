@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, Float, String, ForeignKey
 
 from base import Base
 from models.stable import Stable
+from support.messages.timestamp import TimeStamp
 
 
 class Horse(Base):
@@ -18,10 +19,19 @@ class Horse(Base):
     location = Column(String)
     health_status = Column(String)
 
-    # active stats - change quickly
+    # active stats / needs - change quickly
+    # Date and time indicate when the meter
+    # has last been updated.
     health = Column(Float)
+
     food = Column(Float)
+    food_date = Column(Integer)
+    food_time = Column(Integer)
+
     water = Column(Float)
+    water_date = Column(Integer)
+    water_time = Column(Integer)
+
     happiness = Column(Float)
     energy = Column(Float)
     exercise = Column(Float)
@@ -158,6 +168,113 @@ class Horse(Base):
         self.stimulation += 10
         if self.stimulation > 100:
             self.stimulation = 100
+
+    def _eat(self):
+        items = self.stable.items
+        for item in items:
+            if item.name == "food" and self.location == "Stable":
+                to_eat = 100 - self.food
+                if item.value < to_eat:
+                    self.food += item.value
+                    item.value = 0
+                else:
+                    item.value -= to_eat
+                    self.food = 100
+        if self.food >= 76:
+            return 75
+        if self.food >= 51:
+            return 50
+        if self.food >= 26:
+            return 25
+        return 0
+
+    def _ch_food(self, now):
+        """Calculates what the food meter should be at now,
+        update the current value (and last updated field) and
+        returns the timestamp for the next event."""
+        last_updated = TimeStamp(self.food_date, self.food_time)
+        time_passed = now - last_updated
+
+        food_decay_time = 10
+        self.food -= time_passed.get_min() / float(food_decay_time)
+        self.food_date = now.date
+        self.food_time = now.time
+
+        if self.food >= 76:
+            # No need to eat right now
+            next_limit = 75
+        elif self.food >= 51:
+            # Need to eat, but no happiness or health implications
+            next_limit = self._eat()
+        elif self.food >= 26:
+            # Very hungry, getting seriously unhappy about it.
+            # TODO: update happiness.
+            next_limit = self._eat()
+        elif self.food >= 1:
+            # This is getting bad for health.
+            # TODO: update both health and
+            # happiness.
+            next_limit = self._eat()
+        else:
+            # Food dropped to zero or below. Figure out what to do here.
+            next_limit = -1
+
+        now.add_min((self.food - next_limit) * food_decay_time)
+        return ["food", now]
+
+    def _drink(self):
+        items = self.stable.items
+        for item in items:
+            if item.name == "auto-water":
+                self.water = 100
+            elif item.name == "water":
+                to_drink = 100 - self.water
+                if item.value < to_drink:
+                    self.water += item.value
+                    item.value = 0
+                else:
+                    item.value -= to_drink
+                    self.water = 100
+        if self.water >= 76:
+            return 75
+        if self.water >= 51:
+            return 50
+        if self.water >= 26:
+            return 25
+        return 0
+
+    def _ch_water(self, now):
+        last_updated = TimeStamp(self.water_date, self.water_time)
+        time_passed = now - last_updated
+
+        water_decay_time = 5
+        self.water -= time_passed.get_min() / float(water_decay_time)
+        self.water_date = now.date
+        self.water_time = now.time
+
+        if self.water >= 76:
+            # No need to drink
+            next_limit = 75
+        elif self.water >= 51:
+            next_limit = self._drink()
+        elif self.water >= 26:
+            next_limit = self._drink()
+        elif self.water >= 1:
+            next_limit = self._drink()
+        else:
+            next_limit = -1
+
+        now.add_min((self.water - next_limit) * water_decay_time)
+        return ["water", now]
+
+    def get_events(self, now):
+        events = []
+
+        # For every need, calculate when the next event takes place.
+        events.append(self._ch_food(now))
+        events.append(self._ch_water(now))
+
+        return events
 
     def __str__(self):
         return self.name

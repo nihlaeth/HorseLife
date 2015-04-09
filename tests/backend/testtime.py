@@ -38,15 +38,15 @@ class TestTime():
 
     def test_event(self):
         t = Time()
-        event = Event(0, 0, self.test_event)
-        t.event(event)
+        event = Event(0, 0, self.test_event, "")
+        t.add_event(event)
         assert_equals(t._events[0], event)
 
         # Now test sorting.
-        event1 = Event(1, 23, self.test_event)
-        event2 = Event(0, 22, self.test_event)
-        t.event(event1)
-        t.event(event2)
+        event1 = Event(1, 23, self.test_event, "")
+        event2 = Event(0, 22, self.test_event, "")
+        t.add_event(event1)
+        t.add_event(event2)
         assert_equals(t._events[0], event1)
         assert_equals(t._events[1], event2)
 
@@ -75,16 +75,16 @@ class TestTime():
 
             # Now test events!
             with mock.patch.object(TestTime, "callback") as mock_meth:
-                event = Event(2, 480, self.callback)
-                t.event(event)
+                event = Event(2, 480, self.callback, "")
+                t.add_event(event)
                 t.pass_time(session, 120)
                 mock_meth.assert_called_once_with()
 
                 assert_equals(len(t._events), 0)
 
-                t.event(event)
-                future_event = Event(23, 24, self.callback)
-                t.event(future_event)
+                t.add_event(event)
+                future_event = Event(23, 24, self.callback, "")
+                t.add_event(future_event)
 
                 t.pass_time(session, 10)
 

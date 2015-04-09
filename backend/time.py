@@ -7,6 +7,7 @@ from settingbackend import SettingBackend
 from horsesbackend import HorsesBackend
 from stablebackend import StableBackend
 from support.messages.event import Event
+from support.messages.timestamp import TimeStamp
 
 
 day = Enum(
@@ -35,6 +36,11 @@ class Time():
                 str(hours) if hours > 9 else "0" + str(hours),
                 str(minutes) if minutes > 9 else "0" + str(minutes)])
 
+    def get_time_stamp(self, session):
+        date = SettingBackend.one(session, "Date").get(session, "numeric")
+        time = SettingBackend.one(session, "Time").get(session, "numeric")
+        return TimeStamp(date, time)
+
     def pass_time(self, session, minutes, night=False):
         if minutes == 0:
             return True
@@ -50,7 +56,7 @@ class Time():
         time_obj.set(session, "numeric", time)
         date_obj.set(session, "numeric", date)
 
-        now = Event(date, time, None)
+        now = Event(date, time, None, "")
         if len(self._events) > 0:
             event = self._events.pop()
         else:
@@ -79,9 +85,13 @@ class Time():
                 minutes_to_pass = 420 - time
             self.pass_time(session, minutes_to_pass, True)
 
-    def event(self, new_event):
+    def add_event(self, new_event):
         self._events.append(new_event)
-        # sort list
+        # sort list so it can be used as a stack
         self._events.sort(key=attrgetter("date", "time"), reverse=True)
 
-# time = Time()
+    def add_event_multi(self, events):
+        self._events += events
+        self._events.sort(key=attrgetter("date", "time"), reverse=True)
+
+time = Time()

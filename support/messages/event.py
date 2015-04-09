@@ -3,10 +3,11 @@ from message import Message
 
 class Event(Message):
     """ Signal the interface module to display a meter."""
-    def __init__(self, date, time, callback):
+    def __init__(self, date, time, callback, subject):
         self.date = date
         self.time = time
         self.callback = callback
+        self.subject = subject
 
     def __str__(self):
         return ' '.join(["Event: Date:",
