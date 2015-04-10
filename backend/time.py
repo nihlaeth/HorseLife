@@ -65,6 +65,8 @@ class Time():
         # now has to come first, because of how I implemented
         # comparison with None!
         while now >= event:
+            if night:
+                event.night = True
             event.callback(session, event)
             if len(self._events) > 0:
                 event = self._events.pop()

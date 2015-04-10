@@ -97,3 +97,4 @@ class TestHorseBackend():
             time.pass_time(session, 1440)
             assert_less(backend.get(session, "food"), 100)
             assert_less(backend.get(session, "water"), 100)
+            assert_less(backend.get(session, "energy"), 100)

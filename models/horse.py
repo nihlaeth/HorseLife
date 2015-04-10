@@ -33,7 +33,11 @@ class Horse(Base):
     water_time = Column(Integer)
 
     happiness = Column(Float)
+
     energy = Column(Float)
+    energy_date = Column(Integer)
+    energy_time = Column(Integer)
+
     exercise = Column(Float)
     hygiene = Column(Float)
     stimulation = Column(Float)
@@ -200,20 +204,10 @@ class Horse(Base):
         self.food_date = now.date
         self.food_time = now.time
 
-        if self.food >= 76:
+        if self.food >= 80:
             # No need to eat right now
             next_limit = 75
-        elif self.food >= 51:
-            # Need to eat, but no happiness or health implications
-            next_limit = self._eat()
-        elif self.food >= 26:
-            # Very hungry, getting seriously unhappy about it.
-            # TODO: update happiness.
-            next_limit = self._eat()
         elif self.food >= 1:
-            # This is getting bad for health.
-            # TODO: update both health and
-            # happiness.
             next_limit = self._eat()
         else:
             # Food dropped to zero or below. Figure out what to do here.
@@ -253,13 +247,9 @@ class Horse(Base):
         self.water_date = now.date
         self.water_time = now.time
 
-        if self.water >= 76:
+        if self.water >= 80:
             # No need to drink
             next_limit = 75
-        elif self.water >= 51:
-            next_limit = self._drink()
-        elif self.water >= 26:
-            next_limit = self._drink()
         elif self.water >= 1:
             next_limit = self._drink()
         else:
@@ -269,12 +259,32 @@ class Horse(Base):
         now.add_min((self.water - next_limit) * water_decay_time)
         return ["water", now]
 
+    def _ch_energy(self, now, night=False):
+        last_updated = TimeStamp(self.energy_date, self.energy_time)
+        time_passed = now - last_updated
+
+        energy_inc_time = 3
+        energy_decay_time = 20
+
+        if night:
+            self.energy += time_passed.get_min() / float(energy_inc_time)
+        else:
+            self.energy -= time_passed.get_min() / float(energy_decay_time)
+        self.energy_date = now.date
+        self.energy_time = now.time
+
+        # Just check every two hours or so (small offset to prevent
+        # everything from happening in the same minute).
+        now.add_min(124)
+        return ["energy", now]
+
     def get_events(self, now):
         events = []
 
         # For every need, calculate when the next event takes place.
         events.append(self._ch_food(now))
         events.append(self._ch_water(now))
+        events.append(self._ch_energy(now))
 
         return events
 
@@ -283,6 +293,8 @@ class Horse(Base):
             next_event = self._ch_water(event.t_stamp)
         elif event.subject == "water":
             next_event = self._ch_water(event.t_stamp)
+        elif event.subject == "energy":
+            next_event = self._ch_energy(event.t_stamp, event.night)
 
         return next_event
 

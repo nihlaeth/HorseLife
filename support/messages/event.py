@@ -4,10 +4,11 @@ from timestamp import TimeStamp
 
 class Event(Message):
     """ Signal the interface module to display a meter."""
-    def __init__(self, date, time, callback, subject):
+    def __init__(self, date, time, callback, subject, night=False):
         self.callback = callback
         self.subject = subject
         self.t_stamp = TimeStamp(date, time)
+        self.night = night
 
     def __str__(self):
         return ' '.join(["Event: Date:",

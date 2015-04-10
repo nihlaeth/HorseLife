@@ -27,7 +27,11 @@ class HorseFactory(factory.Factory):
     water_time = 0
 
     happiness = 100
+
     energy = 100
+    energy_date = 0
+    energy_time = 0
+
     exercise = 100
     hygiene = 100
     stimulation = 100
