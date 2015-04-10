@@ -17,9 +17,10 @@ class HorseBackend(Backend):
     def __init__(self, id):
         self._id = id
 
-    def get(self, session, name):
+    def get(self, session, key):
+        now = time.get_time_stamp(session)
         horse = self._one_id(session, self._id)
-        return getattr(horse, name)
+        return horse.get(now, key)
 
     def set(self, session, name, value):
         horse = self._one_id(session, self._id)
