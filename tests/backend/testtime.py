@@ -50,7 +50,7 @@ class TestTime():
         assert_equals(t._events[0], event1)
         assert_equals(t._events[1], event2)
 
-    def callback(self):
+    def callback(self, session, event):
         pass
 
     def test_pass_time(self):
@@ -78,7 +78,7 @@ class TestTime():
                 event = Event(2, 480, self.callback, "")
                 t.add_event(event)
                 t.pass_time(session, 120)
-                mock_meth.assert_called_once_with()
+                mock_meth.assert_called_once_with(session, event)
 
                 assert_equals(len(t._events), 0)
 

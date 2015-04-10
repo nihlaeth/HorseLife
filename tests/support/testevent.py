@@ -6,8 +6,8 @@ from support.messages.event import Event
 class TestEvent():
     def test_basic(self):
         event = Event(0, 5, self.test_basic, "test")
-        assert_equals(event.date, 0)
-        assert_equals(event.time, 5)
+        assert_equals(event.t_stamp.date, 0)
+        assert_equals(event.t_stamp.time, 5)
         assert_equals(event.callback, self.test_basic)
         assert_equals(event.subject, "test")
 

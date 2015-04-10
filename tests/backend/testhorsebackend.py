@@ -1,10 +1,12 @@
 from nose.tools import assert_equals, assert_less, assert_greater
+import mock
 
 from backend.horsebackend import HorseBackend
 from backend.time import time
 from tests.tools.dummydb import DummyDB
 from tests.tools.horsefactory import HorseFactory
 from tests.tools.settingfactory import SettingFactory
+from support.messages.event import Event
 
 
 class TestHorseBackend():
@@ -75,3 +77,23 @@ class TestHorseBackend():
             now = time.get_time_stamp(session)
             backend.get_events(session, now)
             assert_greater(len(time._events), 0)
+
+    def test_callback(self):
+        with DummyDB() as session:
+            session.add(HorseFactory.build())
+            session.add_all([
+                SettingFactory(name="Date"),
+                SettingFactory(name="Time", numeric=1430)])
+            with mock.patch.object(HorseBackend, "event_callback") as m:
+                backend = HorseBackend(1)
+                event = Event(0, 0, backend.event_callback, "food")
+                time.add_event(event)
+                time.pass_time(session, 5)
+                m.assert_called_once_with(session, event)
+            # Now for real!
+            backend = HorseBackend(1)
+            now = time.get_time_stamp(session)
+            backend.get_events(session, now)
+            time.pass_time(session, 1440)
+            assert_less(backend.get(session, "food"), 100)
+            assert_less(backend.get(session, "water"), 100)

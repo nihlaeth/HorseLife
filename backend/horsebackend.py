@@ -45,11 +45,12 @@ class HorseBackend(Backend):
         events = []
         result = horse.get_events(now)
         for e in result:
-            events.append(Event(
-                e[1].date,
-                e[1].time,
-                self.event_callback,
-                e[0]))
+            if e is not None:
+                events.append(Event(
+                    e[1].date,
+                    e[1].time,
+                    self.event_callback,
+                    e[0]))
 
         time.add_event_multi(events)
 
@@ -57,4 +58,11 @@ class HorseBackend(Backend):
         """Execute event, and place the returned next occurence
         in the event queue."""
         horse = self._one_id(session, self._id)
-        horse.event(event)
+        event_list = horse.event(event)
+        if event_list is not None:
+            next_event = Event(
+                event_list[1].date,
+                event_list[1].time,
+                self.event_callback,
+                event_list[0])
+            time.add_event(next_event)

@@ -17,8 +17,15 @@ class HorseFactory(factory.Factory):
     health_status = "healthy"
 
     health = 100
+
     food = 100
+    food_date = 0
+    food_time = 0
+
     water = 100
+    water_date = 0
+    water_time = 0
+
     happiness = 100
     energy = 100
     exercise = 100

@@ -62,10 +62,10 @@ class Time():
         else:
             event = None
 
-        # Now has to come first, because of how I implemented
+        # now has to come first, because of how I implemented
         # comparison with None!
         while now >= event:
-            event.callback()
+            event.callback(session, event)
             if len(self._events) > 0:
                 event = self._events.pop()
             else:
@@ -88,10 +88,14 @@ class Time():
     def add_event(self, new_event):
         self._events.append(new_event)
         # sort list so it can be used as a stack
-        self._events.sort(key=attrgetter("date", "time"), reverse=True)
+        self._events.sort(
+                key=attrgetter("t_stamp.date", "t_stamp.time"),
+                reverse=True)
 
     def add_event_multi(self, events):
         self._events += events
-        self._events.sort(key=attrgetter("date", "time"), reverse=True)
+        self._events.sort(
+                key=attrgetter("t_stamp.date", "t_stamp.time"),
+                reverse=True)
 
 time = Time()
