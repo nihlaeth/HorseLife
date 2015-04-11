@@ -3,11 +3,15 @@ import mock
 import datetime
 
 from backend.horsebackend import HorseBackend
+from backend.eventbackend import EventBackend
 from backend.time import time
+from models.horse import Horse
+from support.messages.timestamp import TimeStamp
 from tests.tools.dummydb import DummyDB
 from tests.tools.horsefactory import HorseFactory
 from tests.tools.settingfactory import SettingFactory
-from support.messages.event import Event
+from tests.tools.eventfactory import EventFactory
+from tests.tools.callbackfactory import CallbackFactory
 
 
 class TestHorseBackend():
@@ -32,7 +36,8 @@ class TestHorseBackend():
             session.add_all([SettingFactory(name="Date"),
                              SettingFactory(name="Time")])
             backend = HorseBackend(1)
-            assert_equals(backend.get(session, "name"), "Spirit")
+            assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
+                          "Spirit")
 
     def test_set(self):
         with DummyDB() as session:
@@ -41,7 +46,8 @@ class TestHorseBackend():
                              SettingFactory(name="Time")])
             backend = HorseBackend(1)
             backend.set(session, "name", "Mary")
-            assert_equals(backend.get(session, "name"), "Mary")
+            assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
+                          "Mary")
 
     def test_pass_time(self):
         with DummyDB() as session:
@@ -50,7 +56,8 @@ class TestHorseBackend():
                              SettingFactory(name="Time")])
             backend = HorseBackend(1)
             backend.pass_time(session, 200, False)
-            assert_less(backend.get(session, "hygiene"), 100)
+            assert_less(backend.get(session, TimeStamp(0, 0), "hygiene"),
+                        100)
 
     def test_groom(self):
         with DummyDB() as session:
@@ -59,8 +66,9 @@ class TestHorseBackend():
                              SettingFactory(name="Time")])
             backend = HorseBackend(1)
             backend.groom(session)
-            assert_equals(backend.get(session, "hygiene"), 100)
-            assert_greater(backend.get(session, "stimulation"), 0)
+            t_stamp = TimeStamp(0, 0)
+            assert_equals(backend.get(session, t_stamp, "hygiene"), 100)
+            assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
 
     def test_pet(self):
         with DummyDB() as session:
@@ -69,7 +77,9 @@ class TestHorseBackend():
                              SettingFactory(name="Time")])
             backend = HorseBackend(1)
             backend.pet(session)
-            assert_greater(backend.get(session, "stimulation"), 0)
+            assert_greater(backend.get(session,
+                                       TimeStamp(0, 0),
+                                       "stimulation"), 0)
 
     def test_get_events(self):
         with DummyDB() as session:
@@ -87,7 +97,7 @@ class TestHorseBackend():
             backend = HorseBackend(1)
             now = time.get_time_stamp(session)
             backend.get_events(session, now)
-            assert_greater(len(time._events), 0)
+            assert_greater(len(EventBackend.all(session)), 0)
 
     def test_callback(self):
         with DummyDB() as session:
@@ -95,14 +105,22 @@ class TestHorseBackend():
             session.add(HorseFactory.build())
             session.add_all([
                 SettingFactory(name="Date"),
-                SettingFactory(name="Time", numeric=1430)])
+                SettingFactory(name="Time", numeric=1430),
+                EventFactory(
+                    subject="food-test",
+                    callbacks=[CallbackFactory(
+                        obj="HorseBackend",
+                        obj_id=1)])])
             t2 = datetime.datetime.now()
-            with mock.patch.object(HorseBackend, "event_callback") as m:
+            with mock.patch.object(Horse, "event") as m:
+                m.return_value = [
+                        "food-test",
+                        TimeStamp(1000, 0),
+                        [["HorseBackend", 1]]]
                 backend = HorseBackend(1)
-                event = Event(0, 0, backend.event_callback, "food")
-                time.add_event(event)
                 time.pass_time(session, 5)
-                m.assert_called_once_with(session, event)
+                m.assert_called_once_with("food-test", TimeStamp(0, 0))
+                assert_equals(EventBackend(1).get(session, "date"), 1000)
             t3 = datetime.datetime.now()
             # Now for real!
             backend = HorseBackend(1)
@@ -112,9 +130,10 @@ class TestHorseBackend():
             t3_2 = datetime.datetime.now()
             time.pass_time(session, 1440)
             t4 = datetime.datetime.now()
-            assert_less(backend.get(session, "food"), 100)
-            assert_less(backend.get(session, "water"), 100)
-            assert_less(backend.get(session, "energy"), 100)
+            t_stamp = time.get_time_stamp(session)
+            assert_less(backend.get(session, t_stamp, "food"), 100)
+            assert_less(backend.get(session, t_stamp, "water"), 100)
+            assert_less(backend.get(session, t_stamp, "energy"), 100)
             t5 = datetime.datetime.now()
 
             print "Adding objects to session took:"

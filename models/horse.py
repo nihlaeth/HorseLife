@@ -211,7 +211,7 @@ class Horse(Base):
             next_limit = self._eat()
         else:
             # Food dropped to zero or below. Figure out what to do here.
-            now.add_min(14)
+            now.add_min(1440)
             return ["food", now]
 
         now.add_min((self.food - next_limit) * food_decay_time)
@@ -253,7 +253,7 @@ class Horse(Base):
         elif self.water >= 1:
             next_limit = self._drink()
         else:
-            now.add_min(16)
+            now.add_min(1440)
             return ["water", now]
 
         now.add_min((self.water - next_limit) * water_decay_time)
@@ -288,13 +288,13 @@ class Horse(Base):
 
         return events
 
-    def event(self, event):
-        if event.subject == "food":
-            next_event = self._ch_water(event.t_stamp)
-        elif event.subject == "water":
-            next_event = self._ch_water(event.t_stamp)
-        elif event.subject == "energy":
-            next_event = self._ch_energy(event.t_stamp, event.night)
+    def event(self, subject, t_stamp, night=False):
+        if subject == "food":
+            next_event = self._ch_food(t_stamp)
+        elif subject == "water":
+            next_event = self._ch_water(t_stamp)
+        elif subject == "energy":
+            next_event = self._ch_energy(t_stamp, night)
 
         return next_event
 

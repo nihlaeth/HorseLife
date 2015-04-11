@@ -13,5 +13,6 @@ pep8 tests/backend/*.py
 pep8 tests/core/*.py
 pep8 tests/generators/*.py
 pep8 tests/interface/*.py
+pep8 tests/models/*.py
 pep8 tests/support/*.py
 pep8 tests/tools/*.py

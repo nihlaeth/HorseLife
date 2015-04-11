@@ -4,9 +4,9 @@ from sqlalchemy import inspect
 
 from session import session_scope
 from settingbackend import SettingBackend
-from horsesbackend import HorsesBackend
+from horsebackend import HorseBackend
 from stablebackend import StableBackend
-from support.messages.event import Event
+from eventbackend import EventBackend
 from support.messages.timestamp import TimeStamp
 
 
@@ -56,24 +56,25 @@ class Time():
         time_obj.set(session, "numeric", time)
         date_obj.set(session, "numeric", date)
 
-        now = Event(date, time, None, "")
-        if len(self._events) > 0:
-            event = self._events.pop()
-        else:
-            event = None
-
-        # now has to come first, because of how I implemented
-        # comparison with None!
-        while now >= event:
-            if night:
-                event.night = True
-            event.callback(session, event)
-            if len(self._events) > 0:
-                event = self._events.pop()
+        now = self.get_time_stamp(session)
+        validClasses = [HorseBackend, StableBackend]
+        validMap = dict(((c.__name__, c) for c in validClasses))
+        while True:
+            try:
+                event = EventBackend.next_event(session)
+            except IndexError:
+                break
+            t_stamp = event.get(session, "t_stamp")
+            if t_stamp <= now:
+                callbacks = event.get(session, "callbacks")
+                subject = event.get(session, "subject")
+                for callback in callbacks:
+                    obj = callback.obj
+                    obj_id = callback.obj_id
+                    cls = validMap[obj]
+                    cls(obj_id).event_callback(session, subject, t_stamp)
             else:
-                event = None
-        if event is not None:
-            self._events.append(event)
+                break
 
         if time >= 1320 or time < 420:
             # It's between 22:00 and 07:00 - night time!
@@ -86,18 +87,5 @@ class Time():
             else:
                 minutes_to_pass = 420 - time
             self.pass_time(session, minutes_to_pass, True)
-
-    def add_event(self, new_event):
-        self._events.append(new_event)
-        # sort list so it can be used as a stack
-        self._events.sort(
-                key=attrgetter("t_stamp.date", "t_stamp.time"),
-                reverse=True)
-
-    def add_event_multi(self, events):
-        self._events += events
-        self._events.sort(
-                key=attrgetter("t_stamp.date", "t_stamp.time"),
-                reverse=True)
 
 time = Time()

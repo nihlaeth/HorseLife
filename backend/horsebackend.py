@@ -1,7 +1,7 @@
 from backend import Backend
-from time import time
 from models.horse import Horse
-from support.messages.event import Event
+from eventbackend import EventBackend
+from generators.eventgenerator import EventGenerator
 
 
 class HorseBackend(Backend):
@@ -17,10 +17,9 @@ class HorseBackend(Backend):
     def __init__(self, id):
         self._id = id
 
-    def get(self, session, key):
-        now = time.get_time_stamp(session)
+    def get(self, session, t_stamp, key):
         horse = self._one_id(session, self._id)
-        return horse.get(now, key)
+        return horse.get(t_stamp, key)
 
     def set(self, session, name, value):
         horse = self._one_id(session, self._id)
@@ -43,27 +42,20 @@ class HorseBackend(Backend):
         type of occurence (need based)."""
         horse = self._one_id(session, self._id)
 
-        events = []
+        events = {}
         result = horse.get_events(now)
         for e in result:
             if e is not None:
-                events.append(Event(
+                events[e[0]] = [
                     e[1].date,
                     e[1].time,
-                    self.event_callback,
-                    e[0]))
+                    [["HorseBackend", 1]]]
+        EventGenerator.gen_many(session, events)
 
-        time.add_event_multi(events)
-
-    def event_callback(self, session, event):
-        """Execute event, and place the returned next occurence
-        in the event queue."""
+    def event_callback(self, session, subject, t_stamp):
+        """Execute event, and update the event with next occurence
+        time in the event queue."""
         horse = self._one_id(session, self._id)
-        event_list = horse.event(event)
-        if event_list is not None:
-            next_event = Event(
-                event_list[1].date,
-                event_list[1].time,
-                self.event_callback,
-                event_list[0])
-            time.add_event(next_event)
+        event_list = horse.event(subject, t_stamp)
+        event = EventBackend.one(session, event_list[0])
+        event.update(session, event_list[1])
