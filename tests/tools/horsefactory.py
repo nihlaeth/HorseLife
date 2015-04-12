@@ -34,7 +34,11 @@ class HorseFactory(factory.Factory):
 
     exercise = 100
     hygiene = 100
+
     stimulation = 100
+    stimulation_date = 0
+    stimulation_time = 0
+
     environment = 100
     social = 100
 

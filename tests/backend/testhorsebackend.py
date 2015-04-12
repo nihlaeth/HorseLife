@@ -38,6 +38,16 @@ class TestHorseBackend():
             backend = HorseBackend(1)
             assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
                           "Spirit")
+            # Now test the changing attributes (needs)
+            t = TimeStamp
+            assert_equals(backend.get(session, t(0, 0), "food"), 100)
+            assert_less(backend.get(session, t(0, 120), "food"), 100)
+            assert_equals(backend.get(session, t(0, 0), "water"), 100)
+            assert_less(backend.get(session, t(0, 120), "water"), 100)
+            assert_equals(backend.get(session, t(0, 0), "energy"), 100)
+            assert_less(backend.get(session, t(0, 120), "energy"), 100)
+            assert_equals(backend.get(session, t(0, 0), "stimulation"), 100)
+            assert_less(backend.get(session, t(0, 120), "stimulation"), 100)
 
     def test_set(self):
         with DummyDB() as session:
