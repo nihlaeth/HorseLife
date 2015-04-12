@@ -24,9 +24,9 @@ class EventGenerator(Generator):
         for s in events:
             result.append(cls._gen_one(
                 s,  # subject
-                events[s][0],
-                events[s][1],  # date
-                events[s][2],  # time
-                events[s][3]))  # callbacks
+                events[s]["obj_id"],
+                events[s]["date"],
+                events[s]["time"],
+                events[s]["callbacks"]))
         session.add_all(result)
         return result
