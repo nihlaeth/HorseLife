@@ -28,6 +28,18 @@ with a horse in it. You can clean the stable and the horse
 gets unhappy with time. And to add insult to injury, the
 horse doesn't even care if the stable is clean or not.
 
+## TODO
+For planned features, see above. This is about stuff that NEEDS to happen
+in the codebase as it is right now. More a list for myself than for anyone
+else's benefit, but I need to dump it somewhere (where I will see it).
+
+* Fix problem where there can be only 1 event of every type. This is a problem as every object instance will want to have it's own event!
+* Bring some backend methods to their parent Backend class to reduce the amount of duplicate code.
+* Add docstrings. Seriously. Add them. To EVERY method and function.
+* Add some comments. I know you get what this does right now, in a few weeks, you won't. Trust me on this one. For once.
+* Do a scan of the entire (reworked) code, see what needs refactoring.
+* Rework the Core classes to work with the new timekeeping, and session management. Also, write tests for the core classes!
+
 ## Directories
 
 ### assets
