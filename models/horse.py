@@ -86,14 +86,32 @@ class Horse(Base):
 
     stable_id = Column(Integer, ForeignKey('stables.id'))
 
-    def groom(self, skill="normal"):
+    def groom(self, now, skill="normal"):
         # TODO have skill factor into grooming
         # from backend.time import time
         # time.pass_time(30)
+
+        # Grooming takes about 30 minutes, so update the timestamp.
+        now.add_min(30)
+
+        # First, make sure the stimulation and hygiene stats are
+        # updated:
+        self._ch_stimulation(now)
+        self._ch_hygiene(now)
+
+        # Now make the changes we want
         self.stimulation += 40
         self.hygiene = 100
         if self.stimulation > 100:
             self.stimulation = 100
+
+        # Now get the updated event information to pass on:
+        e_info_stimulation = self._ch_stimulation(now)
+        e_info_hygiene = self._ch_hygiene(now)
+
+        return {"clock": now,
+                "e_stimulation": e_info_stimulation,
+                "e_hygiene": e_info_hygiene}
 
     def pet(self, person=None):
         # TODO increase relationship with person petting horse

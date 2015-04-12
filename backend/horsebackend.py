@@ -32,9 +32,12 @@ class HorseBackend(Backend):
         horse = self._one_id(session, self._id)
         horse.pass_time(minutes, night)
 
-    def groom(self, session):
+    def groom(self, session, now):
         horse = self._one_id(session, self._id)
-        horse.groom()
+        result = horse.groom(now)
+        self._update_event(session, result["e_stimulation"])
+        self._update_event(session, result["e_hygiene"])
+        return result["clock"]  # Let core deal with timekeeping
 
     def pet(self, session):
         horse = self._one_id(session, self._id)

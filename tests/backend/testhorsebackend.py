@@ -70,12 +70,14 @@ class TestHorseBackend():
         with DummyDB() as session:
             session.add(HorseFactory.build(hygiene=0, stimulation=0))
             session.add_all([SettingFactory(name="Date"),
-                             SettingFactory(name="Time")])
+                             SettingFactory(name="Time"),
+                             EventFactory(subject="stimulation"),
+                             EventFactory(subject="hygiene")])
             backend = HorseBackend(1)
-            backend.groom(session)
-            t = TimeStamp
-            assert_equals(backend.get(session, t(0, 0), "hygiene"), 100)
-            assert_greater(backend.get(session, t(0, 0), "stimulation"), 0)
+            t_stamp = backend.groom(session, TimeStamp(0, 0))
+            assert_equals(t_stamp.time, 30)
+            assert_equals(backend.get(session, t_stamp, "hygiene"), 100)
+            assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
 
     def test_pet(self):
         with DummyDB() as session:
