@@ -28,10 +28,6 @@ class HorseBackend(Backend):
         horse = self._one_id(session, self._id)
         setattr(horse, name, value)
 
-    def pass_time(self, session, minutes, night):
-        horse = self._one_id(session, self._id)
-        horse.pass_time(minutes, night)
-
     def groom(self, session, now):
         horse = self._one_id(session, self._id)
         result = horse.groom(now)
