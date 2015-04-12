@@ -52,6 +52,8 @@ class TestHorseBackend():
             assert_less(backend.get(session, t(0, 120), "social"), 100)
             assert_equals(backend.get(session, t(0, 0), "exercise"), 100)
             assert_less(backend.get(session, t(0, 120), "exercise"), 100)
+            assert_equals(backend.get(session, t(0, 0), "hygiene"), 100)
+            assert_less(backend.get(session, t(0, 120), "hygiene"), 100)
 
     def test_set(self):
         with DummyDB() as session:
@@ -80,9 +82,9 @@ class TestHorseBackend():
                              SettingFactory(name="Time")])
             backend = HorseBackend(1)
             backend.groom(session)
-            t_stamp = TimeStamp(0, 0)
-            assert_equals(backend.get(session, t_stamp, "hygiene"), 100)
-            assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
+            t = TimeStamp
+            assert_equals(backend.get(session, t(0, 0), "hygiene"), 100)
+            assert_greater(backend.get(session, t(0, 0), "stimulation"), 0)
 
     def test_pet(self):
         with DummyDB() as session:

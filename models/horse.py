@@ -43,6 +43,8 @@ class Horse(Base):
     exercise_time = Column(Integer)
 
     hygiene = Column(Float)
+    hygiene_date = Column(Integer)
+    hygiene_time = Column(Integer)
 
     stimulation = Column(Float)
     stimulation_date = Column(Integer)
@@ -362,6 +364,30 @@ class Horse(Base):
         now.add_min((self.exercise - next_limit) * exercise_decay_time)
         return ["exercise", now]
 
+    def _ch_hygiene(self, now):
+        last_updated = TimeStamp(self.hygiene_date, self.hygiene_time)
+        time_passed = now - last_updated
+
+        hygiene_decay_time = 15
+        self.hygiene -= time_passed.get_min() / float(hygiene_decay_time)
+        self.hygiene_date = now.date
+        self.hygiene_time = now.time
+
+        if self.hygiene >= 76:
+            next_limit = 75
+        elif self.hygiene >= 51:
+            next_limit = 50
+        elif self.hygiene >= 26:
+            next_limit = 25
+        elif self.hygiene >= 1:
+            next_limit = 0
+        else:
+            now.add_min(1440)
+            return ["hygiene", now]
+
+        now.add_min((self.hygiene - next_limit) * hygiene_decay_time)
+        return ["hygiene", now]
+
     def get_events(self, now):
         events = []
 
@@ -372,6 +398,7 @@ class Horse(Base):
         events.append(self._ch_stimulation(now))
         events.append(self._ch_social(now))
         events.append(self._ch_exercise(now))
+        events.append(self._ch_hygiene(now))
 
         return events
 
@@ -388,6 +415,8 @@ class Horse(Base):
             next_event = self._ch_social(t_stamp)
         elif subject == "exercise":
             next_event = self._ch_exercise(t_stamp)
+        elif subject == "hygiene":
+            next_event = self._ch_hygiene(t_stamp)
 
         return next_event
 
@@ -414,5 +443,8 @@ class Horse(Base):
         elif key == "exercise":
             self._ch_exercise(now)
             return self.exercise
+        elif key == "hygiene":
+            self._ch_hygiene(now)
+            return self.hygiene
         else:
             return getattr(self, key)
