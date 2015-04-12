@@ -39,6 +39,9 @@ class Horse(Base):
     energy_time = Column(Integer)
 
     exercise = Column(Float)
+    exercise_date = Column(Integer)
+    exercise_time = Column(Integer)
+
     hygiene = Column(Float)
 
     stimulation = Column(Float)
@@ -193,9 +196,9 @@ class Horse(Base):
                     self.food = 100
         if self.food >= 76:
             return 75
-        if self.food >= 51:
+        elif self.food >= 51:
             return 50
-        if self.food >= 26:
+        elif self.food >= 26:
             return 25
         return 0
 
@@ -239,9 +242,9 @@ class Horse(Base):
                     self.water = 100
         if self.water >= 76:
             return 75
-        if self.water >= 51:
+        elif self.water >= 51:
             return 50
-        if self.water >= 26:
+        elif self.water >= 26:
             return 25
         return 0
 
@@ -298,11 +301,11 @@ class Horse(Base):
 
         if self.stimulation >= 76:
             next_limit = 75
-        if self.stimulation >= 51:
+        elif self.stimulation >= 51:
             next_limit = 50
-        if self.stimulation >= 26:
+        elif self.stimulation >= 26:
             next_limit = 25
-        if self.stimulation >= 1:
+        elif self.stimulation >= 1:
             next_limit = 0
         else:
             now.add_min(1440)
@@ -322,11 +325,11 @@ class Horse(Base):
 
         if self.social >= 76:
             next_limit = 75
-        if self.social >= 51:
+        elif self.social >= 51:
             next_limit = 50
-        if self.social >= 26:
+        elif self.social >= 26:
             next_limit = 25
-        if self.social >= 1:
+        elif self.social >= 1:
             next_limit = 0
         else:
             now.add_min(1440)
@@ -334,6 +337,30 @@ class Horse(Base):
 
         now.add_min((self.social - next_limit) * social_decay_time)
         return ["social", now]
+
+    def _ch_exercise(self, now):
+        last_updated = TimeStamp(self.exercise_date, self.exercise_time)
+        time_passed = now - last_updated
+
+        exercise_decay_time = 10
+        self.exercise -= time_passed.get_min() / float(exercise_decay_time)
+        self.exercise_date = now.date
+        self.exercise_time = now.time
+
+        if self.exercise >= 76:
+            next_limit = 75
+        elif self.exercise >= 51:
+            next_limit = 50
+        elif self.exercise >= 26:
+            next_limit = 25
+        elif self.exercise >= 1:
+            next_limit = 0
+        else:
+            now.add_min(1440)
+            return ["exercise", now]
+
+        now.add_min((self.exercise - next_limit) * exercise_decay_time)
+        return ["exercise", now]
 
     def get_events(self, now):
         events = []
@@ -344,6 +371,7 @@ class Horse(Base):
         events.append(self._ch_energy(now))
         events.append(self._ch_stimulation(now))
         events.append(self._ch_social(now))
+        events.append(self._ch_exercise(now))
 
         return events
 
@@ -358,6 +386,8 @@ class Horse(Base):
             next_event = self._ch_stimulation(t_stamp, night)
         elif subject == "social":
             next_event = self._ch_social(t_stamp)
+        elif subject == "exercise":
+            next_event = self._ch_exercise(t_stamp)
 
         return next_event
 
@@ -381,5 +411,8 @@ class Horse(Base):
         elif key == "social":
             self._ch_social(now)
             return self.social
+        elif key == "exercise":
+            self._ch_exercise(now)
+            return self.exercise
         else:
             return getattr(self, key)

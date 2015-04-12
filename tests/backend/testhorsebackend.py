@@ -50,6 +50,8 @@ class TestHorseBackend():
             assert_less(backend.get(session, t(0, 120), "stimulation"), 100)
             assert_equals(backend.get(session, t(0, 0), "social"), 100)
             assert_less(backend.get(session, t(0, 120), "social"), 100)
+            assert_equals(backend.get(session, t(0, 0), "exercise"), 100)
+            assert_less(backend.get(session, t(0, 120), "exercise"), 100)
 
     def test_set(self):
         with DummyDB() as session:
