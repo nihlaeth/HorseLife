@@ -9,9 +9,11 @@ class EventBackend(Backend):
         return [EventBackend(model.id) for model in models]
 
     @classmethod
-    def one(cls, session, subject):
+    def one(cls, session, subject, obj_id):
         return EventBackend(
-                session.query(Event).filter_by(subject=subject)[0].id)
+                session.query(Event).filter(
+                    Event.subject == subject,
+                    Event.obj_id == obj_id)[0].id)
 
     @classmethod
     def next_event(cls, session):

@@ -138,6 +138,7 @@ class TestTime():
             t.pass_time(session, 1440)
             t4 = datetime.datetime.now()
 
+            print "Testing with a single instance"
             print "Setup"
             print (t2 - t1).total_seconds()
             print "\n\n"
@@ -149,5 +150,53 @@ class TestTime():
             print "\n\n"
             print "Total"
             print (t4 - t1).total_seconds()
+            print "\n\n"
+
+            # assert False
+        # Now test with multiple instances!
+        with DummyDB() as session:
+            n = 2  # Keep this low to reduce total testing time!
+            t1 = datetime.datetime.now()
+            session.add_all(HorseFactory.build_batch(n))
+            session.add_all([
+                SettingFactory(name="Date"),
+                SettingFactory(name="Time")])
+            t = Time()
+            now = t.get_time_stamp(session)
+
+            t2 = datetime.datetime.now()
+            # Generate all the events needed
+            horse_b = HorseBackend.all(session)
+            stable_b = StableBackend.all(session)
+
+            for horse in horse_b:
+                horse.get_events(session, now)
+            for stable in stable_b:
+                stable.get_events(session, now)
+            t3 = datetime.datetime.now()
+
+            t.pass_time(session, 480)
+
+            t4 = datetime.datetime.now()
+
+            t.pass_time(session, 1440)
+
+            t5 = datetime.datetime.now()
+
+            print "Testing with %d instances" % n
+            print "Setup"
+            print (t2 - t1).total_seconds()
+            print "\n\n"
+            print "Generate events"
+            print (t3 - t2).total_seconds()
+            print "\n\n"
+            print "Pass time until 08:00"
+            print (t4 - t3).total_seconds()
+            print "\n\n"
+            print "Pass entire day"
+            print (t5 - t4).total_seconds()
+            print "\n\n"
+            print "Total"
+            print (t5 - t1).total_seconds()
 
             # assert False

@@ -51,13 +51,14 @@ class HorseBackend(Backend):
         for e_info in result:
             if e_info is not None:
                 events[e_info["subject"]] = [
+                    self._id,
                     e_info["t_stamp"].date,
                     e_info["t_stamp"].time,
-                    [["HorseBackend", 1]]]
+                    [["HorseBackend", self._id]]]
         EventGenerator.gen_many(session, events)
 
     def _update_event(self, session, e_info):
-        event = EventBackend.one(session, e_info["subject"])
+        event = EventBackend.one(session, e_info["subject"], self._id)
         event.update(session, e_info["t_stamp"])
 
     def event_callback(self, session, subject, t_stamp):

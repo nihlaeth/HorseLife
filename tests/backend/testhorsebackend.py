@@ -33,10 +33,13 @@ class TestHorseBackend():
     def test_get(self):
         with DummyDB() as session:
             session.add(HorseFactory.build(name="Spirit"))
+            session.add(HorseFactory.build())
             session.add_all([SettingFactory(name="Date"),
                              SettingFactory(name="Time")])
             backend = HorseBackend(1)
             backend.get_events(session, TimeStamp(0, 0))
+            backend2 = HorseBackend(2)
+            backend2.get_events(session, TimeStamp(0, 0))
             assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
                           "Spirit")
             # Now test the changing attributes (needs)
@@ -48,7 +51,15 @@ class TestHorseBackend():
             assert_equals(backend.get(session, t(0, 0), "energy"), 100)
             assert_less(backend.get(session, t(0, 120), "energy"), 100)
             assert_equals(backend.get(session, t(0, 0), "stimulation"), 100)
+            assert_greater(
+                    EventBackend.one(
+                        session,
+                        "stimulation",
+                        1).get(session, "time"),
+                    0)
             assert_less(backend.get(session, t(0, 120), "stimulation"), 100)
+            assert_equals(backend2.get(session, t(0, 0), "stimulation"), 100)
+            assert_less(backend2.get(session, t(0, 120), "stimulation"), 100)
             assert_equals(backend.get(session, t(0, 0), "social"), 100)
             assert_less(backend.get(session, t(0, 120), "social"), 100)
             assert_equals(backend.get(session, t(0, 0), "exercise"), 100)

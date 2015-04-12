@@ -10,6 +10,7 @@ class Event(Base):
     __tablename__ = "events"
     id = Column(Integer, primary_key=True)
     subject = Column(String)
+    obj_id = Column(Integer)
     date = Column(Integer)
     time = Column(Integer)
     night = Column(Boolean)
@@ -17,8 +18,9 @@ class Event(Base):
 
     callbacks = relationship("Callback", backref="event")
 
-    def __init__(self, date, time, subject, callbacks=[], night=False):
+    def __init__(self, date, time, subject, obj_id, callbacks=[], night=False):
         self.subject = subject
+        self.obj_id = obj_id
         self.date = date
         self.time = time
         self.t_stamp = TimeStamp(date, time)
@@ -37,6 +39,7 @@ class Event(Base):
     def __str__(self):
         return ' '.join(["Event:",
                          self.subject,
+                         str(self.obj_id),
                          "Date:",
                          str(self.date),
                          "Time:",

@@ -141,5 +141,5 @@ class TestStableBackend():
             backend.get_events(session, TimeStamp(0, 0))
             t_stamp = TimeStamp(0, 0)
             backend.event_callback(session, "cleanliness", t_stamp)
-            event = EventBackend.one(session, "cleanliness")
+            event = EventBackend.one(session, "cleanliness", 1)
             assert_greater(event.get(session, "time"), 0)

@@ -8,6 +8,7 @@ class EventFactory(factory.Factory):
         model = Event
 
     subject = factory.Sequence(lambda n: "Test-event-%d" % n)
+    obj_id = 1
     date = 0
     time = 0
     night = False

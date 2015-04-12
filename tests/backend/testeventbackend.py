@@ -21,7 +21,7 @@ class TestEventBackend():
         with DummyDB() as session:
             EventFactory.reset_sequence()
             session.add(EventFactory())
-            backend = EventBackend.one(session, "Test-event-0")
+            backend = EventBackend.one(session, "Test-event-0", 1)
 
     def test_one_id(self):
         with DummyDB() as session:
