@@ -15,18 +15,8 @@ class StableBackend(Backend):
         return session.query(Stable).filter_by(id=id)[0]
 
     def __init__(self, id):
-        self._id = id
-
-    def get(self, session, t_stamp, key):
-        stable = self._one_id(session, self._id)
-        info = stable.get(t_stamp, key)
-        if info["e_info"] is not None:
-            self._update_event(session, info["e_info"])
-        return info["attr"]
-
-    def set(self, session, name, value):
-        stable = self._one_id(session, self._id)
-        setattr(stable, name, value)
+        Backend.__init__(self, id)
+        self._str = "StableBackend"
 
     def clean(self, session, now):
         stable = self._one_id(session, self._id)
@@ -51,26 +41,3 @@ class StableBackend(Backend):
     def __str__(self):
         # TODO same as above
         return "Stable -- no session == no info"
-
-    def get_events(self, session, now):
-        stable = self._one_id(session, self._id)
-
-        events = {}
-        result = stable.get_events(now)
-        for e_info in result:
-            if e_info is not None:
-                events[e_info["subject"]] = {
-                        "obj_id": self._id,
-                        "date": e_info["t_stamp"].date,
-                        "time": e_info["t_stamp"].time,
-                        "callbacks": [["StableBackend", self._id]]}
-        EventGenerator.gen_many(session, events)
-
-    def _update_event(self, session, e_info):
-        event = EventBackend.one(session, e_info["subject"], self._id)
-        event.update(session, e_info["t_stamp"])
-
-    def event_callback(self, session, subject, t_stamp):
-        stable = self._one_id(session, self._id)
-        e_info = stable.event(subject, t_stamp)
-        self._update_event(session, e_info)

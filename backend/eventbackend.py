@@ -1,8 +1,8 @@
-from backend import Backend
+# from backend import Backend
 from models.event import Event
 
 
-class EventBackend(Backend):
+class EventBackend():
     @classmethod
     def all(cls, session):
         models = session.query(Event).order_by(Event.date, Event.time)
