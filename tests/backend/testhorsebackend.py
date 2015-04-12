@@ -83,12 +83,12 @@ class TestHorseBackend():
         with DummyDB() as session:
             session.add(HorseFactory.build(stimulation=0))
             session.add_all([SettingFactory(name="Date"),
-                             SettingFactory(name="Time")])
+                             SettingFactory(name="Time"),
+                             EventFactory(subject="stimulation")])
             backend = HorseBackend(1)
-            backend.pet(session)
-            assert_greater(backend.get(session,
-                                       TimeStamp(0, 0),
-                                       "stimulation"), 0)
+            t_stamp = backend.pet(session, TimeStamp(0, 0))
+            assert_equals(t_stamp.time, 5)
+            assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
 
     def test_get_events(self):
         with DummyDB() as session:

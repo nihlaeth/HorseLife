@@ -113,13 +113,21 @@ class Horse(Base):
                 "e_stimulation": e_info_stimulation,
                 "e_hygiene": e_info_hygiene}
 
-    def pet(self, person=None):
+    def pet(self, now, person=None):
         # TODO increase relationship with person petting horse
         # from backend.time import time
         # time.pass_time(5)
+
+        now.add_min(5)
+
+        self._ch_stimulation(now)
+
         self.stimulation += 10
         if self.stimulation > 100:
             self.stimulation = 100
+
+        e_info = self._ch_stimulation(now)
+        return {"clock": now, "e_info": e_info}
 
     def _get_limit(self, n):
         if n >= 76:

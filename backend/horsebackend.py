@@ -39,9 +39,11 @@ class HorseBackend(Backend):
         self._update_event(session, result["e_hygiene"])
         return result["clock"]  # Let core deal with timekeeping
 
-    def pet(self, session):
+    def pet(self, session, now):
         horse = self._one_id(session, self._id)
-        horse.pet()
+        result = horse.pet(now)
+        self._update_event(session, result["e_info"])
+        return result["clock"]
 
     def get_events(self, session, now):
         """Fetch events from model - one event for every
