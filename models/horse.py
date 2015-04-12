@@ -185,6 +185,18 @@ class Horse(Base):
         if self.stimulation > 100:
             self.stimulation = 100
 
+    def _get_limit(self, n):
+        if n >= 76:
+            return 75
+        elif n >= 51:
+            return 50
+        elif n >= 26:
+            return 25
+        elif n >= 1:
+            return 0
+        else:
+            return -1
+
     def _eat(self):
         items = self.stable.items
         for item in items:
@@ -196,13 +208,8 @@ class Horse(Base):
                 else:
                     item.value -= to_eat
                     self.food = 100
-        if self.food >= 76:
-            return 75
-        elif self.food >= 51:
-            return 50
-        elif self.food >= 26:
-            return 25
-        return 0
+
+        return self._get_limit(self.food)
 
     def _ch_food(self, now):
         """Calculates what the food meter should be at now,
@@ -242,13 +249,7 @@ class Horse(Base):
                 else:
                     item.value -= to_drink
                     self.water = 100
-        if self.water >= 76:
-            return 75
-        elif self.water >= 51:
-            return 50
-        elif self.water >= 26:
-            return 25
-        return 0
+        return self._get_limit(self.water)
 
     def _ch_water(self, now):
         last_updated = TimeStamp(self.water_date, self.water_time)
@@ -301,15 +302,8 @@ class Horse(Base):
         self.stimulation_date = now.date
         self.stimulation_time = now.time
 
-        if self.stimulation >= 76:
-            next_limit = 75
-        elif self.stimulation >= 51:
-            next_limit = 50
-        elif self.stimulation >= 26:
-            next_limit = 25
-        elif self.stimulation >= 1:
-            next_limit = 0
-        else:
+        next_limit = self._get_limit(self.stimulation)
+        if next_limit < 0:
             now.add_min(1440)
             return ["stimulation", now]
 
@@ -325,15 +319,8 @@ class Horse(Base):
         self.social_date = now.date
         self.social_time = now.time
 
-        if self.social >= 76:
-            next_limit = 75
-        elif self.social >= 51:
-            next_limit = 50
-        elif self.social >= 26:
-            next_limit = 25
-        elif self.social >= 1:
-            next_limit = 0
-        else:
+        next_limit = self._get_limit(self.social)
+        if next_limit < 0:
             now.add_min(1440)
             return ["social", now]
 
@@ -349,15 +336,8 @@ class Horse(Base):
         self.exercise_date = now.date
         self.exercise_time = now.time
 
-        if self.exercise >= 76:
-            next_limit = 75
-        elif self.exercise >= 51:
-            next_limit = 50
-        elif self.exercise >= 26:
-            next_limit = 25
-        elif self.exercise >= 1:
-            next_limit = 0
-        else:
+        next_limit = self._get_limit(self.exercise)
+        if next_limit < 0:
             now.add_min(1440)
             return ["exercise", now]
 
@@ -373,15 +353,8 @@ class Horse(Base):
         self.hygiene_date = now.date
         self.hygiene_time = now.time
 
-        if self.hygiene >= 76:
-            next_limit = 75
-        elif self.hygiene >= 51:
-            next_limit = 50
-        elif self.hygiene >= 26:
-            next_limit = 25
-        elif self.hygiene >= 1:
-            next_limit = 0
-        else:
+        next_limit = self._get_limit(self.hygiene)
+        if next_limit < 0:
             now.add_min(1440)
             return ["hygiene", now]
 
