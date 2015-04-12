@@ -34,7 +34,6 @@ in the codebase as it is right now. More a list for myself than for anyone
 else's benefit, but I need to dump it somewhere (where I will see it).
 
 * Figure out a way to speed up passing time - with around 20 horses, the system will crawl to a halt at a whopping 5 seconds to complete a request.
-* Bring some backend methods to their parent Backend class to reduce the amount of duplicate code.
 * Add docstrings. Seriously. Add them. To EVERY method and function.
 * Add some comments. I know you get what this does right now, in a few weeks, you won't. Trust me on this one. For once.
 * Do a scan of the entire (reworked) code, see what needs refactoring.
