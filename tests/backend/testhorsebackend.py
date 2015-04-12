@@ -65,16 +65,6 @@ class TestHorseBackend():
             assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
                           "Mary")
 
-    def test_pass_time(self):
-        with DummyDB() as session:
-            session.add(HorseFactory.build(name="Fury"))
-            session.add_all([SettingFactory(name="Date"),
-                             SettingFactory(name="Time")])
-            backend = HorseBackend(1)
-            backend.pass_time(session, 200, False)
-            assert_less(backend.get(session, TimeStamp(0, 0), "hygiene"),
-                        100)
-
     def test_groom(self):
         with DummyDB() as session:
             session.add(HorseFactory.build(hygiene=0, stimulation=0))
