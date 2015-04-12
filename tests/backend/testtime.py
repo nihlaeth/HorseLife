@@ -79,11 +79,9 @@ class TestTime():
             # Now test events!
             with mock.patch.object(Horse, "event") as m:
                 t_stamp = TimeStamp(1000, 0)
-                m.return_value = [
-                        "food",
-                        t_stamp,
-                        [["HorseBackend", 1]]]
-
+                m.return_value = {
+                        "subject": "food",
+                        "t_stamp": t_stamp}
                 session.add(EventFactory(
                     subject="food",
                     callbacks=[CallbackFactory(

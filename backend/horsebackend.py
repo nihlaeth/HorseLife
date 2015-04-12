@@ -19,7 +19,10 @@ class HorseBackend(Backend):
 
     def get(self, session, t_stamp, key):
         horse = self._one_id(session, self._id)
-        return horse.get(t_stamp, key)
+        info = horse.get(t_stamp, key)
+        if info["e_info"] is not None:
+            self._update_event(session, info["e_info"])
+        return info["attr"]
 
     def set(self, session, name, value):
         horse = self._one_id(session, self._id)
@@ -44,18 +47,21 @@ class HorseBackend(Backend):
 
         events = {}
         result = horse.get_events(now)
-        for e in result:
-            if e is not None:
-                events[e[0]] = [
-                    e[1].date,
-                    e[1].time,
+        for e_info in result:
+            if e_info is not None:
+                events[e_info["subject"]] = [
+                    e_info["t_stamp"].date,
+                    e_info["t_stamp"].time,
                     [["HorseBackend", 1]]]
         EventGenerator.gen_many(session, events)
+
+    def _update_event(self, session, e_info):
+        event = EventBackend.one(session, e_info["subject"])
+        event.update(session, e_info["t_stamp"])
 
     def event_callback(self, session, subject, t_stamp):
         """Execute event, and update the event with next occurence
         time in the event queue."""
         horse = self._one_id(session, self._id)
-        event_list = horse.event(subject, t_stamp)
-        event = EventBackend.one(session, event_list[0])
-        event.update(session, event_list[1])
+        e_info = horse.event(subject, t_stamp)
+        self._update_event(session, e_info)

@@ -1,3 +1,4 @@
+import copy
 from sqlalchemy import Column, Integer, Float, String, ForeignKey
 
 from base import Base
@@ -140,6 +141,7 @@ class Horse(Base):
         self.food_date = now.date
         self.food_time = now.time
 
+        t_next = copy.copy(now)
         if self.food >= 80:
             # No need to eat right now
             next_limit = 75
@@ -147,11 +149,11 @@ class Horse(Base):
             next_limit = self._eat()
         else:
             # Food dropped to zero or below. Figure out what to do here.
-            now.add_min(1440)
-            return ["food", now]
+            t_next.add_min(1440)
+            return {"subject": "food", "t_stamp": t_next}
 
-        now.add_min((self.food - next_limit) * food_decay_time)
-        return ["food", now]
+        t_next.add_min((self.food - next_limit) * food_decay_time)
+        return {"subject": "food", "t_stamp": t_next}
 
     def _drink(self):
         items = self.stable.items
@@ -177,17 +179,18 @@ class Horse(Base):
         self.water_date = now.date
         self.water_time = now.time
 
+        t_next = copy.copy(now)
         if self.water >= 80:
             # No need to drink
             next_limit = 75
         elif self.water >= 1:
             next_limit = self._drink()
         else:
-            now.add_min(1440)
-            return ["water", now]
+            t_next.add_min(1440)
+            return {"subject": "water", "t_stamp": t_next}
 
-        now.add_min((self.water - next_limit) * water_decay_time)
-        return ["water", now]
+        t_next.add_min((self.water - next_limit) * water_decay_time)
+        return {"subject": "water", "t_stamp": t_next}
 
     def _ch_energy(self, now, night=False):
         last_updated = TimeStamp(self.energy_date, self.energy_time)
@@ -203,10 +206,11 @@ class Horse(Base):
         self.energy_date = now.date
         self.energy_time = now.time
 
+        t_next = copy.copy(now)
         # Just check every two hours or so (small offset to prevent
         # everything from happening in the same minute).
-        now.add_min(124)
-        return ["energy", now]
+        t_next.add_min(124)
+        return {"subject": "energy", "t_stamp": t_next}
 
     def _ch_stimulation(self, now, night=False):
         last_updated = TimeStamp(self.stimulation_date,
@@ -219,13 +223,15 @@ class Horse(Base):
         self.stimulation_date = now.date
         self.stimulation_time = now.time
 
+        t_next = copy.copy(now)
         next_limit = self._get_limit(self.stimulation)
         if next_limit < 0:
-            now.add_min(1440)
-            return ["stimulation", now]
+            t_next.add_min(1440)
+            return {"subject": "stimulation", "t_stamp": t_next}
 
-        now.add_min((self.stimulation - next_limit) * stimulation_decay_time)
-        return ["stimulation", now]
+        t_next.add_min((self.stimulation - next_limit) *
+                       stimulation_decay_time)
+        return {"subject": "stimulation", "t_stamp": t_next}
 
     def _ch_social(self, now):
         last_updated = TimeStamp(self.social_date, self.social_time)
@@ -236,13 +242,14 @@ class Horse(Base):
         self.social_date = now.date
         self.social_time = now.time
 
+        t_next = copy.copy(now)
         next_limit = self._get_limit(self.social)
         if next_limit < 0:
-            now.add_min(1440)
-            return ["social", now]
+            t_next.add_min(1440)
+            return {"subject": "social", "t_stamp": t_next}
 
-        now.add_min((self.social - next_limit) * social_decay_time)
-        return ["social", now]
+        t_next.add_min((self.social - next_limit) * social_decay_time)
+        return {"subject": "social", "t_stamp": t_next}
 
     def _ch_exercise(self, now):
         last_updated = TimeStamp(self.exercise_date, self.exercise_time)
@@ -253,13 +260,14 @@ class Horse(Base):
         self.exercise_date = now.date
         self.exercise_time = now.time
 
+        t_next = copy.copy(now)
         next_limit = self._get_limit(self.exercise)
         if next_limit < 0:
-            now.add_min(1440)
-            return ["exercise", now]
+            t_next.add_min(1440)
+            return {"subject": "exercise", "t_stamp": t_next}
 
-        now.add_min((self.exercise - next_limit) * exercise_decay_time)
-        return ["exercise", now]
+        t_next.add_min((self.exercise - next_limit) * exercise_decay_time)
+        return {"subject": "exercise", "t_stamp": t_next}
 
     def _ch_hygiene(self, now):
         last_updated = TimeStamp(self.hygiene_date, self.hygiene_time)
@@ -270,18 +278,18 @@ class Horse(Base):
         self.hygiene_date = now.date
         self.hygiene_time = now.time
 
+        t_next = copy.copy(now)
         next_limit = self._get_limit(self.hygiene)
         if next_limit < 0:
-            now.add_min(1440)
-            return ["hygiene", now]
+            t_next.add_min(1440)
+            return {"subject": "hygiene", "t_stamp": t_next}
 
-        now.add_min((self.hygiene - next_limit) * hygiene_decay_time)
-        return ["hygiene", now]
+        t_next.add_min((self.hygiene - next_limit) * hygiene_decay_time)
+        return {"subject": "hygiene", "t_stamp": t_next}
 
     def get_events(self, now):
         events = []
 
-        # For every need, calculate when the next event takes place.
         events.append(self._ch_food(now))
         events.append(self._ch_water(now))
         events.append(self._ch_energy(now))
@@ -294,47 +302,48 @@ class Horse(Base):
 
     def event(self, subject, t_stamp, night=False):
         if subject == "food":
-            next_event = self._ch_food(t_stamp)
+            e_info = self._ch_food(t_stamp)
         elif subject == "water":
-            next_event = self._ch_water(t_stamp)
+            e_info = self._ch_water(t_stamp)
         elif subject == "energy":
-            next_event = self._ch_energy(t_stamp, night)
+            e_info = self._ch_energy(t_stamp, night)
         elif subject == "stimulation":
-            next_event = self._ch_stimulation(t_stamp, night)
+            e_info = self._ch_stimulation(t_stamp, night)
         elif subject == "social":
-            next_event = self._ch_social(t_stamp)
+            e_info = self._ch_social(t_stamp)
         elif subject == "exercise":
-            next_event = self._ch_exercise(t_stamp)
+            e_info = self._ch_exercise(t_stamp)
         elif subject == "hygiene":
-            next_event = self._ch_hygiene(t_stamp)
+            e_info = self._ch_hygiene(t_stamp)
 
-        return next_event
+        return e_info
 
     def __str__(self):
         return self.name
 
     def get(self, now, key):
-        # TODO update events after running _ch method
         if key == "food":
-            self._ch_food(now)
-            return self.food
+            e_info = self._ch_food(now)
+            result = self.food
         elif key == "water":
-            self._ch_water(now)
-            return self.water
+            e_info = self._ch_water(now)
+            result = self.water
         elif key == "energy":
-            self._ch_energy(now)
-            return self.energy
+            e_info = self._ch_energy(now)
+            result = self.energy
         elif key == "stimulation":
-            self._ch_stimulation(now)
-            return self.stimulation
+            e_info = self._ch_stimulation(now)
+            result = self.stimulation
         elif key == "social":
-            self._ch_social(now)
-            return self.social
+            e_info = self._ch_social(now)
+            result = self.social
         elif key == "exercise":
-            self._ch_exercise(now)
-            return self.exercise
+            e_info = self._ch_exercise(now)
+            result = self.exercise
         elif key == "hygiene":
-            self._ch_hygiene(now)
-            return self.hygiene
+            e_info = self._ch_hygiene(now)
+            result = self.hygiene
         else:
-            return getattr(self, key)
+            e_info = None
+            result = getattr(self, key)
+        return {"attr": result, "e_info": e_info}

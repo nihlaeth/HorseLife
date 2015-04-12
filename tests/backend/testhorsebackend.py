@@ -36,6 +36,7 @@ class TestHorseBackend():
             session.add_all([SettingFactory(name="Date"),
                              SettingFactory(name="Time")])
             backend = HorseBackend(1)
+            backend.get_events(session, TimeStamp(0, 0))
             assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
                           "Spirit")
             # Now test the changing attributes (needs)
@@ -119,16 +120,21 @@ class TestHorseBackend():
                         obj_id=1)])])
             t2 = datetime.datetime.now()
             with mock.patch.object(Horse, "event") as m:
-                m.return_value = [
-                        "food-test",
-                        TimeStamp(1000, 0),
-                        [["HorseBackend", 1]]]
+                m.return_value = {
+                        "subject": "food-test",
+                        "t_stamp": TimeStamp(1000, 0)}
                 backend = HorseBackend(1)
                 time.pass_time(session, 5)
                 m.assert_called_once_with("food-test", TimeStamp(0, 0))
                 assert_equals(EventBackend(1).get(session, "date"), 1000)
-            t3 = datetime.datetime.now()
+
+        with DummyDB() as session:
             # Now for real!
+            session.add_all([
+                HorseFactory(),
+                SettingFactory(name="Date"),
+                SettingFactory(name="Time")])
+            t3 = datetime.datetime.now()
             backend = HorseBackend(1)
             now = time.get_time_stamp(session)
             t3_1 = datetime.datetime.now()
@@ -162,5 +168,3 @@ class TestHorseBackend():
             print "\n\n"
             print "Total test execution took:"
             print (t5 - t1).total_seconds()
-            # assert False
-            # TODO figure out why pass_time is so slow!
