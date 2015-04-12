@@ -40,6 +40,9 @@ class HorseFactory(factory.Factory):
     stimulation_time = 0
 
     environment = 100
+
     social = 100
+    social_date = 0
+    social_time = 0
 
     stable = factory.SubFactory(StableFactory)

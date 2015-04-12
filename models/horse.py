@@ -46,7 +46,10 @@ class Horse(Base):
     stimulation_time = Column(Integer)
 
     environment = Column(Float)
+
     social = Column(Float)
+    social_date = Column(Integer)
+    social_time = Column(Integer)
 
     # passive stats - change slowly
     endurance = Column(Integer)
@@ -287,7 +290,7 @@ class Horse(Base):
                                  self.stimulation_time)
         time_passed = now - last_updated
 
-        stimulation_decay_time = 5
+        stimulation_decay_time = 1
         self.stimulation -= (time_passed.get_min() /
                              float(stimulation_decay_time))
         self.stimulation_date = now.date
@@ -305,6 +308,33 @@ class Horse(Base):
             now.add_min(1440)
             return ["stimulation", now]
 
+        now.add_min((self.stimulation - next_limit) * stimulation_decay_time)
+        return ["stimulation", now]
+
+    def _ch_social(self, now):
+        last_updated = TimeStamp(self.social_date, self.social_time)
+        time_passed = now - last_updated
+
+        social_decay_time = 20
+        self.social -= time_passed.get_min() / float(social_decay_time)
+        self.social_date = now.date
+        self.social_time = now.time
+
+        if self.social >= 76:
+            next_limit = 75
+        if self.social >= 51:
+            next_limit = 50
+        if self.social >= 26:
+            next_limit = 25
+        if self.social >= 1:
+            next_limit = 0
+        else:
+            now.add_min(1440)
+            return ["social", now]
+
+        now.add_min((self.social - next_limit) * social_decay_time)
+        return ["social", now]
+
     def get_events(self, now):
         events = []
 
@@ -312,6 +342,8 @@ class Horse(Base):
         events.append(self._ch_food(now))
         events.append(self._ch_water(now))
         events.append(self._ch_energy(now))
+        events.append(self._ch_stimulation(now))
+        events.append(self._ch_social(now))
 
         return events
 
@@ -324,6 +356,8 @@ class Horse(Base):
             next_event = self._ch_energy(t_stamp, night)
         elif subject == "stimulation":
             next_event = self._ch_stimulation(t_stamp, night)
+        elif subject == "social":
+            next_event = self._ch_social(t_stamp)
 
         return next_event
 
@@ -344,5 +378,8 @@ class Horse(Base):
         elif key == "stimulation":
             self._ch_stimulation(now)
             return self.stimulation
+        elif key == "social":
+            self._ch_social(now)
+            return self.social
         else:
             return getattr(self, key)
