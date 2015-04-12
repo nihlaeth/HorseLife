@@ -12,7 +12,10 @@ class StableFactory(factory.Factory):
     outside_surface = 0
     light = 50
     capacity = 1
+
     cleanliness = 100
+    cleanliness_date = 0
+    cleanliness_time = 0
 
     @factory.post_generation
     def horses(self, create, extracted, **kwargs):

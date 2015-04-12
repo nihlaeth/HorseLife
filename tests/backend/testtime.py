@@ -10,6 +10,7 @@ from tests.tools.dummydb import DummyDB
 from backend.settingbackend import SettingBackend
 from backend.eventbackend import EventBackend
 from backend.horsebackend import HorseBackend
+from backend.stablebackend import StableBackend
 from backend.time import Time, day
 from models.horse import Horse
 from support.messages.timestamp import TimeStamp
@@ -128,6 +129,7 @@ class TestTime():
             t = Time()
             now = t.get_time_stamp(session)
             HorseBackend(1).get_events(session, now)
+            StableBackend(1).get_events(session, now)
 
             t2 = datetime.datetime.now()
             t.pass_time(session, 480)

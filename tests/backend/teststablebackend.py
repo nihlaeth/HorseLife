@@ -1,10 +1,16 @@
-from nose.tools import assert_equals, assert_less
+import mock
+from nose.tools import assert_equals, assert_less, assert_greater
 
 from backend.stablebackend import StableBackend
+from backend.eventbackend import EventBackend
+from models.stable import Stable
+from support.messages.timestamp import TimeStamp
 from tests.tools.dummydb import DummyDB
 from tests.tools.stablefactory import StableFactory
 from tests.tools.horsefactory import HorseFactory
 from tests.tools.stableitemfactory import StableItemFactory
+from tests.tools.eventfactory import EventFactory
+from tests.tools.callbackfactory import CallbackFactory
 
 
 class TestStableBackend():
@@ -32,38 +38,39 @@ class TestStableBackend():
     def test_get(self):
         print "Testing StableBackend.get(session, name)"
         with DummyDB() as session:
-            session.add(StableFactory.build(name="Test1"))
+            session.add(StableFactory.build(name="Test1",
+                        horses=[HorseFactory()]))
             backend = StableBackend(1)
-            assert_equals(backend.get(session, "name"), "Test1")
+            backend.get_events(session, TimeStamp(0, 0))
+            assert_equals(backend.get(session, None, "name"), "Test1")
+            # Now see if cleanliness behaves as it should.
+            t1 = TimeStamp(0, 0)
+            t2 = TimeStamp(0, 120)
+            assert_equals(backend.get(session, t1, "cleanliness"), 100)
+            assert_less(backend.get(session, t2, "cleanliness"), 100)
 
     def test_set(self):
         print "Testing StableBackend.set(session, name, value)"
         with DummyDB() as session:
             session.add(StableFactory.build(name="Test1"))
             backend = StableBackend(1)
-            assert_equals(backend.get(session, "name"), "Test1")
+            assert_equals(backend.get(session, None, "name"), "Test1")
             backend.set(session, "name", "Test2")
-            assert_equals(backend.get(session, "name"), "Test2")
-
-    def test_pass_time(self):
-        print "Test StableBackend.pass_time(session, minutes, night)"
-        with DummyDB() as session:
-            stable = StableFactory.build(
-                    cleanliness=100,
-                    horses=[HorseFactory.build()])
-            session.add(stable)
-            backend = StableBackend(1)
-            backend.pass_time(session, 100, False)
-            assert_less(backend.get(session, "cleanliness"), 100)
+            assert_equals(backend.get(session, None, "name"), "Test2")
 
     def test_clean(self):
         print "Test StableBackend.clean(session)"
         with DummyDB() as session:
-            stable = StableFactory(cleanliness=0)
-            session.add(stable)
+            session.add_all([
+                StableFactory(cleanliness=0)])
             backend = StableBackend(1)
-            backend.clean(session)
-            assert_equals(backend.get(session, "cleanliness"), 100)
+            backend.get_events(session, TimeStamp(0, 0))
+            t_stamp = backend.clean(session, TimeStamp(0, 0))
+            assert_equals(t_stamp.time, 15)
+            assert_equals(backend.get(
+                session,
+                t_stamp,
+                "cleanliness"), 100)
 
     def test_food(self):
         print "Test StableBackend.food(session)"
@@ -73,7 +80,7 @@ class TestStableBackend():
             session.add(stable)
             backend = StableBackend(1)
             backend.food(session)
-            items = backend.get(session, "items")
+            items = backend.get(session, None, "items")
             assert_equals(items[0].value, 100)
 
     def test_water(self):
@@ -84,5 +91,55 @@ class TestStableBackend():
             session.add(stable)
             backend = StableBackend(1)
             backend.water(session)
-            items = backend.get(session, "items")
+            items = backend.get(session, None, "items")
             assert_equals(items[0].value, 100)
+
+    def test_get_events(self):
+        with DummyDB() as session:
+            session.add(StableFactory())
+            backend = StableBackend(1)
+            backend.get_events(session, TimeStamp(0, 0))
+            assert_greater(len(EventBackend.all(session)), 0)
+
+    def test_update_event(self):
+        with DummyDB() as session:
+            session.add_all([
+                StableFactory(),
+                EventFactory(subject="flub")])
+            backend = StableBackend(1)
+
+            backend._update_event(session, {
+                "subject": "flub",
+                "t_stamp": TimeStamp(5, 20)})
+
+            event = EventBackend(1)
+            assert_equals(event.get(session, "date"), 5)
+            assert_equals(event.get(session, "time"), 20)
+
+    def test_event_callback(self):
+        with DummyDB() as session:
+            session.add_all([
+                StableFactory(),
+                EventFactory(subject="stablestest",
+                             callbacks=[CallbackFactory(
+                                 obj="StableBackend",
+                                 obj_id=1)])])
+            with mock.patch.object(Stable, "event") as m:
+                m.return_value = {
+                        "subject": "stablestest",
+                        "t_stamp": TimeStamp(1000, 0)}
+                backend = StableBackend(1)
+                t_stamp = TimeStamp(0, 0)
+                backend.event_callback(session, "stablestest", t_stamp)
+
+                m.assert_called_once_with("stablestest", t_stamp)
+        # Now test it without the mock!
+        with DummyDB() as session:
+            session.add_all([
+                StableFactory()])
+            backend = StableBackend(1)
+            backend.get_events(session, TimeStamp(0, 0))
+            t_stamp = TimeStamp(0, 0)
+            backend.event_callback(session, "cleanliness", t_stamp)
+            event = EventBackend.one(session, "cleanliness")
+            assert_greater(event.get(session, "time"), 0)
