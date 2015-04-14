@@ -80,22 +80,20 @@ class Time():
         now = self.get_time_stamp(session)
         validClasses = [HorseBackend, StableBackend]
         validMap = dict(((c.__name__, c) for c in validClasses))
-        while True:
-            try:
-                event = EventBackend.next_event(session)
-            except IndexError:
-                break
-            t_stamp = event.get(session, "t_stamp")
-            if t_stamp <= now:
-                callbacks = event.get(session, "callbacks")
-                subject = event.get(session, "subject")
-                for callback in callbacks:
-                    obj = callback.obj
-                    obj_id = callback.obj_id
-                    cls = validMap[obj]
-                    cls(obj_id).event_callback(session, subject, t_stamp)
-            else:
-                break
+        events = EventBackend.all_raw(session)
+        while events[0].t_stamp <= now:
+            t_stamp = events[0].t_stamp
+            callbacks = events[0].callbacks
+            subject = events[0].subject
+            for callback in callbacks:
+                obj = callback.obj
+                obj_id = callback.obj_id
+                cls = validMap[obj]
+                cls(obj_id).event_callback(session, subject, t_stamp)
+            # Some events will have changed timestamps by now
+            events = sorted(
+                    events,
+                    key=attrgetter("date", "time"))
 
         if time >= 1320 or time < 420:
             # It's between 22:00 and 07:00 - night time!

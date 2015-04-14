@@ -52,6 +52,7 @@ class TestTime():
             t1 = datetime.datetime.now()
             session.add(SettingFactory(name="Time"))
             session.add(SettingFactory(name="Date"))
+            session.add(EventFactory(date=5000))
             t2 = datetime.datetime.now()
 
             t = Time()
@@ -90,12 +91,11 @@ class TestTime():
                         obj="HorseBackend",
                         obj_id=1)]))
                 session.add(HorseFactory())
-                t_stamp = EventBackend(1).get(session, "t_stamp")
 
                 t.pass_time(session, 120)
                 m.assert_called_once_with(
                         "food",
-                        t_stamp)
+                        TimeStamp(0, 0))
             t9 = datetime.datetime.now()
 
             print "Setup"
@@ -156,7 +156,7 @@ class TestTime():
             # assert False
         # Now test with multiple instances!
         with DummyDB() as session:
-            n = 20  # Keep this low to reduce total testing time!
+            n = 2  # Keep this low to reduce total testing time!
             t1 = datetime.datetime.now()
             session.add_all(HorseFactory.build_batch(n))
             session.add_all([

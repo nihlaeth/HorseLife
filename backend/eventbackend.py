@@ -18,6 +18,15 @@ class EventBackend():
         return [EventBackend(model.id) for model in models]
 
     @classmethod
+    def all_raw(cls, session):
+        """ Return a list of all events encapsulated by EventBackend
+        objects, ordered by date and time.
+
+        session -- sqlalchemy session
+        """
+        return session.query(Event).order_by(Event.date, Event.time)
+
+    @classmethod
     def one(cls, session, subject, obj_id):
         """ Return a single encapsulated event.
 
@@ -123,4 +132,4 @@ class EventBackend():
         stuck using this ungainly method. Sorry.
         """
         event = EventBackend._one_id(session, self._id)
-        print str(event)
+        return str(event)
