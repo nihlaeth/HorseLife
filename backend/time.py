@@ -89,8 +89,13 @@ class Time():
                 obj = callback.obj
                 obj_id = callback.obj_id
                 cls = validMap[obj]
-                cls(obj_id).event_callback(session, subject, t_stamp)
-            # Some events will have changed timestamps by now
+                e_info = cls(obj_id).event_callback(
+                        session,
+                        subject,
+                        t_stamp)
+                # Update event
+                events[0].update(e_info["t_stamp"])
+            # Events will have changed timestamp by now
             events = sorted(
                     events,
                     key=attrgetter("date", "time"))
