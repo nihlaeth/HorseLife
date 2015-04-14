@@ -8,6 +8,7 @@ from support.messages.timestamp import TimeStamp
 
 
 class Stable(Base):
+    """ Represents a stable."""
     __tablename__ = 'stables'
 
     id = Column(Integer, primary_key=True)
@@ -26,23 +27,21 @@ class Stable(Base):
     horses = relationship("Horse", backref="stable")
 
     def food(self):
-        # from backend.time import time
+        """ Fill the food tray in the stable."""
+        # TODO have time factor in here (return current + 5 minutes)
         for item in self.items:
             if item.name == "food":
                 item.value = 100
-        # time.pass_time(5)
 
     def water(self):
-        # from backend.time import time
+        """ Fill water tray in the stable."""
+        # TODO have time factor in here (return current + 5 minutes)
         for item in self.items:
             if item.name == "water":
                 item.value = 100
-        # time.pass_time(5)
 
     def clean(self, now):
-        # from backend.time import time
-        # time.pass_time(15)
-
+        """ Clean stable (takes about 15 minutes)."""
         # Cleaning the stable takes about 15 minutes
         now.add_min(15)
 
@@ -87,6 +86,8 @@ class Stable(Base):
                 str([str(horse) for horse in self.horses])])
 
     def _get_limit(self, n):
+        """ Helper method for the _ch_* methods. It returns the next
+        event boundary, dependent on current need value (n)."""
         if n >= 76:
             return 75
         elif n >= 51:
@@ -99,6 +100,8 @@ class Stable(Base):
             return -1
 
     def _ch_cleanliness(self, now):
+        """ Calculate current value of the cleanliness meter and returns
+        info needed to update the associated event."""
         last_updated = TimeStamp(self.cleanliness_date,
                                  self.cleanliness_time)
         time_passed = now - last_updated
@@ -121,6 +124,9 @@ class Stable(Base):
         return {"subject": "cleanliness", "t_stamp": t_next}
 
     def get(self, now, key):
+        """ Get attribute - in case of an active attribute, calculate it's
+        current value and return said value + info to update associated
+        event."""
         if key == "cleanliness":
             e_info = self._ch_cleanliness(now)
             result = self.cleanliness
@@ -130,6 +136,9 @@ class Stable(Base):
         return {"attr": result, "e_info": e_info}
 
     def get_events(self, now):
+        """ Get all the events needed for the operation of this object and
+        return the information necessary to construct them in the
+        database."""
         events = []
 
         events.append(self._ch_cleanliness(now))
@@ -137,6 +146,7 @@ class Stable(Base):
         return events
 
     def event(self, subject, t_stamp, night=False):
+        """ This is the method that gets executed on event activation."""
         if subject == "cleanliness":
             e_info = self._ch_cleanliness(t_stamp)
 

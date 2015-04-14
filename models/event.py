@@ -7,6 +7,8 @@ from support.messages.timestamp import TimeStamp
 
 
 class Event(Base):
+    """ Represents an event in time, for instance, a horse getting hungry,
+    or a stable getting dirty."""
     __tablename__ = "events"
     id = Column(Integer, primary_key=True)
     subject = Column(String)
@@ -19,6 +21,7 @@ class Event(Base):
     callbacks = relationship("Callback", backref="event")
 
     def __init__(self, date, time, subject, obj_id, callbacks=[], night=False):
+        """ Overwritten init so t_stamp is also initiated."""
         self.subject = subject
         self.obj_id = obj_id
         self.date = date
@@ -29,9 +32,12 @@ class Event(Base):
 
     @reconstructor
     def reconstruct(self):
+        """ Reconstruct t_stamp when sqlalchemy reconstructs this (__init__
+        is skipped)."""
         self.t_stamp = TimeStamp(self.date, self.time)
 
     def update(self, timestamp):
+        """ Update time and date information."""
         self.t_stamp = timestamp
         self.date = timestamp.date
         self.time = timestamp.time
