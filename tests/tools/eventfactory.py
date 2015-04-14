@@ -15,6 +15,7 @@ class EventFactory(factory.Factory):
 
     @factory.post_generation
     def callbacks(self, create, extracted, **kwargs):
+        """ If callback is specified, append it to callbacks[]."""
         if extracted:
             for callback in extracted:
                 self.callbacks.append(callback)

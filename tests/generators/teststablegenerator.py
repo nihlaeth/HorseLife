@@ -8,9 +8,7 @@ from models.stableitem import StableItem
 
 class TestStableGenerator():
     def test_gen_one(self):
-        print "Test StableGenerator._gen_one(location, b_type)"
-
-        print "-- basic functionality"
+        """ Test StableGenerator._gen_one(stable_type)"""
         assert_equals(repr(StableGenerator()._gen_one("Shed")),
                       repr(Stable(
                                name="Shed",
@@ -24,10 +22,8 @@ class TestStableGenerator():
                                horses=[])))
 
     def test_gen_many(self):
-        print "Test StableGenerator.gen_many(session, n, b_type)"
-
+        """ Test StableGenerator.gen_many(session, n, stable_type)"""
         with DummyDB() as session:
-            print "--test location increments"
             StableGenerator().gen_many(session, 3, "Shed")
             assert_equals(
                     session.query(Stable).count(),

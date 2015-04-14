@@ -8,31 +8,27 @@ from models.setting import Setting
 
 class TestSettingBackend():
     def test_all(self):
-        print "Testing SettingBackend.all(session)"
+        """ Test SettingBackend.all(session)"""
         with DummyDB() as session:
             settings = SettingFactory.build_batch(3)
             session.add_all(settings)
-            print "-- basic functionality"
-
             backends = SettingBackend.all(session)
             assert_equals(backends[0]._id, 1)
             assert_equals(backends[2]._id, 3)
 
     def test_one(self):
-        print "Testing SettingBackend.one(session, name)"
+        """ Test SettingBackend.one(session, name)"""
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             settings = SettingFactory.build_batch(3)
             session.add_all(settings)
-            print "-- basic functionality"
-
             backend = SettingBackend.one(session, "Test0")
             assert_equals(backend._id, 1)
             backend = SettingBackend.one(session, "Test2")
             assert_equals(backend._id, 3)
 
     def test_one_id(self):
-        print "Testing SettingBackend._one_id(session, id)"
+        """ Test SettingBackend._one_id(session, id)"""
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             settings = SettingFactory.build_batch(3)
@@ -43,7 +39,7 @@ class TestSettingBackend():
             assert_equals(setting.name, "Test2")
 
     def test_get(self):
-        print "Testing SettingBackend.get(session, name)"
+        """ Test SettingBackend.get(session, key)"""
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             session.add(SettingFactory.build(numeric=34, text="blah"))
@@ -53,7 +49,7 @@ class TestSettingBackend():
             assert_equals(backend.get(session, "text"), "blah")
 
     def test_set(self):
-        print "Testing SettingBackend.set(session, name, value)"
+        """ Test SettingBackend.set(session, key, value)"""
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             session.add(SettingFactory.build())

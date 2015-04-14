@@ -19,10 +19,9 @@ from support.messages.timestamp import TimeStamp
 
 class TestTime():
     def test_get_day(self):
-        print "Test Time._get_day()"
+        """ Test Time.get_day(session)"""
         with DummyDB() as session:
             session.add(SettingFactory(name="Date", numeric=0, text=""))
-            print "-- basic functionality"
             t = Time()
             assert_equals(t.get_day(session), day.Monday)
             t._date.set(session, "numeric", 2)
@@ -31,10 +30,9 @@ class TestTime():
             assert_equals(t.get_day(session), day.Monday)
 
     def test_get_time(self):
-        print "Test Time._get_time()"
+        """ Test Time.get_time(session)"""
         with DummyDB() as session:
             session.add(SettingFactory(name="Time", numeric=0, text=""))
-            print "--basic functionality"
             t = Time()
             assert_equals(t.get_time(session), "00:00")
             t._time.set(session, "numeric", 60)
@@ -44,10 +42,8 @@ class TestTime():
             t._time.set(session, "numeric", 899)
             assert_equals(t.get_time(session), "14:59")
 
-    def callback(self, session, event):
-        pass
-
     def test_pass_time(self):
+        """ Test Time.pass_time(session)"""
         with DummyDB() as session:
             t1 = datetime.datetime.now()
             session.add(SettingFactory(name="Time"))
@@ -119,7 +115,7 @@ class TestTime():
             # assert False
 
     def test_integration(self):
-        """See how this system runs under a normal load."""
+        """ Test Time.pass_time integration with running system."""
         with DummyDB() as session:
             t1 = datetime.datetime.now()
             horse = HorseFactory()

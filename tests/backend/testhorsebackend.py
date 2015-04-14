@@ -17,14 +17,17 @@ from tests.tools.callbackfactory import CallbackFactory
 
 class TestHorseBackend():
     def test_init(self):
+        """ Test HorseBackend.__init__(id)"""
         assert_equals(HorseBackend(1)._id, 1)
 
     def test_one_id(self):
+        """ Test HorseBackend._one_id(session, id)"""
         with DummyDB() as session:
             session.add(HorseFactory.build())
             assert_equals(HorseBackend._one_id(session, 1).id, 1)
 
     def test_all(self):
+        """ Test HorseBackend.all(session)"""
         with DummyDB() as session:
             horses = HorseFactory.build_batch(10)
             session.add_all(horses)
@@ -32,6 +35,7 @@ class TestHorseBackend():
             assert_equals(len(backends), 10)
 
     def test_get(self):
+        """ Test HorseBackend.get(session, timestamp, key)"""
         with DummyDB() as session:
             session.add(HorseFactory.build(name="Spirit"))
             session.add(HorseFactory.build())
@@ -69,6 +73,7 @@ class TestHorseBackend():
             assert_less(backend.get(session, t(0, 120), "hygiene"), 100)
 
     def test_set(self):
+        """ Test HorseBackend.set(session, key, value)"""
         with DummyDB() as session:
             session.add(HorseFactory.build(name="Storm"))
             session.add_all([SettingFactory(name="Date"),
@@ -79,6 +84,7 @@ class TestHorseBackend():
                           "Mary")
 
     def test_groom(self):
+        """ Test HorseBackend.groom(session, timestamp)"""
         with DummyDB() as session:
             session.add(HorseFactory.build(hygiene=0, stimulation=0))
             session.add_all([SettingFactory(name="Date"),
@@ -92,6 +98,7 @@ class TestHorseBackend():
             assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
 
     def test_pet(self):
+        """ Test HorseBackend.pet(session, timestamp)"""
         with DummyDB() as session:
             session.add(HorseFactory.build(stimulation=0))
             session.add_all([SettingFactory(name="Date"),
@@ -103,6 +110,7 @@ class TestHorseBackend():
             assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
 
     def test_get_events(self):
+        """ Test HorseBackend.get_events(session, timestamp)"""
         with DummyDB() as session:
             session.add(
                     HorseFactory.build(
@@ -121,6 +129,7 @@ class TestHorseBackend():
             assert_greater(len(EventBackend.all(session)), 0)
 
     def test_callback(self):
+        """ Test HorseBackend.event_callback(session, subject, timestamp)"""
         with DummyDB() as session:
             t1 = datetime.datetime.now()
             session.add(HorseFactory.build())

@@ -15,18 +15,16 @@ from tests.tools.callbackfactory import CallbackFactory
 
 class TestStableBackend():
     def test_all(self):
-        print "Testing StableBackend.all(session)"
+        """ Test StableBackend.all(session)"""
         with DummyDB() as session:
             stables = StableFactory.build_batch(3)
             session.add_all(stables)
-            print "-- basic functionality"
-
             backends = StableBackend.all(session)
             assert_equals(backends[0]._id, 1)
             assert_equals(backends[2]._id, 3)
 
     def test_one_id(self):
-        print "Testing StableBackend._one_id(session, id)"
+        """ Test StableBackend._one_id(session, id)"""
         with DummyDB() as session:
             stables = StableFactory.build_batch(2)
             session.add_all(stables)
@@ -36,7 +34,7 @@ class TestStableBackend():
             assert_equals(stable.id, 2)
 
     def test_get(self):
-        print "Testing StableBackend.get(session, name)"
+        """ Test StableBackend.get(session, timestamp, key)"""
         with DummyDB() as session:
             session.add(StableFactory.build(name="Test1",
                         horses=[HorseFactory()]))
@@ -50,7 +48,7 @@ class TestStableBackend():
             assert_less(backend.get(session, t2, "cleanliness"), 100)
 
     def test_set(self):
-        print "Testing StableBackend.set(session, name, value)"
+        """ Test StableBackend.set(session, key, value)"""
         with DummyDB() as session:
             session.add(StableFactory.build(name="Test1"))
             backend = StableBackend(1)
@@ -59,7 +57,7 @@ class TestStableBackend():
             assert_equals(backend.get(session, None, "name"), "Test2")
 
     def test_clean(self):
-        print "Test StableBackend.clean(session)"
+        """ Test StableBackend.clean(session, timestamp)"""
         with DummyDB() as session:
             session.add_all([
                 StableFactory(cleanliness=0)])
@@ -73,7 +71,7 @@ class TestStableBackend():
                 "cleanliness"), 100)
 
     def test_food(self):
-        print "Test StableBackend.food(session)"
+        """ Test StableBackend.food(session)"""
         with DummyDB() as session:
             stable = StableFactory(items=[
                 StableItemFactory(name="food", value=0)])
@@ -84,7 +82,7 @@ class TestStableBackend():
             assert_equals(items[0].value, 100)
 
     def test_water(self):
-        print "Test StableBackend.water(session)"
+        """ Test StableBackend.water(session)"""
         with DummyDB() as session:
             stable = StableFactory(items=[
                 StableItemFactory(name="water", value=0)])
@@ -95,6 +93,7 @@ class TestStableBackend():
             assert_equals(items[0].value, 100)
 
     def test_get_events(self):
+        """ Test StableBackend.get_events(session, timestamp)"""
         with DummyDB() as session:
             session.add(StableFactory())
             backend = StableBackend(1)
@@ -102,6 +101,7 @@ class TestStableBackend():
             assert_greater(len(EventBackend.all(session)), 0)
 
     def test_update_event(self):
+        """ Test StableBackend._update_event(session, e_info)"""
         with DummyDB() as session:
             session.add_all([
                 StableFactory(),
@@ -117,6 +117,7 @@ class TestStableBackend():
             assert_equals(event.get(session, "time"), 20)
 
     def test_event_callback(self):
+        """ Test StableBackend.event_callback(session, subject, timestamp)"""
         with DummyDB() as session:
             session.add_all([
                 StableFactory(),

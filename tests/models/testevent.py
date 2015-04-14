@@ -5,12 +5,14 @@ from models.event import Event
 
 class TestEvent():
     def test_basic(self):
+        """ Test Event.__init__()"""
         event = Event(0, 5, "test", 1)
         assert_equals(event.t_stamp.date, 0)
         assert_equals(event.t_stamp.time, 5)
         assert_equals(event.subject, "test")
 
     def test_comparison(self):
+        """ Test Event comparison methods"""
         event1 = Event(0, 0, "", 1)
         event2 = Event(0, 0, "", 1)
         event3 = Event(5, 0, "", 1)

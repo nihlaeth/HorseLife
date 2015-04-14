@@ -5,11 +5,13 @@ from support.messages.timestamp import TimeStamp
 
 class TestTimeStamp():
     def test_basic(self):
+        """ Test TimeStamp.__init__(date, time)"""
         t_stamp = TimeStamp(0, 5)
         assert_equals(t_stamp.date, 0)
         assert_equals(t_stamp.time, 5)
 
     def test_comparison(self):
+        """ Test TimeStamp comparison methods"""
         t_stamp1 = TimeStamp(0, 0)
         t_stamp2 = TimeStamp(0, 0)
         t_stamp3 = TimeStamp(5, 0)

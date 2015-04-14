@@ -11,6 +11,7 @@ from models.stableitem import StableItem
 
 
 class DummyDB():
+    """ Provide a temporary, totally empty, database in RAM."""
     def __init__(self, debug=False):
         self._Session = sessionmaker()
         self._engine = create_engine('sqlite:///:memory:', echo=debug)
