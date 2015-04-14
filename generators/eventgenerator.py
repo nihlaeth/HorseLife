@@ -6,6 +6,7 @@ from models.callback import Callback
 class EventGenerator(Generator):
     @classmethod
     def _gen_one(cls, subject, obj_id, date, time, callbacks):
+        """ Generate a single event object."""
         generated_callbacks = []
         for callback in callbacks:
             generated_callbacks.append(Callback(
@@ -20,6 +21,7 @@ class EventGenerator(Generator):
 
     @classmethod
     def gen_many(cls, session, events):
+        """ Generate 1 or more events and add them to the session."""
         result = []
         for s in events:
             result.append(cls._gen_one(
