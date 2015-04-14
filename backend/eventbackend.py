@@ -19,8 +19,8 @@ class EventBackend():
 
     @classmethod
     def all_raw(cls, session):
-        """ Return a list of all events encapsulated by EventBackend
-        objects, ordered by date and time.
+        """ Return a list of all events, ordered by date and time.
+        These are unencapsulated events, so beware!
 
         session -- sqlalchemy session
         """
