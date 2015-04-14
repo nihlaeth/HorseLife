@@ -111,5 +111,5 @@ class Backend():
         """
         instance = self._one_id(session, self._id)
         e_info = instance.event(subject, t_stamp)
-        #self._update_event(session, e_info)
+        # self._update_event(session, e_info)
         return e_info

@@ -130,11 +130,11 @@ class Horse(Base):
     def _get_limit(self, n):
         """ Helper method for the _ch_* methods. n is the current need
         value, this function determines where the next event border is."""
-        if n >= 76:
-            return 75
-        elif n >= 51:
-            return 50
-        elif n >= 26:
+        # if n >= 76:
+        #     return 75
+        # elif n >= 51:
+        #    return 50
+        if n >= 26:
             return 25
         elif n >= 1:
             return 0
