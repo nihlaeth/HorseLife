@@ -8,6 +8,7 @@ from backend.time import time
 from models.horse import Horse
 from support.messages.timestamp import TimeStamp
 from tests.tools.dummydb import DummyDB
+from tests.tools.profiled import profiled
 from tests.tools.horsefactory import HorseFactory
 from tests.tools.settingfactory import SettingFactory
 from tests.tools.eventfactory import EventFactory
@@ -140,6 +141,20 @@ class TestHorseBackend():
                 time.pass_time(session, 5)
                 m.assert_called_once_with("food-test", TimeStamp(0, 0))
                 assert_equals(EventBackend(1).get(session, "date"), 1000)
+        with DummyDB() as session:
+            session.add_all([
+                HorseFactory(),
+                EventFactory(subject="food", obj_id="1")])
+            backend = HorseBackend(1)
+            with profiled():
+                e_info = backend.event_callback(
+                        session,
+                        "food",
+                        TimeStamp(0, 0))
+            # assert_equals(e_info["subject"], "food")
+            # assert_equals(e_info["t_stamp"].date, 0)
+            # assert_greater(e_info["t_stamp"].time, 0)
+            # assert False
 
         with DummyDB() as session:
             # Now for real!
