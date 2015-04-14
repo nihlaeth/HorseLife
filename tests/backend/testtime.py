@@ -7,6 +7,7 @@ from tests.tools.settingfactory import SettingFactory
 from tests.tools.eventfactory import EventFactory
 from tests.tools.callbackfactory import CallbackFactory
 from tests.tools.dummydb import DummyDB
+from tests.tools.profiled import profiled
 from backend.settingbackend import SettingBackend
 from backend.eventbackend import EventBackend
 from backend.horsebackend import HorseBackend
@@ -155,7 +156,7 @@ class TestTime():
             # assert False
         # Now test with multiple instances!
         with DummyDB() as session:
-            n = 2  # Keep this low to reduce total testing time!
+            n = 20  # Keep this low to reduce total testing time!
             t1 = datetime.datetime.now()
             session.add_all(HorseFactory.build_batch(n))
             session.add_all([
@@ -179,7 +180,8 @@ class TestTime():
 
             t4 = datetime.datetime.now()
 
-            t.pass_time(session, 1440)
+            with profiled():
+                t.pass_time(session, 1440)
 
             t5 = datetime.datetime.now()
 
