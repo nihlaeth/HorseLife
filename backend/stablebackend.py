@@ -6,6 +6,11 @@ from generators.eventgenerator import EventGenerator
 
 class StableBackend(Backend):
     @classmethod
+    def all_raw(cls, session):
+        """ Return all raw instances of Stable."""
+        return session.query(Stable)
+
+    @classmethod
     def all(cls, session):
         """ Return a list of all encapsulated stable models.
 

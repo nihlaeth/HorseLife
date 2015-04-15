@@ -6,6 +6,11 @@ from generators.eventgenerator import EventGenerator
 
 class HorseBackend(Backend):
     @classmethod
+    def all_raw(cls, session):
+        """ Return all the raw horse instances."""
+        return session.query(Horse)
+
+    @classmethod
     def all(cls, session):
         """ Return a list of all the horses in the db (encapsulated).
 

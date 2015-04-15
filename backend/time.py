@@ -81,6 +81,15 @@ class Time():
         validClasses = [HorseBackend, StableBackend]
         validMap = dict(((c.__name__, c) for c in validClasses))
         events = EventBackend.all_raw(session)
+        horses_temp = HorseBackend.all_raw(session)
+        # Now organize the horses for easy access.
+        horses = {}
+        for horse in horses_temp:
+            horses[str(horse.id)] = horse
+        stables_temp = StableBackend.all_raw(session)
+        stables = {}
+        for stable in stables_temp:
+            stables[str(stable.id)] = stable
         while events[0].t_stamp <= now:
             t_stamp = events[0].t_stamp
             callbacks = events[0].callbacks
@@ -89,10 +98,10 @@ class Time():
                 obj = callback.obj
                 obj_id = callback.obj_id
                 cls = validMap[obj]
-                e_info = cls(obj_id).event_callback(
-                        session,
-                        subject,
-                        t_stamp)
+                if obj == "StableBackend":
+                    e_info = stables[str(obj_id)].event(subject, t_stamp)
+                elif obj == "HorseBackend":
+                    e_info = horses[str(obj_id)].event(subject, t_stamp)
                 # Update event
                 events[0].update(e_info["t_stamp"])
             # Events will have changed timestamp by now

@@ -14,6 +14,12 @@ from tests.tools.callbackfactory import CallbackFactory
 
 
 class TestStableBackend():
+    def test_all_raw(self):
+        """ Test StanleBackend.all_raw(session)"""
+        with DummyDB() as session:
+            session.add_all(StableFactory.build_batch(20))
+            assert_equals(StableBackend.all_raw(session).count(), 20)
+
     def test_all(self):
         """ Test StableBackend.all(session)"""
         with DummyDB() as session:
