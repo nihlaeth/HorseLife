@@ -80,7 +80,7 @@ class Time():
         now = self.get_time_stamp(session)
         validClasses = [HorseBackend, StableBackend]
         validMap = dict(((c.__name__, c) for c in validClasses))
-        events = EventBackend.all_raw(session)
+        events = list(EventBackend.all_raw(session))
         horses_temp = HorseBackend.all_raw(session)
         # Now organize the horses for easy access.
         horses = {}
