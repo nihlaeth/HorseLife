@@ -227,9 +227,10 @@ class Horse(Base):
         t_next.add_min((self.water - next_limit) * water_decay_time)
         return {"subject": "water", "t_stamp": t_next}
 
-    def _ch_energy(self, now, night=False):
+    def _ch_energy(self, now):
         """ Calculate current value of energy meter and return information
         to update associated event."""
+        night = now.is_night()
         last_updated = TimeStamp(self.energy_date, self.energy_time)
         time_passed = now - last_updated
 
@@ -240,27 +241,47 @@ class Horse(Base):
             self.energy += time_passed.get_min() / float(energy_inc_time)
         else:
             self.energy -= time_passed.get_min() / float(energy_decay_time)
+        # Make sure energy stays within reasonable limits.
+        if self.energy > 100:
+            self.energy = 100
+        elif self.energy < 0:
+            self.energy = 0
+
         self.energy_date = now.date
         self.energy_time = now.time
 
         t_next = copy.copy(now)
-        # Just check every two hours or so (small offset to prevent
-        # everything from happening in the same minute).
-        t_next.add_min(124)
+        if night:
+            # If it's night, we want to have an event at the end of
+            # it, to make sure the energy level raises correctly.
+            t_next.end_of_night()
+        else:
+            # Make sure horse loses energy until it's night
+            t_next.start_of_night()
         return {"subject": "energy", "t_stamp": t_next}
 
-    def _ch_stimulation(self, now, night=False):
+    def _ch_stimulation(self, now):
         """ Calculate current value of stimulation meter and return info
         to update associated event."""
+        night = now.is_night()
         last_updated = TimeStamp(self.stimulation_date,
                                  self.stimulation_time)
         time_passed = now - last_updated
 
         stimulation_decay_time = 1
-        self.stimulation -= (time_passed.get_min() /
-                             float(stimulation_decay_time))
+        # Stimulation only decays if the horse is awake.
+        if not night:
+            self.stimulation -= (time_passed.get_min() /
+                                 float(stimulation_decay_time))
         self.stimulation_date = now.date
         self.stimulation_time = now.time
+        # Make sure stimulation stays within reasonable limits
+        if self.stimulation < 0:
+            self.stimulation = 0
+        elif self.stimulation > 100:
+            # This method can't raise it above a hundred, but some other
+            # method might.
+            self.stimulation = 100
 
         t_next = copy.copy(now)
         next_limit = self._get_limit(self.stimulation)
@@ -270,6 +291,16 @@ class Horse(Base):
 
         t_next.add_min((self.stimulation - next_limit) *
                        stimulation_decay_time)
+        if t_next.is_night() != night:
+            # Passed a day/night change, put the next event at
+            # the exact change to ensure correct energy decay.
+            # Reset t_next
+            t_next = copy.copy(now)
+            if night:
+                t_next.end_of_night()
+            else:
+                t_next.start_of_night()
+
         return {"subject": "stimulation", "t_stamp": t_next}
 
     def _ch_social(self, now):
@@ -347,16 +378,16 @@ class Horse(Base):
 
         return events
 
-    def event(self, subject, t_stamp, night=False):
+    def event(self, subject, t_stamp):
         """ This is the method that gets executed on event activation."""
         if subject == "food":
             e_info = self._ch_food(t_stamp)
         elif subject == "water":
             e_info = self._ch_water(t_stamp)
         elif subject == "energy":
-            e_info = self._ch_energy(t_stamp, night)
+            e_info = self._ch_energy(t_stamp)
         elif subject == "stimulation":
-            e_info = self._ch_stimulation(t_stamp, night)
+            e_info = self._ch_stimulation(t_stamp)
         elif subject == "social":
             e_info = self._ch_social(t_stamp)
         elif subject == "exercise":

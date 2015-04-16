@@ -89,9 +89,7 @@ class TestTime():
                 session.add(HorseFactory())
 
                 t.pass_time(session, 120)
-                m.assert_called_once_with(
-                        "food",
-                        TimeStamp(0, 0))
+                m.assert_called_once_with("food", TimeStamp(0, 0))
             t9 = datetime.datetime.now()
 
             print "Setup"

@@ -46,7 +46,7 @@ class Time():
         time = SettingBackend.one(session, "Time").get(session, "numeric")
         return TimeStamp(date, time)
 
-    def pass_time(self, session, minutes, night=False):
+    def pass_time(self, session, minutes):
         """ Pass the time and activate whatever event is passed in doing so.
 
         session -- sqlalchemy session
@@ -99,9 +99,14 @@ class Time():
                 obj_id = callback.obj_id
                 cls = validMap[obj]
                 if obj == "StableBackend":
-                    e_info = stables[str(obj_id)].event(subject, t_stamp)
+                    e_info = stables[str(obj_id)].event(
+                            subject,
+                            t_stamp,
+                            night=True)
                 elif obj == "HorseBackend":
-                    e_info = horses[str(obj_id)].event(subject, t_stamp)
+                    e_info = horses[str(obj_id)].event(
+                            subject,
+                            t_stamp)
                 # Update event
                 events[0].update(e_info["t_stamp"])
             # Events will have changed timestamp by now
@@ -119,6 +124,6 @@ class Time():
                 minutes_to_pass = 420 + 1440 - time
             else:
                 minutes_to_pass = 420 - time
-            self.pass_time(session, minutes_to_pass, True)
+            self.pass_time(session, minutes_to_pass)
 
 time = Time()

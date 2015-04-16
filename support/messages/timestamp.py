@@ -8,13 +8,34 @@ class TimeStamp(Message):
         self.time = int(time)
 
     def get_min(self):
+        """ Return the date/time as total amount of minutes (int)."""
         return self.time + self.date * 60
 
     def add_min(self, minutes):
+        """ Add minutes to date/time."""
         self.time += int(minutes)
         if self.time >= 1440:
             self.date += self.time / 1440
             self.time %= 1440
+
+    def end_of_night(self):
+        """ Skip self to the end of the night."""
+        if self.time >= 1320:
+            self.date += 1
+        self.time = 420
+
+    def start_of_night(self):
+        """ Skip self to the start of the night."""
+        if self.time > 1320:
+            self.date += 1
+        self.time = 1320
+
+    def is_night(self):
+        """ Check if it's night (bool)."""
+        if self.time >= 1320 or self.time < 420:
+            return True
+        else:
+            return False
 
     def __str__(self):
         return ' '.join(["Timestamp: Date:",

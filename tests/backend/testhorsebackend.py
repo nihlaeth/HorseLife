@@ -60,7 +60,8 @@ class TestHorseBackend():
             assert_equals(backend.get(session, t(0, 0), "water"), 100)
             assert_less(backend.get(session, t(0, 120), "water"), 100)
             assert_equals(backend.get(session, t(0, 0), "energy"), 100)
-            assert_less(backend.get(session, t(0, 120), "energy"), 100)
+            # It was just night, energy should be restored.
+            assert_equals(backend.get(session, t(0, 120), "energy"), 100)
             assert_equals(backend.get(session, t(0, 0), "stimulation"), 100)
             assert_greater(
                     EventBackend.one(
@@ -68,9 +69,13 @@ class TestHorseBackend():
                         "stimulation",
                         1).get(session, "time"),
                     0)
-            assert_less(backend.get(session, t(0, 120), "stimulation"), 100)
+            # Stimulation does not decay during the night!
+            assert_equals(backend.get(
+                session,
+                t(0, 120),
+                "stimulation"), 100)
             assert_equals(backend2.get(session, t(0, 0), "stimulation"), 100)
-            assert_less(backend2.get(session, t(0, 120), "stimulation"), 100)
+            assert_equals(backend2.get(session, t(0, 120), "stimulation"), 100)
             assert_equals(backend.get(session, t(0, 0), "social"), 100)
             assert_less(backend.get(session, t(0, 120), "social"), 100)
             assert_equals(backend.get(session, t(0, 0), "exercise"), 100)
