@@ -33,7 +33,7 @@ For planned features, see above. This is about stuff that NEEDS to happen
 in the codebase as it is right now. More a list for myself than for anyone
 else's benefit, but I need to dump it somewhere (where I will see it).
 
-* Get night to work correctly. Pass the parameter along, and emit some event at the end of night, so sleep doesn't depend on horses randomly having some event fire during the night.
+* Rework pass_time to work with TimeStamps - no more minutes to pass around!
 * Add some comments. I know you get what this does right now, in a few weeks, you won't. Trust me on this one. For once.
 * Do a scan of the entire (reworked) code, see what needs refactoring.
 * Rework the Core classes to work with the new timekeeping, and session management. Also, write tests for the core classes!
