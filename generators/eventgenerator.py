@@ -5,7 +5,7 @@ from models.callback import Callback
 
 class EventGenerator(Generator):
     @classmethod
-    def _gen_one(cls, subject, obj_id, date, time, callbacks):
+    def _gen_one(cls, subject, obj_id, t_stamp, callbacks):
         """ Generate a single event object."""
         generated_callbacks = []
         for callback in callbacks:
@@ -13,8 +13,8 @@ class EventGenerator(Generator):
                 obj=callback[0],
                 obj_id=callback[1]))
         return Event(
-                date=date,
-                time=time,
+                date=t_stamp.date,
+                time=t_stamp.time,
                 subject=subject,
                 obj_id=obj_id,
                 callbacks=generated_callbacks)
@@ -27,8 +27,7 @@ class EventGenerator(Generator):
             result.append(cls._gen_one(
                 s,  # subject
                 events[s]["obj_id"],
-                events[s]["date"],
-                events[s]["time"],
+                events[s]["t_stamp"],
                 events[s]["callbacks"]))
         session.add_all(result)
         return result

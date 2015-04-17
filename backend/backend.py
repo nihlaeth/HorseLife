@@ -76,8 +76,7 @@ class Backend():
             if e_info is not None:
                 events[e_info["subject"]] = {
                         "obj_id": self._id,
-                        "date": e_info["t_stamp"].date,
-                        "time": e_info["t_stamp"].time,
+                        "t_stamp": e_info["t_stamp"],
                         "callbacks": [[self._str, self._id]]}
         EventGenerator.gen_many(session, events)
 
