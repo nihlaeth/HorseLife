@@ -36,7 +36,7 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Add some comments. I know you get what this does right now, in a few weeks, you won't. Trust me on this one. For once.
 * Check tests to see what can be isolated better
 * Do a scan of the entire (reworked) code, see what needs refactoring.
-* Rework the Core classes to work with the new timekeeping, and session management. Also, write tests for the core classes!
+* Write tests for core classes
 
 ## Directories
 
