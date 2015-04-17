@@ -11,7 +11,6 @@ class EventFactory(factory.Factory):
     obj_id = 1
     date = 0
     time = 0
-    night = False
 
     @factory.post_generation
     def callbacks(self, create, extracted, **kwargs):

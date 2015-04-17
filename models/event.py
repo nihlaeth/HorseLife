@@ -15,12 +15,11 @@ class Event(Base):
     obj_id = Column(Integer)
     date = Column(Integer)
     time = Column(Integer)
-    night = Column(Boolean)
     t_stamp = None
 
     callbacks = relationship("Callback", backref="event")
 
-    def __init__(self, date, time, subject, obj_id, callbacks=[], night=False):
+    def __init__(self, date, time, subject, obj_id, callbacks=[]):
         """ Overwritten init so t_stamp is also initiated."""
         self.subject = subject
         self.obj_id = obj_id
@@ -28,7 +27,6 @@ class Event(Base):
         self.time = time
         self.t_stamp = TimeStamp(date, time)
         self.callbacks = callbacks
-        self.night = night
 
     @reconstructor
     def reconstruct(self):
