@@ -3,6 +3,7 @@ from sqlalchemy import func
 import ConfigParser
 
 from generator import Generator
+from support.messages.timestamp import TimeStamp
 from models.horse import Horse
 
 
@@ -11,7 +12,7 @@ class HorseGenerator(Generator):
         self._config = ConfigParser.SafeConfigParser()
         self._config.read("config/horses.cfg")
 
-    def _gen_one(self, breed, training="none"):
+    def _gen_one(self, breed, t_stamp, training="none"):
         if breed == "random":
             breed = random.choice(self._config.sections())
         return Horse(
@@ -24,14 +25,28 @@ class HorseGenerator(Generator):
             health_status="Healthy",
             health=100,
             food=100,
+            food_date=t_stamp.date,
+            food_time=t_stamp.time,
             water=100,
+            water_date=t_stamp.date,
+            water_time=t_stamp.time,
             happiness=100,
             energy=100,
+            energy_date=t_stamp.date,
+            energy_time=t_stamp.time,
             hygiene=100,
+            hygiene_date=t_stamp.date,
+            hygiene_time=t_stamp.time,
             stimulation=100,
+            stimulation_date=t_stamp.date,
+            stimulation_time=t_stamp.time,
             exercise=100,
+            exercise_date=t_stamp.date,
+            exercise_time=t_stamp.time,
             environment=100,
             social=100,
+            social_date=t_stamp.date,
+            social_time=t_stamp.time,
             endurance=0,
             strength=0,
             speed=0,
@@ -72,9 +87,9 @@ class HorseGenerator(Generator):
                 self._config.getint(breed, "genetic_horsemanship_min"),
                 self._config.getint(breed, "genetic_horsemanship_max")))
 
-    def gen_many(self, session, n, breed="random"):
+    def gen_many(self, session, n, breed="random", t_stamp=TimeStamp(0, 0)):
         result = []
         for i in range(n):
-            result.append(self._gen_one(breed))
+            result.append(self._gen_one(breed, t_stamp=t_stamp))
         session.add_all(result)
         return result
