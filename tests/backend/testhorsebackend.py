@@ -158,9 +158,8 @@ class TestHorseBackend():
                         "subject": "food-test",
                         "t_stamp": TimeStamp(1000, 0)}
                 backend = HorseBackend(1)
-                time.pass_time(session, 5)
+                backend.event_callback(session, "food-test", TimeStamp(0, 0))
                 m.assert_called_once_with("food-test", TimeStamp(0, 0))
-                assert_equals(EventBackend(1).get(session, "date"), 1000)
         with DummyDB() as session:
             session.add_all([
                 HorseFactory(),
@@ -171,9 +170,9 @@ class TestHorseBackend():
                         session,
                         "food",
                         TimeStamp(0, 0))
-            # assert_equals(e_info["subject"], "food")
-            # assert_equals(e_info["t_stamp"].date, 0)
-            # assert_greater(e_info["t_stamp"].time, 0)
+            assert_equals(e_info["subject"], "food")
+            assert_equals(e_info["t_stamp"].date, 0)
+            assert_greater(e_info["t_stamp"].time, 0)
             # assert False
 
         with DummyDB() as session:
@@ -188,7 +187,8 @@ class TestHorseBackend():
             t3_1 = datetime.datetime.now()
             backend.get_events(session, now)
             t3_2 = datetime.datetime.now()
-            time.pass_time(session, 1440)
+            now.add_min(1440)
+            time.pass_time(session, now)
             t4 = datetime.datetime.now()
             t_stamp = time.get_time_stamp(session)
             assert_less(backend.get(session, t_stamp, "food"), 100)

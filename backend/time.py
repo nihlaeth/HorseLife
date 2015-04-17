@@ -46,12 +46,11 @@ class Time():
         time = SettingBackend.one(session, "Time").get(session, "numeric")
         return TimeStamp(date, time)
 
-    def pass_time(self, session, minutes):
+    def pass_time(self, session, now):
         """ Pass the time and activate whatever event is passed in doing so.
 
         session -- sqlalchemy session
-        minutes -- minutes to pass (int) --> to be replaced by a TimeStamp
-            object to allow for easier calculations
+        now -- TimeStamp object set to the target time (the new now)
         night -- indicates resting time, only if there are no actions
             being performed by the player (bool)
 
@@ -63,21 +62,15 @@ class Time():
         to the pass_time method in the future (it would allow the
         EventBackend to inherit from Backend again).
         """
-        if minutes == 0:
-            return True
-        time_obj = SettingBackend.one(session, "Time")
-        date_obj = SettingBackend.one(session, "Date")
-        time = time_obj.get(session, "numeric")
-        date = date_obj.get(session, "numeric")
+        SettingBackend.one(session, "Time").set(
+                session,
+                "numeric",
+                now.time)
+        SettingBackend.one(session, "Date").set(
+                session,
+                "numeric",
+                now.date)
 
-        time += minutes
-        if time >= 1440:
-            time -= 1440
-            date += 1
-        time_obj.set(session, "numeric", time)
-        date_obj.set(session, "numeric", date)
-
-        now = self.get_time_stamp(session)
         validClasses = [HorseBackend, StableBackend]
         validMap = dict(((c.__name__, c) for c in validClasses))
         events = list(EventBackend.all_raw(session))
@@ -114,16 +107,16 @@ class Time():
                     events,
                     key=attrgetter("date", "time"))
 
-        if time >= 1320 or time < 420:
+        if now.is_night():
             # It's between 22:00 and 07:00 - night time!
             # If you managed to get past midnight, you're seriously
             # depriving your horses of sleep...
             # TODO emit some notification so the user gets feedback about
             # the date change!
-            if time >= 1320:
-                minutes_to_pass = 420 + 1440 - time
+            if now.time >= 1320:
+                now.add_min(420 + 1440 - now.time)
             else:
-                minutes_to_pass = 420 - time
-            self.pass_time(session, minutes_to_pass)
+                now.add_min(420 - now.time)
+            self.pass_time(session, now)
 
 time = Time()

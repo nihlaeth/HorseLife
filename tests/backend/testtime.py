@@ -52,13 +52,15 @@ class TestTime():
             t2 = datetime.datetime.now()
 
             t = Time()
-            t.pass_time(session, 480)
+            now = TimeStamp(0, 480)
+            t.pass_time(session, now)
             t3 = datetime.datetime.now()
             assert_equals(t.get_day(session), day.Monday)
             assert_equals(t.get_time(session), "08:00")
             t4 = datetime.datetime.now()
 
-            t.pass_time(session, 1440)
+            now.add_min(1440)
+            t.pass_time(session, now)
             t5 = datetime.datetime.now()
 
             assert_equals(t.get_day(session), day.Tuesday)
@@ -69,7 +71,8 @@ class TestTime():
             # 900 minutes puts us at 23:00, which is past
             # bedtime. We should end up at 07:00 the next day.
 
-            t.pass_time(session, 900)
+            now.add_min(900)
+            t.pass_time(session, now)
             t7 = datetime.datetime.now()
             assert_equals(t.get_day(session), day.Wednesday)
             assert_equals(t.get_time(session), "07:00")
@@ -88,7 +91,8 @@ class TestTime():
                         obj_id=1)]))
                 session.add(HorseFactory())
 
-                t.pass_time(session, 120)
+                now.add_min(120)
+                t.pass_time(session, now)
                 m.assert_called_once_with("food", TimeStamp(0, 0))
             t9 = datetime.datetime.now()
 
@@ -127,10 +131,12 @@ class TestTime():
             StableBackend(1).get_events(session, now)
 
             t2 = datetime.datetime.now()
-            t.pass_time(session, 480)
+            now.add_min(480)
+            t.pass_time(session, now)
             t3 = datetime.datetime.now()
 
-            t.pass_time(session, 1440)
+            now.add_min(1440)
+            t.pass_time(session, now)
             t4 = datetime.datetime.now()
 
             print "Testing with a single instance"
@@ -170,12 +176,14 @@ class TestTime():
                 stable.get_events(session, now)
             t3 = datetime.datetime.now()
 
-            t.pass_time(session, 480)
+            now.add_min(480)
+            t.pass_time(session, now)
 
             t4 = datetime.datetime.now()
 
+            now.add_min(1440)
             with profiled():
-                t.pass_time(session, 1440)
+                t.pass_time(session, now)
 
             t5 = datetime.datetime.now()
 
