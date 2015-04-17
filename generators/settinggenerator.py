@@ -2,7 +2,7 @@ from generator import Generator
 from models.setting import Setting
 
 
-class SettingsGenerator(Generator):
+class SettingGenerator(Generator):
     @classmethod
     def _gen_one(cls, name, numeric, text):
         return Setting(name=name, numeric=numeric, text=text)
