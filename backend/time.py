@@ -109,14 +109,9 @@ class Time():
 
         if now.is_night():
             # It's between 22:00 and 07:00 - night time!
-            # If you managed to get past midnight, you're seriously
-            # depriving your horses of sleep...
             # TODO emit some notification so the user gets feedback about
             # the date change!
-            if now.time >= 1320:
-                now.add_min(420 + 1440 - now.time)
-            else:
-                now.add_min(420 - now.time)
+            now.end_of_night()
             self.pass_time(session, now)
 
 time = Time()
