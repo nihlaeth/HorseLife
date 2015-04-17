@@ -3,7 +3,7 @@ from support.messages.quit import Quit
 from support.messages.back import Back
 from errors.unknownbuildingtype import UnknownBuildingType
 from stablecore import StableCore
-from models.stable import Stable
+from backend.stablebackend import StableBackend
 
 
 class BuildingCore(Core):
@@ -14,7 +14,7 @@ class BuildingCore(Core):
 
     def run(self):
         while True:
-            if isinstance(self._building, Stable):
+            if isinstance(self._building, StableBackend):
                 next_ = StableCore(self._building)
             else:
                 raise UnknownBuildingType(self._building.building_type)

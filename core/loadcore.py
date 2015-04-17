@@ -33,6 +33,8 @@ class LoadCore(Core):
                 return choice
             elif isinstance(choice, Command):
                 exec(choice.command)
+            elif isinstance(choice, Quit):
+                return choice
 
     def __str__(self):
         return "Load Game"

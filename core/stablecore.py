@@ -6,58 +6,93 @@ from support.messages.action import Action
 from support.messages.command import Command
 from interface.cli.stabledisplay import StableDisplay
 from backend.session import session_scope
-from backend.stablesbackend import StablesBackend
-from backend.horsesbackend import HorsesBackend
+from backend.stablebackend import StableBackend
+from backend.horsebackend import HorseBackend
 
 
 class StableCore(Core):
     def __init__(self, stable):
-        self._stable_id = stable.id
         self._stable = stable
         self._display = StableDisplay()
-        if len(self._stable.horses) == 1:
-            self._horse = self._stable.horses[0]
-            self._horse_id = self._horse.id
-        else:
-            self._horse = None
+        #if len(self._stable.horses) == 1:
+        #    self._horse = self._stable.horses[0]
+        #    self._horse_id = self._horse.id
+        #else:
+        self._horse = None
 
     def run(self):
         while True:
             with session_scope() as session:
-                # Make sure the stable and horse instances are fresh.
-                self._stable = StablesBackend.one(session, self._stable_id)
-                if self._horse is not None:
-                    self._horse = HorsesBackend.one(session, self._horse_id)
+                # Get horses
+                horses = self._stable.get(session, None, "horses")
+                if len(horses)>0 and self._horse is None:
+                    self._horse = HorseBackend(horses[0].id)
 
                 from backend.time import time
-                info = [" ".join(["Time:", time.get_time()]),
+                now = time.get_time_stamp(session)
+                info = [" ".join(["Time:", time.get_time(session)]),
                         "",
                         "Cleanliness:",
-                        Meter(self._stable.cleanliness)]
+                        Meter(self._stable.get(
+                            session,
+                            now,
+                            "cleanliness"))]
 
                 if self._horse is not None:
                     info.append("")
-                    info.append(''.join(["Name: ", self._horse.name]))
+                    info.append(''.join([
+                        "Name: ",
+                        self._horse.get(session, None, "name")]))
                     info.append("Happiness:")
-                    info.append(Meter(self._horse.happiness))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "happiness")))
                     info.append("Health:")
-                    info.append(Meter(self._horse.health))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "health")))
                     info.append("Food:")
-                    info.append(Meter(self._horse.food))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "food")))
                     info.append("Water:")
-                    info.append(Meter(self._horse.water))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "water")))
                     info.append("Energy:")
-                    info.append(Meter(self._horse.energy))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "energy")))
                     info.append("Exercise:")
-                    info.append(Meter(self._horse.energy))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "energy")))
                     info.append("Hygiene:")
-                    info.append(Meter(self._horse.hygiene))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "hygiene")))
                     info.append("Stimulation:")
-                    info.append(Meter(self._horse.stimulation))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "stimulation")))
                     info.append("Environment:")
-                    info.append(Meter(self._horse.environment))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "environment")))
                     info.append("Social:")
-                    info.append(Meter(self._horse.social))
+                    info.append(Meter(self._horse.get(
+                        session,
+                        now,
+                        "social")))
 
                 actions = []
                 actions.append(Action("clean", "Clean stable"))
@@ -73,13 +108,13 @@ class StableCore(Core):
                                           "View pedigree papers"))
                     actions.append(Action("change name", "Change name"))
 
-                if len(self._stable.horses) > 1:
-                    for horse in self._stable.horses:
-                        if horse != self._horse:
+                if len(horses) > 1:
+                    for horse in horses:
+                        if horse.id != self._horse._id:
                             actions.append(Action(
                                 "fetch",
                                 ''.join(["Fetch ", horse.name]),
-                                [horse]))
+                                [HorseBackend(horse.id)]))
 
                 menu = [Back(), Quit()]
                 self._display.init(actions, menu, info)
@@ -90,20 +125,23 @@ class StableCore(Core):
                     exec(choice.command)
                 elif isinstance(choice, Action):
                         if choice.action == "clean":
-                            self._stable.clean()
+                            new_time = self._stable.clean(session, now)
+                            time.pass_time(session, new_time)
                         if choice.action == "change name":
                             self._horse.name = self._display.get_string(
                                     4,
                                     "Name: ")
                         if choice.action == "groom":
-                            self._horse.groom()
+                            new_time = self._horse.groom(session, now)
+                            time.pass_time(session, new_time)
                         if choice.action == "feed":
-                            self._stable.food()
+                            self._stable.food(session)
                             # TODO fetch food from storage
                         if choice.action == "water":
-                            self._stable.water()
+                            self._stable.water(session)
                         if choice.action == "pet":
-                            self._horse.pet()
+                            new_time = self._horse.pet(session, now)
+                            time.pass_time(session, new_time)
                 session.commit()
 
     def __str__(self):

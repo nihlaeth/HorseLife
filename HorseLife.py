@@ -6,6 +6,7 @@ from core.maincore import MainCore
 from support.messages.newgame import NewGame
 from support.messages.savedgame import SavedGame
 from support.messages.quit import Quit
+from support.messages.timestamp import TimeStamp
 from models.base import Base
 from models.stable import Stable
 from models.stableitem import StableItem
@@ -13,7 +14,9 @@ from models.horse import Horse
 from models.setting import Setting
 from generators.stablegenerator import StableGenerator
 from generators.horsegenerator import HorseGenerator
-from generators.settingsgenerator import SettingsGenerator
+from generators.settinggenerator import SettingGenerator
+from backend.stablebackend import StableBackend
+from backend.horsebackend import HorseBackend
 
 
 class HorseLife():
@@ -59,7 +62,10 @@ class HorseLife():
                 stables = StableGenerator().gen_many(session, 1, "Shed")
                 horses = HorseGenerator().gen_many(session, 1, "Mixed breed")
                 stables[0].horses = [horses[0]]
-                SettingsGenerator.gen_many(
+                # Generate events for these objects
+                StableBackend(1).get_events(session, TimeStamp(0, 0))
+                HorseBackend(1).get_events(session, TimeStamp(0, 0))
+                SettingGenerator.gen_many(
                         session,
                         {
                             "Date": [0, ""],

@@ -16,7 +16,7 @@ class TownCore(Core):
         while True:
             with session_scope() as session:
                 from backend.time import time
-                info = [" ".join(["Time", time.get_time()])]
+                info = [" ".join(["Time", time.get_time(session)])]
                 info.append("Where do you want to visit?")
 
                 actions = [
