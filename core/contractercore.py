@@ -7,6 +7,9 @@ from support.messages.back import Back
 from support.messages.command import Command
 from support.messages.action import Action
 from backend.session import session_scope
+from backend.time import time
+from backend.stablebackend import StableBackend
+from generators.stablegenerator import StableGenerator
 
 
 class ContracterCore(Core):
@@ -17,7 +20,7 @@ class ContracterCore(Core):
     def run(self):
         while True:
             with session_scope() as session:
-                from backend.time import time
+                now = time.get_time_stamp(session)
                 info = [" ".join(["Time", time.get_time(session)])]
 
                 if self._screen == "home":
@@ -53,6 +56,15 @@ class ContracterCore(Core):
                         info.append(" ".join([
                             "Price:",
                             config.get(section, "price")]))
+                        actions.append(Action("buy-stable",
+                                              " ".join([
+                                                  "Buy",
+                                                  section,
+                                                  "for",
+                                                  config.get(
+                                                      section,
+                                                      "price")]),
+                                              [section]))
                     actions.append(Action("home",
                                           "Look at other building types"))
                 menu = [Back(), Quit()]
@@ -71,6 +83,17 @@ class ContracterCore(Core):
                                     "arenas",
                                     "tack-feed"]:
                         self._screen = choice.action
+                    if choice.action == "buy-stable":
+                        # TODO once you have money implemented, check if
+                        # you have enough cash and decrease it with the
+                        # price.
+                        stable_id = StableGenerator().gen_many(
+                                session,
+                                1,
+                                choice.arguments[0],
+                                now)[0].id
+                        stable = StableBackend(stable_id)
+                        stable.get_events(session, now)
 
                 session.commit()
 
