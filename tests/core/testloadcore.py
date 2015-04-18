@@ -59,8 +59,6 @@ class TestLoadCore():
         args = m3.call_args_list[-1:]
         arg1 = args[0][0][0]
         arg2 = args[0][0][1]
-        print "arg1=" + str(arg1)
-        print "arg2=" + str(arg2)
         assert_equals(arg1[0].file_name, "file1")
         assert_equals(arg1[1].file_name, "file2")
         assert_equals(isinstance(arg2[0], NewGame), True)
