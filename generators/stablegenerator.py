@@ -34,4 +34,5 @@ class StableGenerator(Generator):
         for i in range(n):
             result.append(self._gen_one(stable_type, t_stamp))
         session.add_all(result)
+        session.flush()
         return result

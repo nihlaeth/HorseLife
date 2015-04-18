@@ -30,4 +30,5 @@ class EventGenerator(Generator):
                 events[s]["t_stamp"],
                 events[s]["callbacks"]))
         session.add_all(result)
+        session.flush()
         return result

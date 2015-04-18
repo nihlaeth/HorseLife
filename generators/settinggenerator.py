@@ -13,4 +13,5 @@ class SettingGenerator(Generator):
         for s in settings:
             result.append(cls._gen_one(s, settings[s][0], settings[s][1]))
         session.add_all(result)
+        session.flush()
         return result

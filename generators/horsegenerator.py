@@ -92,4 +92,5 @@ class HorseGenerator(Generator):
         for i in range(n):
             result.append(self._gen_one(breed, t_stamp=t_stamp))
         session.add_all(result)
+        session.flush()
         return result
