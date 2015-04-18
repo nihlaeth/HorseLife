@@ -14,10 +14,6 @@ class StableCore(Core):
     def __init__(self, stable):
         self._stable = stable
         self._display = StableDisplay()
-        #if len(self._stable.horses) == 1:
-        #    self._horse = self._stable.horses[0]
-        #    self._horse_id = self._horse.id
-        #else:
         self._horse = None
 
     def run(self):
@@ -25,7 +21,7 @@ class StableCore(Core):
             with session_scope() as session:
                 # Get horses
                 horses = self._stable.get(session, None, "horses")
-                if len(horses)>0 and self._horse is None:
+                if len(horses) > 0 and self._horse is None:
                     self._horse = HorseBackend(horses[0].id)
 
                 from backend.time import time
