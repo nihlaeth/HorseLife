@@ -37,6 +37,10 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Check tests to see what can be isolated better
 * Do a scan of the entire (reworked) code, see what needs refactoring.
 * Write tests for core classes
+* Figure out why horse doesn't sleep during the night
+* Add other building types (pastures, tack/feed rooms, headquarters, etc.)
+* Implement horsemarket
+* Start working on training system
 
 ## Directories
 
