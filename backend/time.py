@@ -2,7 +2,7 @@ from operator import attrgetter
 from enum import Enum
 from sqlalchemy import inspect
 
-from session import session_scope
+from session import SessionScope
 from settingbackend import SettingBackend
 from horsebackend import HorseBackend
 from stablebackend import StableBackend

@@ -5,7 +5,7 @@ from support.messages.meter import Meter
 from support.messages.action import Action
 from support.messages.command import Command
 from interface.cli.stabledisplay import StableDisplay
-from backend.session import session_scope
+from backend.session import SessionScope
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
 
@@ -18,7 +18,7 @@ class StableCore(Core):
 
     def run(self):
         while True:
-            with session_scope() as session:
+            with SessionScope() as session:
                 # Get horses
                 horses = self._stable.get(session, None, "horses")
                 if len(horses) > 0 and self._horse is None:

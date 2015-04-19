@@ -6,7 +6,7 @@ from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.command import Command
 from support.messages.action import Action
-from backend.session import session_scope
+from backend.session import SessionScope
 from backend.time import time
 from backend.stablebackend import StableBackend
 from generators.stablegenerator import StableGenerator
@@ -19,7 +19,7 @@ class ContracterCore(Core):
 
     def run(self):
         while True:
-            with session_scope() as session:
+            with SessionScope() as session:
                 now = time.get_time_stamp(session)
                 info = [" ".join(["Time", time.get_time(session)])]
 

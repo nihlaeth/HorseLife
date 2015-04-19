@@ -8,14 +8,14 @@ from core.maincore import MainCore
 from core.buildingcore import BuildingCore
 from support.messages.quit import Quit
 from support.messages.command import Command
-from backend.session import session_scope
+from backend.session import SessionScope
 from interface.cli.maindisplay import MainDisplay
 
 
 class TestMainCore():
     @mock.patch.object(BuildingCore, "run")
     @mock.patch.object(MainDisplay, "display")
-    @mock.patch.object(session_scope, "__enter__")
+    @mock.patch.object(SessionScope, "__enter__")
     def test_run(self, m_session, m_display, m_building):
         """ Test MainCore.run()"""
         with DummyDB() as session:

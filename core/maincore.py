@@ -4,7 +4,7 @@ from buildingcore import BuildingCore
 from towncore import TownCore
 from support.messages.quit import Quit
 from support.messages.command import Command
-from backend.session import session_scope
+from backend.session import SessionScope
 from backend.stablebackend import StableBackend
 
 
@@ -14,7 +14,7 @@ class MainCore(Core):
 
     def run(self):
         while True:
-            with session_scope() as session:
+            with SessionScope() as session:
                 stables = StableBackend.all(session)
 
                 from backend.time import time

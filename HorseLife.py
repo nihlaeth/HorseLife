@@ -58,7 +58,7 @@ class HorseLife():
         Base.metadata.create_all(self.engine)
 
         if new:
-            with s.session_scope() as session:
+            with s.SessionScope() as session:
                 stables = StableGenerator().gen_many(session, 1, "Shed")
                 horses = HorseGenerator().gen_many(session, 1, "Mixed breed")
                 stables[0].horses = [horses[0]]
