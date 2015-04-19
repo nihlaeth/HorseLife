@@ -18,7 +18,7 @@ class LoadCore(Core):
             files = os.listdir("./saves/")
             actions = []
             for f in files:
-                action.append(SavedGame(f))
+                actions.append(SavedGame(f))
             menu = []
             menu.append(NewGame())
             menu.append(Quit())
