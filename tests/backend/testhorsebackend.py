@@ -62,6 +62,10 @@ class TestHorseBackend():
             assert_equals(backend.get(session, t(0, 0), "energy"), 100)
             # It was just night, energy should be restored.
             assert_equals(backend.get(session, t(0, 120), "energy"), 100)
+            # At the end of the day, energy should be low
+            assert_less(backend.get(session, t(0, 1319), "energy"), 50)
+            # And in the morning, it should be restored again
+            assert_greater(backend.get(session, t(1, 419), "energy"), 95)
             assert_equals(backend.get(session, t(0, 0), "stimulation"), 100)
             assert_greater(
                     EventBackend.one(

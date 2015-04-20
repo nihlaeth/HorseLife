@@ -18,17 +18,39 @@ class TimeStamp(Message):
             self.date += self.time / 1440
             self.time %= 1440
 
-    def end_of_night(self):
+    def end_of_night(self, event=False):
         """ Skip self to the end of the night."""
         if self.time >= 1320:
             self.date += 1
-        self.time = 420
+        if event:
+            if self.time == 419:
+                # Came here after putting time at
+                # a minute before the transition.
+                self.time = 420
+                self.start_of_night(event=True)
+                return None
+            # Just before the transition, so night dependent needs will
+            # compute correctly.
+            self.time = 419
+        else:
+            self.time = 420
 
-    def start_of_night(self):
+    def start_of_night(self, event=False):
         """ Skip self to the start of the night."""
         if self.time > 1320:
             self.date += 1
-        self.time = 1320
+        if event:
+            if self.time == 1319:
+                # Came here after putting time at
+                # a minute before the transition.
+                self.time = 1320
+                self.end_of_night(event=True)
+                return None
+            # Just before the transition, so night-dependent needs will
+            # compute correctly.
+            self.time = 1319
+        else:
+            self.time = 1320
 
     def is_night(self):
         """ Check if it's night (bool)."""

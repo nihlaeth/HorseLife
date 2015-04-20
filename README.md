@@ -38,7 +38,6 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Check tests to see what can be isolated better
 * Look at performance of TestStableCore, also at that of pass_time (still).
 * Do a scan of the entire (reworked) code, see what needs refactoring.
-* Figure out why horse doesn't sleep during the night
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system

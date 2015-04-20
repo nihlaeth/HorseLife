@@ -17,6 +17,7 @@ from generators.horsegenerator import HorseGenerator
 from generators.settinggenerator import SettingGenerator
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
+from backend.time import time
 
 
 class HorseLife():
@@ -52,7 +53,7 @@ class HorseLife():
         # when we're done testing, put in a permanent database,
         # and allow the user to pick
         # a db (savegame)
-        self.engine = create_engine('sqlite:///:memory:', echo=True)
+        self.engine = create_engine('sqlite:///:memory:', echo=False)
         s.Session.configure(bind=self.engine)
 
         Base.metadata.create_all(self.engine)
@@ -69,7 +70,8 @@ class HorseLife():
                         session,
                         {
                             "Date": [0, ""],
-                            "Time": [420, ""]})
+                            "Time": [0, ""]})
+                time.pass_time(session, TimeStamp(0, 420))
 
         m = MainCore()
         choice = m.run()

@@ -254,10 +254,10 @@ class Horse(Base):
         if night:
             # If it's night, we want to have an event at the end of
             # it, to make sure the energy level raises correctly.
-            t_next.end_of_night()
+            t_next.end_of_night(event=True)
         else:
             # Make sure horse loses energy until it's night
-            t_next.start_of_night()
+            t_next.start_of_night(event=True)
         return {"subject": "energy", "t_stamp": t_next}
 
     def _ch_stimulation(self, now):
@@ -297,9 +297,9 @@ class Horse(Base):
             # Reset t_next
             t_next = copy.copy(now)
             if night:
-                t_next.end_of_night()
+                t_next.end_of_night(event=True)
             else:
-                t_next.start_of_night()
+                t_next.start_of_night(event=True)
 
         return {"subject": "stimulation", "t_stamp": t_next}
 
