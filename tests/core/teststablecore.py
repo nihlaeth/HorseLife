@@ -40,7 +40,7 @@ class TestStableCore():
             core = StableCore(StableBackend(1))
 
             result = core.run()
-            
+
             m_display.assert_called_once_with()
             assert_equals(result, quit)
 
