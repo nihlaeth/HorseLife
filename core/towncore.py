@@ -36,11 +36,11 @@ class TownCore(Core):
 
                 self._display.init(actions, menu, info)
                 choice = self._display.display()
+                result = None
                 if isinstance(choice, Quit) or isinstance(choice, Back):
                     return choice
                 elif isinstance(choice, Command):
                     exec(choice.command)
-                    result = None
                 elif isinstance(choice, Action):
                     if choice.action == "contracter":
                         result = ContracterCore().run()
