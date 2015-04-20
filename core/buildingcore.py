@@ -17,7 +17,7 @@ class BuildingCore(Core):
             if isinstance(self._building, StableBackend):
                 next_ = StableCore(self._building)
             else:
-                raise UnknownBuildingType(self._building.building_type)
+                raise UnknownBuildingType(self._building)
 
             result = next_.run()
             if isinstance(result, Back) or isinstance(result, Quit):
