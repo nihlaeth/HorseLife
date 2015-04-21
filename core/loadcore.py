@@ -10,6 +10,7 @@ from support.messages.command import Command
 
 
 class LoadCore(Core):
+    """ This lets the user pick a saved game, or start (and name) a new one."""
     def __init__(self):
         self._display = LoadDisplay()
 

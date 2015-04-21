@@ -9,6 +9,7 @@ from backend.stablebackend import StableBackend
 
 
 class MainCore(Core):
+    """ Main game screen. Here you can pick a building to go to."""
     def __init__(self):
         self._display = MainDisplay()
 

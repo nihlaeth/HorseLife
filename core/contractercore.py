@@ -13,6 +13,9 @@ from generators.stablegenerator import StableGenerator
 
 
 class ContracterCore(Core):
+    """ The place to go to create buildings. This handles ALL building (and
+    destruction) in the game, except for initial construction when starting
+    a new game."""
     def __init__(self):
         self._display = ContracterDisplay()
         self._screen = "home"

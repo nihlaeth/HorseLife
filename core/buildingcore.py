@@ -7,6 +7,8 @@ from backend.stablebackend import StableBackend
 
 
 class BuildingCore(Core):
+    """ This class just takes some of the processing away from MainCore.
+    It determines building type and then refers to the correct core class."""
     def __init__(self, building):
         # No display class here, since this core class only relays
         # to a more specific building class

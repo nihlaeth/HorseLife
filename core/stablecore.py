@@ -11,6 +11,8 @@ from backend.horsebackend import HorseBackend
 
 
 class StableCore(Core):
+    """ View a stable (and it's inhabitants). This is the main starting
+    point for doing anything with a horse."""
     def __init__(self, stable):
         self._stable = stable
         self._display = StableDisplay()

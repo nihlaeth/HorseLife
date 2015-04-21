@@ -9,6 +9,8 @@ from backend.session import SessionScope
 
 
 class TownCore(Core):
+    """ Town: anything not directly affiliated with the business we're
+    running. Construction, education, horse market, competitions, etc."""
     def __init__(self):
         self._display = TownDisplay()
 

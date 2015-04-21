@@ -1,12 +1,13 @@
 class Core():
     def __init__(self):
+        """ Some basic initialization: get a display, save some id's of
+        related objects, or their backends or something like that."""
         self._display = None
 
     def run(self):
-        # get needed data, pass it to display class and activate it
-        # wait for response and handle it:
-        # call new class, hide display class, or
-        # return appropriate action to the class that called this one
+        """ Game logic! Get data through backend and frontend (interface
+        / user input), and do stuff with it! Communicate back to backend
+        and front-end, well, you get the picture."""
         pass
 
     def __str__(self):
