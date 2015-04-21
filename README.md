@@ -37,6 +37,7 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Check tests to see what can be isolated better
 * Add notification system
 * Add story progression
+* Have needs check if their last_checked < now - don't do any of the work if it is equal to or greater than now.
 * Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
 * Implement money
 * Look at performance of TestStableCore, also at that of pass_time (still).
