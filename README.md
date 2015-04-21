@@ -35,6 +35,10 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 
 * Add some comments. I know you get what this does right now, in a few weeks, you won't. Trust me on this one. For once.
 * Check tests to see what can be isolated better
+* Add notification system
+* Add story progression
+* Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
+* Implement money
 * Look at performance of TestStableCore, also at that of pass_time (still).
 * Do a scan of the entire (reworked) code, see what needs refactoring.
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
