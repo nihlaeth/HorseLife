@@ -86,6 +86,7 @@ class Horse(Base):
     gen_horsemanship = Column(Integer)
 
     stable_id = Column(Integer, ForeignKey('stables.id'))
+    owner_id = Column(Integer, ForeignKey('people.id'))
 
     def groom(self, now, skill="normal"):
         """ Groom the horse (clean, brush). It takes about 30 minutes.
