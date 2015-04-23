@@ -44,7 +44,7 @@ class HorseLife():
         if isinstance(choice, NewGame):
             self.loadGame(choice.file_name, True)
         elif isinstance(choice, SavedGame):
-            self.loadGame(choics.file_name)
+            self.loadGame(choice.file_name)
         elif isinstance(choice, Quit):
             self.quit()
 
