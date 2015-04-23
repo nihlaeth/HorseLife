@@ -7,7 +7,7 @@ class PersonBackend(Backend):
     def all(cls, session):
         """ Return a list of all people (encapsulated)"""
         models = session.query(Person)
-        return [PersonBackend(person.id) for person in people]
+        return [PersonBackend(person.id) for person in models]
 
     @classmethod
     def one(cls, session, name):
