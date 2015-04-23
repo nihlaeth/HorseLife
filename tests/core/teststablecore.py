@@ -22,6 +22,7 @@ class TestStableCore():
     @mock.patch.object(StableDisplay, "display")
     @mock.patch.object(SessionScope, "__enter__")
     def test_run(self, m_db, m_display, m_getstr):
+        """ Test StableCore.run()"""
         with DummyDB() as session:
             m_db.return_value = session
             stable_raw = StableFactory()

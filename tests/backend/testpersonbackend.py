@@ -27,6 +27,7 @@ class TestPersonBackend():
             assert_equals(backend._id, 1)
 
     def test_all(self):
+        """ Test PersonBackend.all(session)"""
         with DummyDB() as session:
             session.add_all(PersonFactory.build_batch(20))
             backends = PersonBackend.all(session)
