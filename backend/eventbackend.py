@@ -18,7 +18,7 @@ class EventBackend(object):
         session -- sqlalchemy session
         """
         models = session.query(Event).order_by(Event.date, Event.time)
-        return [EventBackend(model.id) for model in models]
+        return [EventBackend(model.mid) for model in models]
 
     @classmethod
     def all_raw(cls, session):
@@ -46,7 +46,7 @@ class EventBackend(object):
         return EventBackend(
             session.query(Event).filter(
                 Event.subject == subject,
-                Event.obj_id == obj_id)[0].id)
+                Event.obj_id == obj_id)[0].mid)
 
     @classmethod
     def next_event(cls, session):
@@ -66,7 +66,7 @@ class EventBackend(object):
         It's deprecated, and can disappear at any time!
         """
         return EventBackend(
-            session.query(Event).order_by(Event.date, Event.time)[0].id)
+            session.query(Event).order_by(Event.date, Event.time)[0].mid)
 
     @classmethod
     def _one_id(cls, session, id_):
@@ -78,7 +78,7 @@ class EventBackend(object):
         Note: this should never be called from anything other than this
         class. It returns the bare model instead of an encapsulated one.
         """
-        return session.query(Event).filter_by(id=id_)[0]
+        return session.query(Event).filter_by(mid=id_)[0]
 
     def __init__(self, id_):
         """Set model id (does not connect to database).

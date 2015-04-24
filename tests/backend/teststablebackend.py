@@ -35,9 +35,9 @@ class TestStableBackend():
             stables = StableFactory.build_batch(2)
             session.add_all(stables)
             stable = StableBackend._one_id(session, 1)
-            assert_equals(stable.id, 1)
+            assert_equals(stable.mid, 1)
             stable = StableBackend._one_id(session, 2)
-            assert_equals(stable.id, 2)
+            assert_equals(stable.mid, 2)
 
     def test_get(self):
         """ Test StableBackend.get(session, timestamp, key)"""

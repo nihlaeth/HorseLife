@@ -36,7 +36,7 @@ class StableCore(Core):
                 # Get horses
                 horses = self._stable.get(session, None, "horses")
                 if len(horses) > 0 and self._horse is None:
-                    self._horse = HorseBackend(horses[0].id)
+                    self._horse = HorseBackend(horses[0].mid)
 
                 time = Time(session)
                 now = time.get_time_stamp(session)

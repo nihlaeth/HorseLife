@@ -103,7 +103,7 @@ class ContracterCore(Core):
                             session,
                             1,
                             choice.arguments[0],
-                            now)[0].id
+                            now)[0].mid
                         stable = StableBackend(stable_id)
                         stable.get_events(session, now)
 

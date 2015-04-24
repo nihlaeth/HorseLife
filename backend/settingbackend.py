@@ -13,8 +13,8 @@ class SettingBackend(Backend):
 
         session -- sqlalchemy session
         """
-        models = session.query(Setting).order_by(Setting.id)
-        return [SettingBackend(model.id) for model in models]
+        models = session.query(Setting).order_by(Setting.mid)
+        return [SettingBackend(model.mid) for model in models]
 
     @classmethod
     def one(cls, session, name):
@@ -24,7 +24,7 @@ class SettingBackend(Backend):
         name -- setting name (str)
         """
         return SettingBackend(
-            session.query(Setting).filter_by(name=name)[0].id)
+            session.query(Setting).filter_by(name=name)[0].mid)
 
     @classmethod
     def _one_id(cls, session, id_):
@@ -33,7 +33,7 @@ class SettingBackend(Backend):
         session -- sqlalchemy session
         id -- setting model id (int)
         """
-        return session.query(Setting).filter_by(id=id_)[0]
+        return session.query(Setting).filter_by(mid=id_)[0]
 
     def __init__(self, id_):
         """Set model id.

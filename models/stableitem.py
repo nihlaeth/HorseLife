@@ -1,18 +1,24 @@
-from base import Base
+"""StableItem model."""
+from base import BASE
 from sqlalchemy import ForeignKey, Column, Integer, String
-from sqlalchemy.orm import relationship, backref
 
 
-class StableItem(Base):
+# Sqlalchemy takes care of __init__
+# pylint: disable=no-init
+class StableItem(BASE):
+
+    """StableItem model."""
+
     __tablename__ = 'stableitems'
 
-    id = Column(Integer, primary_key=True)
+    mid = Column(Integer, primary_key=True)
 
     name = Column(String)
     value = Column(Integer)
-    stable_id = Column(Integer, ForeignKey('stables.id'))
+    stable_id = Column(Integer, ForeignKey('stables.mid'))
 
     def __repr__(self):
+        """Return string representation of object."""
         return ''.join([
             "[",
             self.name,

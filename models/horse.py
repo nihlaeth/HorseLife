@@ -1,16 +1,22 @@
+"""Horse model."""
 import copy
 from sqlalchemy import Column, Integer, Float, String, ForeignKey
 
-from base import Base
-from models.stable import Stable
+from base import BASE
 from support.messages.timestamp import TimeStamp
 
 
-class Horse(Base):
-    """ Represents a horse."""
+# Sqlalchemy handles the __init__, the instance attributes
+# is a case of wontfix. The code won't get any better if we split
+# some off into their own models.
+# pylint: disable=no-init,too-many-instance-attributes
+class Horse(BASE):
+
+    """Represents a horse."""
+
     __tablename__ = 'horses'
 
-    id = Column(Integer, primary_key=True)
+    mid = Column(Integer, primary_key=True)
 
     # basic info
     age = Column(Integer)
@@ -85,12 +91,15 @@ class Horse(Base):
     gen_harness = Column(Integer)
     gen_horsemanship = Column(Integer)
 
-    stable_id = Column(Integer, ForeignKey('stables.id'))
-    owner_id = Column(Integer, ForeignKey('people.id'))
+    stable_id = Column(Integer, ForeignKey('stables.mid'))
+    owner_id = Column(Integer, ForeignKey('people.mid'))
 
     def groom(self, now, skill="normal"):
-        """ Groom the horse (clean, brush). It takes about 30 minutes.
-        In the future, skill will play a role here."""
+        """Groom the horse (clean, brush).
+
+        It takes about 30 minutes.
+        In the future, skill will play a role here.
+        """
         # Grooming takes about 30 minutes, so update the timestamp.
         now.add_min(30)
 
@@ -114,9 +123,11 @@ class Horse(Base):
                 "e_hygiene": e_info_hygiene}
 
     def pet(self, now, person=None):
-        """ Pet horse, takes about 5 minutes and stimulates the horse.
+        """Pet horse, takes about 5 minutes and stimulates the horse.
+
         In the future, this will effect the relationship between player
-        and horse."""
+        and horse.
+        """
         now.add_min(5)
 
         self._ch_stimulation(now)
@@ -128,26 +139,36 @@ class Horse(Base):
         e_info = self._ch_stimulation(now)
         return {"clock": now, "e_info": e_info}
 
-    def _get_limit(self, n):
-        """ Helper method for the _ch_* methods. n is the current need
-        value, this function determines where the next event border is."""
-        # if n >= 76:
-        #     return 75
-        # elif n >= 51:
-        #    return 50
-        if n >= 26:
+    # Could be a function, but is better at home in here. It is duplicate
+    # code though.
+    # TODO fix duplication - move to common parent
+    # pylint: disable=no-self-use
+    def _get_limit(self, num):
+        """Determine where the next event border is.
+
+        Helper method for the _ch_* methods.
+
+        num -- current need value
+        This function determines where the next event border is.
+        """
+        if num >= 26:
             return 25
-        elif n >= 1:
+        elif num >= 1:
             return 0
         else:
             return -1
 
     def _eat(self):
-        """ Have the horse eat. This is something it does independently
+        """Have the horse eat.
+
+        This is something it does independently
         of the player.
 
         In the future, different food types will sustain the horse for
-        different times / levels of activity."""
+        different times / levels of activity.
+        """
+        # stable is an attribute created by sqlalchemy (backref)
+        # pylint: disable=no-member
         items = self.stable.items
         for item in items:
             if item.name == "food" and self.location == "Stable":
@@ -162,9 +183,7 @@ class Horse(Base):
         return self._get_limit(self.food)
 
     def _ch_food(self, now):
-        """Calculates what the food meter should be at now,
-        updates the current value (and last updated field) and
-        returns the timestamp for the next event."""
+        """Calculate what the food meter should be at now."""
         last_updated = TimeStamp(self.food_date, self.food_time)
         time_passed = now - last_updated
 
@@ -188,8 +207,12 @@ class Horse(Base):
         return {"subject": "food", "t_stamp": t_next}
 
     def _drink(self):
-        """ Have the horse drink. This is done independently from
-        the player."""
+        """Have the horse drink.
+
+        This is done independently from the player.
+        """
+        # stable is provided by sqlalchemy (backref)
+        # pylint: disable=no-member
         items = self.stable.items
         for item in items:
             if item.name == "auto-water":
@@ -205,8 +228,7 @@ class Horse(Base):
         return self._get_limit(self.water)
 
     def _ch_water(self, now):
-        """ Calculate current value of water meter, and return the
-        information needed to update associated event."""
+        """Calculate current value of water meter."""
         last_updated = TimeStamp(self.water_date, self.water_time)
         time_passed = now - last_updated
 
@@ -229,8 +251,7 @@ class Horse(Base):
         return {"subject": "water", "t_stamp": t_next}
 
     def _ch_energy(self, now):
-        """ Calculate current value of energy meter and return information
-        to update associated event."""
+        """Calculate current value of energy meter."""
         night = now.is_night()
         last_updated = TimeStamp(self.energy_date, self.energy_time)
         time_passed = now - last_updated
@@ -262,8 +283,7 @@ class Horse(Base):
         return {"subject": "energy", "t_stamp": t_next}
 
     def _ch_stimulation(self, now):
-        """ Calculate current value of stimulation meter and return info
-        to update associated event."""
+        """Calculate current value of stimulation meter."""
         night = now.is_night()
         last_updated = TimeStamp(self.stimulation_date,
                                  self.stimulation_time)
@@ -305,8 +325,7 @@ class Horse(Base):
         return {"subject": "stimulation", "t_stamp": t_next}
 
     def _ch_social(self, now):
-        """ Calculate current value of social meter and return info to
-        update associated event."""
+        """Calculate current value of social meter."""
         last_updated = TimeStamp(self.social_date, self.social_time)
         time_passed = now - last_updated
 
@@ -325,8 +344,7 @@ class Horse(Base):
         return {"subject": "social", "t_stamp": t_next}
 
     def _ch_exercise(self, now):
-        """ Calculate current value of exercise meter and return info to
-        update associated event."""
+        """Calculate current value of exercise meter."""
         last_updated = TimeStamp(self.exercise_date, self.exercise_time)
         time_passed = now - last_updated
 
@@ -345,8 +363,7 @@ class Horse(Base):
         return {"subject": "exercise", "t_stamp": t_next}
 
     def _ch_hygiene(self, now):
-        """ Calculate current value of hygiene meter and return info to
-        update associated event."""
+        """Calculate current value of hygiene meter."""
         last_updated = TimeStamp(self.hygiene_date, self.hygiene_time)
         time_passed = now - last_updated
 
@@ -365,8 +382,7 @@ class Horse(Base):
         return {"subject": "hygiene", "t_stamp": t_next}
 
     def get_events(self, now):
-        """ Get a single event for every need meter, return the information
-        needed to generate said events in database."""
+        """Get a single event for every need meter and return event info."""
         events = []
 
         events.append(self._ch_food(now))
@@ -380,7 +396,7 @@ class Horse(Base):
         return events
 
     def event(self, subject, t_stamp):
-        """ This is the method that gets executed on event activation."""
+        """Handle event, is called at event activation."""
         if subject == "food":
             e_info = self._ch_food(t_stamp)
         elif subject == "water":
@@ -399,13 +415,17 @@ class Horse(Base):
         return e_info
 
     def __str__(self):
+        """Return string representation of object."""
         return self.name
 
     def get(self, now, key):
-        """ Get an attribute - if it's an active stat (need), it will
+        """Get an attribute.
+
+        If it's an active stat (need), it will
         be calculated / updated to current timestamp first. Aside from
         the attribute value, this also returns the info needed to update
-        the event in question."""
+        the event in question.
+        """
         if key == "food":
             e_info = self._ch_food(now)
             result = self.food

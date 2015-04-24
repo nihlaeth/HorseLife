@@ -18,8 +18,8 @@ class HorseBackend(Backend):
 
         session -- sqlalchemy session
         """
-        horses = session.query(Horse).order_by(Horse.id)
-        return [HorseBackend(horse.id) for horse in horses]
+        horses = session.query(Horse).order_by(Horse.mid)
+        return [HorseBackend(horse.mid) for horse in horses]
 
     @classmethod
     def _one_id(cls, session, id_):
@@ -28,7 +28,7 @@ class HorseBackend(Backend):
         session -- sqlalchemy session
         id -- id of horse model (int)
         """
-        return session.query(Horse).filter_by(id=id_)[0]
+        return session.query(Horse).filter_by(mid=id_)[0]
 
     def __init__(self, id_):
         """Backend sets self.id_, self._str is for inherited methods."""

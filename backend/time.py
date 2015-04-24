@@ -86,11 +86,11 @@ class Time(object):
         # Now organize the horses for easy access.
         horses = {}
         for horse in horses_temp:
-            horses[str(horse.id)] = horse
+            horses[str(horse.mid)] = horse
         stables_temp = StableBackend.all_raw(session)
         stables = {}
         for stable in stables_temp:
-            stables[str(stable.id)] = stable
+            stables[str(stable.mid)] = stable
 
         self._process_events(now, events, stables, horses)
 

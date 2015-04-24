@@ -8,7 +8,7 @@ from support.messages.newgame import NewGame
 from support.messages.savedgame import SavedGame
 from support.messages.quit import Quit
 from support.messages.timestamp import TimeStamp
-from models.base import Base
+from models.base import BASE
 # The imports below appear unused, but are necessary to create the
 # models in the database, so we have pylint ignore them.
 # pylint: disable=unused-import
@@ -68,7 +68,7 @@ class HorseLife(object):
         self.engine = create_engine('sqlite:///%s' % database, echo=False)
         s.SESSION.configure(bind=self.engine)
 
-        Base.metadata.create_all(self.engine)
+        BASE.metadata.create_all(self.engine)
 
         if new:
             with s.SessionScope() as session:

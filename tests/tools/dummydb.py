@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
-from models.base import Base
+from models.base import BASE
 from models.horse import Horse
 from models.person import Person
 from models.setting import Setting
@@ -16,7 +16,7 @@ class DummyDB():
         self._Session = sessionmaker()
         self._engine = create_engine('sqlite:///:memory:', echo=debug)
         self._Session.configure(bind=self._engine)
-        Base.metadata.create_all(self._engine)
+        BASE.metadata.create_all(self._engine)
 
     def __enter__(self):
         self._session = self._Session()

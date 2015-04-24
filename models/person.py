@@ -1,12 +1,18 @@
-from base import Base
+"""Person model."""
+from base import BASE
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 
 
-class Person(Base):
+# Sqlalchemy takes care of __init__
+# pylint: disable=no-init
+class Person(BASE):
+
+    """Person model."""
+
     __tablename__ = 'people'
 
-    id = Column(Integer, primary_key=True)
+    mid = Column(Integer, primary_key=True)
 
     name = Column(String)
     age = Column(Integer)

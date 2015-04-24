@@ -19,7 +19,7 @@ class StableBackend(Backend):
         session -- sqlalchemy session
         """
         stables = session.query(Stable).order_by(Stable.name)
-        return [StableBackend(stable.id) for stable in stables]
+        return [StableBackend(stable.mid) for stable in stables]
 
     @classmethod
     def _one_id(cls, session, id_):
@@ -28,7 +28,7 @@ class StableBackend(Backend):
         session -- sqlalchemy session
         id -- model id (int)
         """
-        return session.query(Stable).filter_by(id=id_)[0]
+        return session.query(Stable).filter_by(mid=id_)[0]
 
     def __init__(self, id_):
         """Backend sets _id, _str is for use with inherited methods."""

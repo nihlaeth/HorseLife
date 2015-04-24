@@ -24,7 +24,7 @@ class TestHorseBackend():
         """ Test HorseBackend._one_id(session, id)"""
         with DummyDB() as session:
             session.add(HorseFactory.build())
-            assert_equals(HorseBackend._one_id(session, 1).id, 1)
+            assert_equals(HorseBackend._one_id(session, 1).mid, 1)
 
     def test_all_raw(self):
         """ Test HorseBackend.all_raw(session)"""
