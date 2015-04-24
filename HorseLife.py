@@ -11,7 +11,7 @@ from support.messages.timestamp import TimeStamp
 from models.base import Base
 # The imports below appear unused, but are necessary to create the
 # models in the database, so we have pylint ignore them.
-# pylint: disable-msg=unused-import
+# pylint: disable=unused-import
 from models.stable import Stable
 from models.stableitem import StableItem
 from models.horse import Horse
@@ -66,7 +66,7 @@ class HorseLife(object):
         # and allow the user to pick
         # a db (savegame)
         self.engine = create_engine('sqlite:///%s' % database, echo=False)
-        s.Session.configure(bind=self.engine)
+        s.SESSION.configure(bind=self.engine)
 
         Base.metadata.create_all(self.engine)
 
@@ -83,7 +83,7 @@ class HorseLife(object):
                     {
                         "Date": [0, ""],
                         "Time": [0, ""]})
-                time.pass_time(session, TimeStamp(0, 420))
+                Time(session).pass_time(session, TimeStamp(0, 420))
 
         choice = MainCore().run()
 
