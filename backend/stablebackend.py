@@ -1,18 +1,20 @@
+"""Provide abstraction layer for Stable model."""
 from backend import Backend
-from eventbackend import EventBackend
 from models.stable import Stable
-from generators.eventgenerator import EventGenerator
 
 
 class StableBackend(Backend):
+
+    """Abstraction layer for Stable model."""
+
     @classmethod
     def all_raw(cls, session):
-        """ Return all raw instances of Stable."""
+        """Return all raw instances of Stable."""
         return session.query(Stable)
 
     @classmethod
     def all(cls, session):
-        """ Return a list of all encapsulated stable models.
+        """Return a list of all encapsulated stable models.
 
         session -- sqlalchemy session
         """
@@ -20,21 +22,21 @@ class StableBackend(Backend):
         return [StableBackend(stable.id) for stable in stables]
 
     @classmethod
-    def _one_id(cls, session, id):
-        """ Return bare stable model - internal use only!
+    def _one_id(cls, session, id_):
+        """Return bare stable model - internal use only.
 
         session -- sqlalchemy session
         id -- model id (int)
         """
-        return session.query(Stable).filter_by(id=id)[0]
+        return session.query(Stable).filter_by(id=id_)[0]
 
-    def __init__(self, id):
-        """ Backend sets _id, _str is for use with inherited methods."""
-        Backend.__init__(self, id)
+    def __init__(self, id_):
+        """Backend sets _id, _str is for use with inherited methods."""
+        Backend.__init__(self, id_)
         self._str = "StableBackend"
 
     def clean(self, session, now):
-        """ Execute clean method on encapsulated model.
+        """Execute clean method on encapsulated model.
 
         session -- sqlalchemy session
         now -- TimeStamp object indicating time at the start of this action
@@ -46,7 +48,7 @@ class StableBackend(Backend):
         return result["clock"]
 
     def food(self, session):
-        """ Add food to encapsulated stable.
+        """Add food to encapsulated stable.
 
         session -- sqlalchemy session
 
@@ -58,7 +60,7 @@ class StableBackend(Backend):
         return stable.food()
 
     def water(self, session):
-        """ Provide water for encapsulated stable.
+        """Provide water for encapsulated stable.
 
         session -- sqlalchemy
         """
@@ -66,11 +68,13 @@ class StableBackend(Backend):
         return stable.water()
 
     def __repr__(self):
+        """Return string representation of encapsulated model."""
         # TODO find elegant way to get repr info
         # without a session - and have the info not
         # be stale.
         return "Stable -- no session == no info"
 
     def __str__(self):
+        """Return string representation of encapsulated model."""
         # TODO same as above
         return "Stable -- no session == no info"

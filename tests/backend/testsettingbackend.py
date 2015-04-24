@@ -44,9 +44,9 @@ class TestSettingBackend():
             SettingFactory.reset_sequence()
             session.add(SettingFactory.build(numeric=34, text="blah"))
             backend = SettingBackend(1)
-            assert_equals(backend.get(session, "name"), "Test0")
-            assert_equals(backend.get(session, "numeric"), 34)
-            assert_equals(backend.get(session, "text"), "blah")
+            assert_equals(backend.get(session, None, "name"), "Test0")
+            assert_equals(backend.get(session, None, "numeric"), 34)
+            assert_equals(backend.get(session, None, "text"), "blah")
 
     def test_set(self):
         """ Test SettingBackend.set(session, key, value)"""
@@ -54,6 +54,6 @@ class TestSettingBackend():
             SettingFactory.reset_sequence()
             session.add(SettingFactory.build())
             backend = SettingBackend(1)
-            assert_equals(backend.get(session, "name"), "Test0")
+            assert_equals(backend.get(session, None, "name"), "Test0")
             backend.set(session, "name", "Test2")
-            assert_equals(backend.get(session, "name"), "Test2")
+            assert_equals(backend.get(session, None, "name"), "Test2")

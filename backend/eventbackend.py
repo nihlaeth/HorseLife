@@ -1,3 +1,4 @@
+"""Provide abstraction layer for Event model."""
 # Note: originally EventBackend inherited from Base. However,
 # since I moved some common methods to Base to be inherited from,
 # and some of them handle events, this resulted in circular imports.
@@ -6,11 +7,13 @@
 from models.event import Event
 
 
-class EventBackend():
+class EventBackend(object):
+
+    """Abstraction layer for Event model."""
+
     @classmethod
     def all(cls, session):
-        """ Return a list of all events encapsulated by EventBackend
-        objects, ordered by date and time.
+        """Return a list of all events encapsulated by EventBackend.
 
         session -- sqlalchemy session
         """
@@ -19,7 +22,8 @@ class EventBackend():
 
     @classmethod
     def all_raw(cls, session):
-        """ Return a list of all events, ordered by date and time.
+        """Return a list of all events, ordered by date and time.
+
         These are unencapsulated events, so beware!
 
         session -- sqlalchemy session
@@ -28,7 +32,7 @@ class EventBackend():
 
     @classmethod
     def one(cls, session, subject, obj_id):
-        """ Return a single encapsulated event.
+        """Return a single encapsulated event.
 
         session -- sqlalchemy session
         subject -- event subject (string)
@@ -40,13 +44,13 @@ class EventBackend():
         the callbacks to determine.
         """
         return EventBackend(
-                session.query(Event).filter(
-                    Event.subject == subject,
-                    Event.obj_id == obj_id)[0].id)
+            session.query(Event).filter(
+                Event.subject == subject,
+                Event.obj_id == obj_id)[0].id)
 
     @classmethod
     def next_event(cls, session):
-        """ Return the next (encapsulated) event (ordered chronologically).
+        """Return the next (encapsulated) event (ordered chronologically).
 
         session -- sqlalchemy session
 
@@ -56,13 +60,17 @@ class EventBackend():
         keep activating the same event in an infinite loop. On the other
         side, if the event causes some other event to be moved forward
         in the queue, this will be handled correctly.
+
+        Note: This method is currently unused as the event queue is now
+        handled differently due to performance issues (too many queries).
+        It's deprecated, and can disappear at any time!
         """
         return EventBackend(
-                session.query(Event).order_by(Event.date, Event.time)[0].id)
+            session.query(Event).order_by(Event.date, Event.time)[0].id)
 
     @classmethod
-    def _one_id(cls, session, id):
-        """ Return the event that belongs to the id - for internal use only!
+    def _one_id(cls, session, id_):
+        """Return the event that belongs to the id - for internal use only.
 
         session -- sqlalchemy session
         id -- model id (int)
@@ -70,17 +78,17 @@ class EventBackend():
         Note: this should never be called from anything other than this
         class. It returns the bare model instead of an encapsulated one.
         """
-        return session.query(Event).filter_by(id=id)[0]
+        return session.query(Event).filter_by(id=id_)[0]
 
-    def __init__(self, id):
-        """ Set model id (does not connect to database).
+    def __init__(self, id_):
+        """Set model id (does not connect to database).
 
         id -- model id (int)
         """
-        self._id = id
+        self._id = id_
 
     def get(self, session, key):
-        """ Get attribute from encapsulated event.
+        """Get attribute from encapsulated event.
 
         session -- sqlalchemy session
         key -- attribute name (str)
@@ -92,7 +100,7 @@ class EventBackend():
         return getattr(event, key)
 
     def set(self, session, key, value):
-        """ Set attribute on encapsulated event.
+        """Set attribute on encapsulated event.
 
         session -- sqlalchemy session
         key -- attribute name (str)
@@ -102,7 +110,7 @@ class EventBackend():
         setattr(event, key, value)
 
     def update(self, session, timestamp):
-        """ Update timestamp on encapsulated model.
+        """Update timestamp on encapsulated model.
 
         session -- sqlalchemy session
         timestamp -- TimeStamp object with new time for event
@@ -120,7 +128,7 @@ class EventBackend():
         event.update(timestamp)
 
     def string(self, session):
-        """ String representation for encapsulated event.
+        """String representation for encapsulated event.
 
         session -- sqlalchemy session
 

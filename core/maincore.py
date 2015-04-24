@@ -6,6 +6,7 @@ from support.messages.quit import Quit
 from support.messages.command import Command
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
+from backend.time import Time
 
 
 class MainCore(Core):
@@ -18,8 +19,7 @@ class MainCore(Core):
             with SessionScope() as session:
                 stables = StableBackend.all(session)
 
-                from backend.time import time
-                info = [" ".join(["Time", time.get_time(session)])]
+                info = [" ".join(["Time", Time(session).get_time(session)])]
 
                 actions = [TownCore()]
                 for s in stables:

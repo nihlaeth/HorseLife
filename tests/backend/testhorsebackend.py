@@ -4,7 +4,7 @@ import datetime
 
 from backend.horsebackend import HorseBackend
 from backend.eventbackend import EventBackend
-from backend.time import time
+from backend.time import Time
 from models.horse import Horse
 from support.messages.timestamp import TimeStamp
 from tests.tools.dummydb import DummyDB
@@ -139,6 +139,7 @@ class TestHorseBackend():
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time", numeric=60)])
             backend = HorseBackend(1)
+            time = Time(session)
             now = time.get_time_stamp(session)
             backend.get_events(session, now)
             assert_greater(len(EventBackend.all(session)), 0)
@@ -187,6 +188,7 @@ class TestHorseBackend():
                 SettingFactory(name="Time")])
             t3 = datetime.datetime.now()
             backend = HorseBackend(1)
+            time = Time(session)
             now = time.get_time_stamp(session)
             t3_1 = datetime.datetime.now()
             backend.get_events(session, now)

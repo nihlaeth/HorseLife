@@ -6,6 +6,7 @@ from support.messages.back import Back
 from support.messages.command import Command
 from support.messages.action import Action
 from backend.session import SessionScope
+from backend.time import Time
 
 
 class TownCore(Core):
@@ -17,8 +18,7 @@ class TownCore(Core):
     def run(self):
         while True:
             with SessionScope() as session:
-                from backend.time import time
-                info = [" ".join(["Time", time.get_time(session)])]
+                info = [" ".join(["Time", Time(session).get_time(session)])]
                 info.append("Where do you want to visit?")
 
                 actions = [

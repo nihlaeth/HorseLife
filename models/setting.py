@@ -10,3 +10,6 @@ class Setting(Base):
     name = Column(String)
     numeric = Column(Integer)
     text = Column(String)
+
+    def get(self, now, key):
+        return {"attr": getattr(self, key), "e_info": None}

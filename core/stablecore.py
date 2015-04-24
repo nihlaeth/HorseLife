@@ -8,6 +8,7 @@ from interface.cli.stabledisplay import StableDisplay
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
+from backend.time import Time
 
 
 class StableCore(Core):
@@ -26,7 +27,7 @@ class StableCore(Core):
                 if len(horses) > 0 and self._horse is None:
                     self._horse = HorseBackend(horses[0].id)
 
-                from backend.time import time
+                time = Time(session)
                 now = time.get_time_stamp(session)
                 info = [" ".join(["Time:", time.get_time(session)]),
                         "",

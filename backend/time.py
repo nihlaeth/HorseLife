@@ -1,8 +1,7 @@
+"""Timekeeping mechanism."""
 from operator import attrgetter
 from enum import Enum
-from sqlalchemy import inspect
 
-from session import SessionScope
 from settingbackend import SettingBackend
 from horsebackend import HorseBackend
 from stablebackend import StableBackend
@@ -10,9 +9,9 @@ from eventbackend import EventBackend
 from support.messages.timestamp import TimeStamp
 
 
-""" Simple enum to translate between index numbers and weekdays.
-Note: week starts on Monday(0). Also note the captialization."""
-day = Enum(
+# Simple enum to translate between index numbers and weekdays.
+# Note: week starts on Monday(0). Also note the captialization.
+DAY = Enum(
     "Monday",
     "Tuesday",
     "Wednesday",
@@ -22,32 +21,41 @@ day = Enum(
     "Sunday")
 
 
-class Time():
+class Time(object):
+
+    """Timekeeping mechanism."""
+
+    def __init__(self, session):
+        """Get the id's of the relevant settings."""
+        self._time_id = SettingBackend.one(session, "Time")._id
+        self._date_id = SettingBackend.one(session, "Date")._id
+
     def get_day(self, session):
-        """ Deprecated -- use get_time_stamp"""
-        self._date = SettingBackend.one(session, "Date")
-        return day[self._date.get(session, "numeric") % 7]
+        """Return day of the week."""
+        date = SettingBackend(self._date_id)
+        return DAY[date.get(session, None, "numeric") % 7]
 
     def get_time(self, session):
-        """ Deprecated -- use get_time_stamp"""
-        self._time = SettingBackend.one(session, "Time")
-        hours = self._time.get(session, "numeric") / 60
-        minutes = self._time.get(session, "numeric") % 60
+        """Deprecated -- use get_time_stamp."""
+        time_ = SettingBackend(self._time_id)
+        total_minutes = time_.get(session, None, "numeric")
+        hours = total_minutes / 60
+        minutes = total_minutes % 60
         return ":".join([
-                str(hours) if hours > 9 else "0" + str(hours),
-                str(minutes) if minutes > 9 else "0" + str(minutes)])
+            str(hours) if hours > 9 else "0" + str(hours),
+            str(minutes) if minutes > 9 else "0" + str(minutes)])
 
     def get_time_stamp(self, session):
-        """ Return TimeStamp object indicating current time.
+        """Return TimeStamp object indicating current time.
 
         session -- sqlalchemy session
         """
-        date = SettingBackend.one(session, "Date").get(session, "numeric")
-        time = SettingBackend.one(session, "Time").get(session, "numeric")
-        return TimeStamp(date, time)
+        date = SettingBackend(self._date_id).get(session, None, "numeric")
+        time_ = SettingBackend(self._time_id).get(session, None, "numeric")
+        return TimeStamp(date, time_)
 
     def pass_time(self, session, now):
-        """ Pass the time and activate whatever event is passed in doing so.
+        """Pass the time and activate whatever event is passed in doing so.
 
         session -- sqlalchemy session
         now -- TimeStamp object set to the target time (the new now)
@@ -63,16 +71,16 @@ class Time():
         EventBackend to inherit from Backend again).
         """
         SettingBackend.one(session, "Time").set(
-                session,
-                "numeric",
-                now.time)
+            session,
+            "numeric",
+            now.time)
         SettingBackend.one(session, "Date").set(
-                session,
-                "numeric",
-                now.date)
+            session,
+            "numeric",
+            now.date)
 
-        validClasses = [HorseBackend, StableBackend]
-        validMap = dict(((c.__name__, c) for c in validClasses))
+        # valid_classes = [HorseBackend, StableBackend]
+        # valid_map = dict(((c.__name__, c) for c in validClasses))
         events = list(EventBackend.all_raw(session))
         horses_temp = HorseBackend.all_raw(session)
         # Now organize the horses for easy access.
@@ -83,29 +91,8 @@ class Time():
         stables = {}
         for stable in stables_temp:
             stables[str(stable.id)] = stable
-        while events[0].t_stamp <= now:
-            t_stamp = events[0].t_stamp
-            callbacks = events[0].callbacks
-            subject = events[0].subject
-            for callback in callbacks:
-                obj = callback.obj
-                obj_id = callback.obj_id
-                cls = validMap[obj]
-                if obj == "StableBackend":
-                    e_info = stables[str(obj_id)].event(
-                            subject,
-                            t_stamp,
-                            night=True)
-                elif obj == "HorseBackend":
-                    e_info = horses[str(obj_id)].event(
-                            subject,
-                            t_stamp)
-                # Update event
-                events[0].update(e_info["t_stamp"])
-            # Events will have changed timestamp by now
-            events = sorted(
-                    events,
-                    key=attrgetter("date", "time"))
+
+        self._process_events(now, events, stables, horses)
 
         if now.is_night():
             # It's between 22:00 and 07:00 - night time!
@@ -114,4 +101,31 @@ class Time():
             now.end_of_night()
             self.pass_time(session, now)
 
-time = Time()
+    # We know this could be a function, but it's definitely a part
+    # of the timekeeping system, and a private one at that.
+    # For the sake of encapsulation, we're keeping it this way.
+    # pylint: disable=no-self-use
+    def _process_events(self, now, events, stables, horses):
+        """Do event callbacks, update timestamps, etc."""
+        while events[0].t_stamp <= now:
+            t_stamp = events[0].t_stamp
+            callbacks = events[0].callbacks
+            subject = events[0].subject
+            for callback in callbacks:
+                obj = callback.obj
+                obj_id = callback.obj_id
+                if obj == "StableBackend":
+                    e_info = stables[str(obj_id)].event(
+                        subject,
+                        t_stamp,
+                        night=True)
+                elif obj == "HorseBackend":
+                    e_info = horses[str(obj_id)].event(
+                        subject,
+                        t_stamp)
+                # Update event
+                events[0].update(e_info["t_stamp"])
+            # Events will have changed timestamp by now
+            events = sorted(
+                events,
+                key=attrgetter("date", "time"))

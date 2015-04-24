@@ -1,30 +1,38 @@
+"""Provides an interface for the *Base classes."""
 from eventbackend import EventBackend
 from generators.eventgenerator import EventGenerator
 
 
-class Backend():
+class Backend(object):
+
+    """Common methods for the *Base classes."""
+
     @classmethod
-    def one(cls, id):
-        """ Fetch instance from db with id and return backend instance."""
+    def one(cls, session, id_):
+        """Fetch instance from db with id and return backend instance."""
         pass
 
     @classmethod
-    def all(cls):
-        """ Fetch all instances from db and return list of backend
-        instances.
-        """
+    def all(cls, session):
+        """Fetch all instances from db and return backend instances."""
         pass
 
-    def __init__(self, id):
-        """ _id indicates id of model in database, _str is used in
-        classes that inherit from this one, to differentiate between
-        them in common methods.
+    @classmethod
+    def _one_id(cls, session, id_):
+        """Fetch unencapsulated instance from database."""
+        pass
+
+    def __init__(self, id_):
+        """Set the model identifier.
+
+        _id indicates id of model in database.
+        _str is used to indicate inherited class id in shared method.
         """
-        self._id = id
+        self._id = id_
         self._str = "Backend"
 
     def get(self, session, t_stamp, key):
-        """ Get an attribute from the encapsulated db model.
+        """Get an attribute from the encapsulated db model.
 
         session -- sqlalchemy session
         t_stamp -- TimeStamp object indicating the current (game) time
@@ -42,7 +50,7 @@ class Backend():
         return info["attr"]
 
     def set(self, session, key, value):
-        """ Set an attributes on the encapsulated db model.
+        """Set an attributes on the encapsulated db model.
 
         session -- sqlalchemy session
         key -- name of attribute
@@ -57,8 +65,7 @@ class Backend():
         setattr(instance, key, value)
 
     def get_events(self, session, now):
-        """ Fetches event information from encapsulated model and creates
-        the necessary events.
+        """Fetch events from encapsulated models and create them in db.
 
         session -- sqlalchemy session
         now -- TimeStamp object indicating 'current' time
@@ -75,14 +82,13 @@ class Backend():
         for e_info in result:
             if e_info is not None:
                 events[e_info["subject"]] = {
-                        "obj_id": self._id,
-                        "t_stamp": e_info["t_stamp"],
-                        "callbacks": [[self._str, self._id]]}
+                    "obj_id": self._id,
+                    "t_stamp": e_info["t_stamp"],
+                    "callbacks": [[self._str, self._id]]}
         EventGenerator.gen_many(session, events)
 
     def _update_event(self, session, e_info):
-        """ Update timestamp of an event associated with the encapsulated
-        model.
+        """Update timestamp of an event associated with model.
 
         session -- sqlalchemy session
         e_info -- dict containing event information
@@ -100,7 +106,9 @@ class Backend():
         event.update(session, e_info["t_stamp"])
 
     def event_callback(self, session, subject, t_stamp):
-        """ This method is called at event activation.
+        """Execute event.
+
+        This is called by the Time.pass_time method.
 
         session -- sqlalchemy session
         subject -- subject of the event (string)

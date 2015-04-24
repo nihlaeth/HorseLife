@@ -22,7 +22,7 @@ from generators.horsegenerator import HorseGenerator
 from generators.settinggenerator import SettingGenerator
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
-from backend.time import time
+from backend.time import Time
 
 
 class HorseLife(object):
