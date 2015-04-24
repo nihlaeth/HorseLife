@@ -85,7 +85,7 @@ class EventBackend(object):
 
         id -- model id (int)
         """
-        self._id = id_
+        self.id_ = id_
 
     def get(self, session, key):
         """Get attribute from encapsulated event.
@@ -96,7 +96,7 @@ class EventBackend(object):
         Note: there are no active attributes in event, so no
         timestamp is needed.
         """
-        event = EventBackend._one_id(session, self._id)
+        event = EventBackend._one_id(session, self.id_)
         return getattr(event, key)
 
     def set(self, session, key, value):
@@ -106,7 +106,7 @@ class EventBackend(object):
         key -- attribute name (str)
         value -- new value
         """
-        event = EventBackend._one_id(session, self._id)
+        event = EventBackend._one_id(session, self.id_)
         setattr(event, key, value)
 
     def update(self, session, timestamp):
@@ -124,7 +124,7 @@ class EventBackend(object):
         be used anywhere in the layer model without breaking
         layer conventions (no session handling for example).
         """
-        event = EventBackend._one_id(session, self._id)
+        event = EventBackend._one_id(session, self.id_)
         event.update(timestamp)
 
     def string(self, session):
@@ -139,5 +139,5 @@ class EventBackend(object):
         here without seriously smelling up the entire project, you're
         stuck using this ungainly method. Sorry.
         """
-        event = EventBackend._one_id(session, self._id)
+        event = EventBackend._one_id(session, self.id_)
         return str(event)

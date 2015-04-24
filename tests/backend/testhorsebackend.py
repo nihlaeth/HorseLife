@@ -18,7 +18,7 @@ from tests.tools.callbackfactory import CallbackFactory
 class TestHorseBackend():
     def test_init(self):
         """ Test HorseBackend.__init__(id)"""
-        assert_equals(HorseBackend(1)._id, 1)
+        assert_equals(HorseBackend(1).id_, 1)
 
     def test_one_id(self):
         """ Test HorseBackend._one_id(session, id)"""

@@ -1,3 +1,4 @@
+"""Game logic for Stable screen."""
 from core import Core
 from support.messages.quit import Quit
 from support.messages.back import Back
@@ -6,20 +7,30 @@ from support.messages.action import Action
 from support.messages.command import Command
 from interface.cli.stabledisplay import StableDisplay
 from backend.session import SessionScope
-from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
 from backend.time import Time
 
 
 class StableCore(Core):
-    """ View a stable (and it's inhabitants). This is the main starting
-    point for doing anything with a horse."""
+
+    """Game logic for Stable screen.
+
+    View a stable (and it's inhabitants). This is the main starting
+    point for doing anything with a horse.
+    """
+
     def __init__(self, stable):
+        """Get display and set stable and horse private attributes.
+
+        stable -- StableBackend instance
+        """
+        Core.__init__(self)
         self._stable = stable
         self._display = StableDisplay()
         self._horse = None
 
     def run(self):
+        """Run with it."""
         while True:
             with SessionScope() as session:
                 # Get horses
@@ -109,7 +120,7 @@ class StableCore(Core):
 
                 if len(horses) > 1:
                     for horse in horses:
-                        if horse.id != self._horse._id:
+                        if horse.id != self._horse.id_:
                             actions.append(Action(
                                 "fetch",
                                 ''.join(["Fetch ", horse.name]),
@@ -118,30 +129,36 @@ class StableCore(Core):
                 menu = [Back(), Quit()]
                 self._display.init(actions, menu, info)
                 choice = self._display.display()
-                if isinstance(choice, Quit) or isinstance(choice, Back):
-                    return choice
-                elif isinstance(choice, Command):
-                    exec(choice.command)
-                elif isinstance(choice, Action):
-                        if choice.action == "clean":
-                            new_time = self._stable.clean(session, now)
-                            time.pass_time(session, new_time)
-                        if choice.action == "change name":
-                            self._horse.name = self._display.get_string(
-                                    4,
-                                    "Name: ")
-                        if choice.action == "groom":
-                            new_time = self._horse.groom(session, now)
-                            time.pass_time(session, new_time)
-                        if choice.action == "feed":
-                            self._stable.food(session)
-                            # TODO fetch food from storage
-                        if choice.action == "water":
-                            self._stable.water(session)
-                        if choice.action == "pet":
-                            new_time = self._horse.pet(session, now)
-                            time.pass_time(session, new_time)
-                session.commit()
+                result = self._choice(session, choice, time, now)
+                if result is not None:
+                    return result
+
+    def _choice(self, session, choice, time, now):
+        """Handle user choice."""
+        if isinstance(choice, Quit) or isinstance(choice, Back):
+            return choice
+        elif isinstance(choice, Command):
+            exec(choice.command)
+        elif isinstance(choice, Action):
+            if choice.action == "clean":
+                new_time = self._stable.clean(session, now)
+                time.pass_time(session, new_time)
+            elif choice.action == "change name":
+                self._horse.name = self._display.get_string(
+                    4,
+                    "Name: ")
+            elif choice.action == "groom":
+                new_time = self._horse.groom(session, now)
+                time.pass_time(session, new_time)
+            elif choice.action == "feed":
+                self._stable.food(session)
+                # TODO fetch food from storage
+            elif choice.action == "water":
+                self._stable.water(session)
+            elif choice.action == "pet":
+                new_time = self._horse.pet(session, now)
+                time.pass_time(session, new_time)
 
     def __str__(self):
-        return self._stable.name
+        """Return string representation of object."""
+        return str(self._stable)

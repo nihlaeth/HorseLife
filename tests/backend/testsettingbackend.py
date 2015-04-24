@@ -13,8 +13,8 @@ class TestSettingBackend():
             settings = SettingFactory.build_batch(3)
             session.add_all(settings)
             backends = SettingBackend.all(session)
-            assert_equals(backends[0]._id, 1)
-            assert_equals(backends[2]._id, 3)
+            assert_equals(backends[0].id_, 1)
+            assert_equals(backends[2].id_, 3)
 
     def test_one(self):
         """ Test SettingBackend.one(session, name)"""
@@ -23,9 +23,9 @@ class TestSettingBackend():
             settings = SettingFactory.build_batch(3)
             session.add_all(settings)
             backend = SettingBackend.one(session, "Test0")
-            assert_equals(backend._id, 1)
+            assert_equals(backend.id_, 1)
             backend = SettingBackend.one(session, "Test2")
-            assert_equals(backend._id, 3)
+            assert_equals(backend.id_, 3)
 
     def test_one_id(self):
         """ Test SettingBackend._one_id(session, id)"""

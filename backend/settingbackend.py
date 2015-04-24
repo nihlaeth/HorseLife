@@ -50,5 +50,5 @@ class SettingBackend(Backend):
         key -- attribute name (str)
         value -- new value
         """
-        setting = SettingBackend._one_id(session, self._id)
+        setting = SettingBackend._one_id(session, self.id_)
         setattr(setting, name, key)

@@ -26,8 +26,8 @@ class TestStableBackend():
             stables = StableFactory.build_batch(3)
             session.add_all(stables)
             backends = StableBackend.all(session)
-            assert_equals(backends[0]._id, 1)
-            assert_equals(backends[2]._id, 3)
+            assert_equals(backends[0].id_, 1)
+            assert_equals(backends[2].id_, 3)
 
     def test_one_id(self):
         """ Test StableBackend._one_id(session, id)"""

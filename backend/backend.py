@@ -28,7 +28,7 @@ class Backend(object):
         _id indicates id of model in database.
         _str is used to indicate inherited class id in shared method.
         """
-        self._id = id_
+        self.id_ = id_
         self._str = "Backend"
 
     def get(self, session, t_stamp, key):
@@ -43,7 +43,7 @@ class Backend(object):
         timestamp. If this is not the case (and you're sure), you can just
         pass None as timestamp.
         """
-        instance = self._one_id(session, self._id)
+        instance = self._one_id(session, self.id_)
         info = instance.get(t_stamp, key)
         if info["e_info"] is not None:
             self._update_event(session, info["e_info"])
@@ -61,7 +61,7 @@ class Backend(object):
         way. They have their own dedicated methods for this. You will
         get utter chaos if you try.
         """
-        instance = self._one_id(session, self._id)
+        instance = self._one_id(session, self.id_)
         setattr(instance, key, value)
 
     def get_events(self, session, now):
@@ -75,16 +75,16 @@ class Backend(object):
         of the actual row in the database. Once these events are
         created, they will be updated, not removed and re-created.
         """
-        instance = self._one_id(session, self._id)
+        instance = self._one_id(session, self.id_)
 
         events = {}
         result = instance.get_events(now)
         for e_info in result:
             if e_info is not None:
                 events[e_info["subject"]] = {
-                    "obj_id": self._id,
+                    "obj_id": self.id_,
                     "t_stamp": e_info["t_stamp"],
-                    "callbacks": [[self._str, self._id]]}
+                    "callbacks": [[self._str, self.id_]]}
         EventGenerator.gen_many(session, events)
 
     def _update_event(self, session, e_info):
@@ -102,7 +102,7 @@ class Backend(object):
         with the event after calling it, the game will get stuck in
         an infinite loop.
         """
-        event = EventBackend.one(session, e_info["subject"], self._id)
+        event = EventBackend.one(session, e_info["subject"], self.id_)
         event.update(session, e_info["t_stamp"])
 
     def event_callback(self, session, subject, t_stamp):
@@ -116,7 +116,7 @@ class Backend(object):
         the event fires. For all intense and purposes, this is
         the same as the current time, though it isn't in reality.
         """
-        instance = self._one_id(session, self._id)
+        instance = self._one_id(session, self.id_)
         e_info = instance.event(subject, t_stamp)
         # self._update_event(session, e_info)
         return e_info

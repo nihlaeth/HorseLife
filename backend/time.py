@@ -27,8 +27,8 @@ class Time(object):
 
     def __init__(self, session):
         """Get the id's of the relevant settings."""
-        self._time_id = SettingBackend.one(session, "Time")._id
-        self._date_id = SettingBackend.one(session, "Date")._id
+        self._time_id = SettingBackend.one(session, "Time").id_
+        self._date_id = SettingBackend.one(session, "Date").id_
 
     def get_day(self, session):
         """Return day of the week."""

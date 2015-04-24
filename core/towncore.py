@@ -1,3 +1,4 @@
+"""Game logic for Town screen."""
 from interface.cli.towndisplay import TownDisplay
 from core import Core
 from contractercore import ContracterCore
@@ -10,30 +11,38 @@ from backend.time import Time
 
 
 class TownCore(Core):
-    """ Town: anything not directly affiliated with the business we're
-    running. Construction, education, horse market, competitions, etc."""
+
+    """Game logic for Town screen.
+
+    Town: anything not directly affiliated with the business we're
+    running. Construction, education, horse market, competitions, etc.
+    """
+
     def __init__(self):
+        """Set display."""
+        Core.__init__(self)
         self._display = TownDisplay()
 
     def run(self):
+        """Run with it."""
         while True:
             with SessionScope() as session:
                 info = [" ".join(["Time", Time(session).get_time(session)])]
                 info.append("Where do you want to visit?")
 
                 actions = [
-                        Action("bank", "Bank"),
-                        Action("horses", "Horse market"),
-                        Action("contracter", "Contracter"),
-                        Action("tack", "Saddle maker"),
-                        Action("food", "Horse supplies"),
-                        Action("newspaper", "News agency"),
-                        Action("veterinarian", "Veterinarian"),
-                        Action("farrier", "Farrier"),
-                        Action("competitions",
-                               "National equine sports association"),
-                        Action("employment", "Employment agency"),
-                        Action("education", "College")]
+                    Action("bank", "Bank"),
+                    Action("horses", "Horse market"),
+                    Action("contracter", "Contracter"),
+                    Action("tack", "Saddle maker"),
+                    Action("food", "Horse supplies"),
+                    Action("newspaper", "News agency"),
+                    Action("veterinarian", "Veterinarian"),
+                    Action("farrier", "Farrier"),
+                    Action("competitions",
+                           "National equine sports association"),
+                    Action("employment", "Employment agency"),
+                    Action("education", "College")]
                 menu = [Back(), Quit()]
 
                 self._display.init(actions, menu, info)
@@ -52,4 +61,5 @@ class TownCore(Core):
                 session.commit()
 
     def __str__(self):
+        """Return string representation of object."""
         return "Town"

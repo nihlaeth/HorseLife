@@ -9,7 +9,7 @@ class TestPersonBackend():
     def test_init(self):
         """ Test PersonBackend.__init__(id)"""
         backend = PersonBackend(1)
-        assert_equals(backend._id, 1)
+        assert_equals(backend.id_, 1)
 
     def test_one_id(self):
         """ Test PersonBackend._one_id(session, id)"""
@@ -24,7 +24,7 @@ class TestPersonBackend():
             PersonFactory.reset_sequence()
             session.add(PersonFactory())
             backend = PersonBackend.one(session, "Test0")
-            assert_equals(backend._id, 1)
+            assert_equals(backend.id_, 1)
 
     def test_all(self):
         """ Test PersonBackend.all(session)"""

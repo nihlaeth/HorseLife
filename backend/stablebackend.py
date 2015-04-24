@@ -42,7 +42,7 @@ class StableBackend(Backend):
         now -- TimeStamp object indicating time at the start of this action
         return: TimeStamp object indicating the time at the end of action
         """
-        stable = self._one_id(session, self._id)
+        stable = self._one_id(session, self.id_)
         result = stable.clean(now)
         self._update_event(session, result["e_info"])
         return result["clock"]
@@ -56,7 +56,7 @@ class StableBackend(Backend):
         all it does is fill the feeding tray in this particular stable.
         In the future, we'll want to do something with types of food.
         """
-        stable = self._one_id(session, self._id)
+        stable = self._one_id(session, self.id_)
         return stable.food()
 
     def water(self, session):
@@ -64,7 +64,7 @@ class StableBackend(Backend):
 
         session -- sqlalchemy
         """
-        stable = self._one_id(session, self._id)
+        stable = self._one_id(session, self.id_)
         return stable.water()
 
     def __repr__(self):

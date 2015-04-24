@@ -31,7 +31,7 @@ class HorseBackend(Backend):
         return session.query(Horse).filter_by(id=id_)[0]
 
     def __init__(self, id_):
-        """Backend sets self._id, self._str is for inherited methods."""
+        """Backend sets self.id_, self._str is for inherited methods."""
         Backend.__init__(self, id_)
         self._str = "HorseBackend"
 
@@ -42,7 +42,7 @@ class HorseBackend(Backend):
         now -- TimeStamp object indicating time at the start of this action
         return: TimeStamp object indicating time at the end of this action
         """
-        horse = self._one_id(session, self._id)
+        horse = self._one_id(session, self.id_)
         result = horse.groom(now)
         self._update_event(session, result["e_stimulation"])
         self._update_event(session, result["e_hygiene"])
@@ -55,7 +55,7 @@ class HorseBackend(Backend):
         now -- TimeStamp object indicating time at the start of this action
         return: TimeStamp object indicating time at the end of this action
         """
-        horse = self._one_id(session, self._id)
+        horse = self._one_id(session, self.id_)
         result = horse.pet(now)
         self._update_event(session, result["e_info"])
         return result["clock"]

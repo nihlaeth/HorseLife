@@ -10,7 +10,7 @@ from support.messages.timestamp import TimeStamp
 class TestEventBackend():
     def test_init(self):
         """ Test EventBackend.__init__(id)"""
-        assert_equals(EventBackend(1)._id, 1)
+        assert_equals(EventBackend(1).id_, 1)
 
     def test_all(self):
         """ Test EventBackend.all(session)"""

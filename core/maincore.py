@@ -1,3 +1,4 @@
+"""Game logic for Main screen."""
 from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
@@ -10,11 +11,16 @@ from backend.time import Time
 
 
 class MainCore(Core):
-    """ Main game screen. Here you can pick a building to go to."""
+
+    """Logic for Main game screen. Here you can pick a building to go to."""
+
     def __init__(self):
+        """Set display."""
+        Core.__init__(self)
         self._display = MainDisplay()
 
     def run(self):
+        """Run with it."""
         while True:
             with SessionScope() as session:
                 stables = StableBackend.all(session)
@@ -22,8 +28,8 @@ class MainCore(Core):
                 info = [" ".join(["Time", Time(session).get_time(session)])]
 
                 actions = [TownCore()]
-                for s in stables:
-                    actions.append(BuildingCore(s))
+                for stable in stables:
+                    actions.append(BuildingCore(stable))
 
                 menu = []
                 menu.append(Quit())
@@ -48,4 +54,5 @@ class MainCore(Core):
                 session.commit()
 
     def __str__(self):
+        """Return string representation of object."""
         return "Main"

@@ -1,3 +1,4 @@
+"""Game logic for contracter store."""
 import ConfigParser
 
 from interface.cli.contracterdisplay import ContracterDisplay
@@ -13,14 +14,21 @@ from generators.stablegenerator import StableGenerator
 
 
 class ContracterCore(Core):
-    """ The place to go to create buildings. This handles ALL building (and
-    destruction) in the game, except for initial construction when starting
-    a new game."""
+
+    """Game logic for contracter store.
+
+    This handles ALL building (and destruction) in the game,
+    except for initial construction when starting a new game.
+    """
+
     def __init__(self):
+        """Set display and screen."""
+        Core.__init__(self)
         self._display = ContracterDisplay()
         self._screen = "home"
 
     def run(self):
+        """Run with it."""
         while True:
             with SessionScope() as session:
                 time = Time(session)
@@ -81,25 +89,26 @@ class ContracterCore(Core):
                     exec(choice.command)
                 elif isinstance(choice, Action):
                     if choice.action in [
-                                    "home",
-                                    "stables",
-                                    "pastures",
-                                    "arenas",
-                                    "tack-feed"]:
+                            "home",
+                            "stables",
+                            "pastures",
+                            "arenas",
+                            "tack-feed"]:
                         self._screen = choice.action
                     if choice.action == "buy-stable":
                         # TODO once you have money implemented, check if
                         # you have enough cash and decrease it with the
                         # price.
                         stable_id = StableGenerator().gen_many(
-                                session,
-                                1,
-                                choice.arguments[0],
-                                now)[0].id
+                            session,
+                            1,
+                            choice.arguments[0],
+                            now)[0].id
                         stable = StableBackend(stable_id)
                         stable.get_events(session, now)
 
                 session.commit()
 
     def __str__(self):
-        return "Town"
+        """Return string representation of object."""
+        return "Contracter"
