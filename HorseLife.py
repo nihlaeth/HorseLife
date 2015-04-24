@@ -1,3 +1,4 @@
+"""Provides a loading mechanism for the game and creates an instance."""
 from sqlalchemy import create_engine
 
 import backend.session as s
@@ -8,10 +9,14 @@ from support.messages.savedgame import SavedGame
 from support.messages.quit import Quit
 from support.messages.timestamp import TimeStamp
 from models.base import Base
+# The imports below appear unused, but are necessary to create the
+# models in the database, so we have pylint ignore them.
+# pylint: disable-msg=unused-import
 from models.stable import Stable
 from models.stableitem import StableItem
 from models.horse import Horse
 from models.setting import Setting
+from models.person import Person
 from generators.stablegenerator import StableGenerator
 from generators.horsegenerator import HorseGenerator
 from generators.settinggenerator import SettingGenerator
@@ -20,8 +25,15 @@ from backend.horsebackend import HorseBackend
 from backend.time import time
 
 
-class HorseLife():
+class HorseLife(object):
+
+    """Loading mechanism for the game."""
+
     def __init__(self):
+        """Start the load screen to determine which database to use.
+
+        Also load an interface (unimplemented to date).
+        """
         # figure out which interface to use - for now there's only cli
         # later on, the default will be ncurses or opengl. This can
         # be overwritten with a command-line argument
@@ -38,22 +50,22 @@ class HorseLife():
         #    self.quit()
 
         # now get some user input about which db to load
-        l = LoadCore()
-        choice = l.run()
+        choice = LoadCore().run()
 
         if isinstance(choice, NewGame):
-            self.loadGame(choice.file_name, True)
+            self.load_game(choice.file_name, True)
         elif isinstance(choice, SavedGame):
-            self.loadGame(choice.file_name)
+            self.load_game(choice.file_name)
         elif isinstance(choice, Quit):
             self.quit()
 
-    def loadGame(self, database, new=False):
+    def load_game(self, database, new=False):
+        """Load and populate database, then load Main screen."""
         # load database
         # when we're done testing, put in a permanent database,
         # and allow the user to pick
         # a db (savegame)
-        self.engine = create_engine('sqlite:///:memory:', echo=False)
+        self.engine = create_engine('sqlite:///%s' % database, echo=False)
         s.Session.configure(bind=self.engine)
 
         Base.metadata.create_all(self.engine)
@@ -67,25 +79,25 @@ class HorseLife():
                 StableBackend(1).get_events(session, TimeStamp(0, 0))
                 HorseBackend(1).get_events(session, TimeStamp(0, 0))
                 SettingGenerator.gen_many(
-                        session,
-                        {
-                            "Date": [0, ""],
-                            "Time": [0, ""]})
+                    session,
+                    {
+                        "Date": [0, ""],
+                        "Time": [0, ""]})
                 time.pass_time(session, TimeStamp(0, 420))
 
-        m = MainCore()
-        choice = m.run()
+        choice = MainCore().run()
 
         if isinstance(choice, Quit):
             self.quit()
 
     def error(self, text):
-        """Error handling - print them, write them to a log, whatever!"""
+        """Error handling - print them, write them to a log, whatever."""
         print "Error: " + text
         self.quit()
 
     def quit(self):
+        """Do some cleanup before exiting."""
         pass
 
-
-game = HorseLife()
+if __name__ == "__main__":
+    HorseLife()
