@@ -1,3 +1,4 @@
+"""Generator for Person models."""
 import random
 import names
 
@@ -6,9 +7,14 @@ from models.person import Person
 
 
 class PersonGenerator(Generator):
+
+    """Generator for Person models."""
+
+    # Arguments are supposed to be different from parent class method.
+    # pylint: disable=arguments-differ
     @classmethod
     def _gen_one(cls, agerange, money, name=None):
-        """ Generate a person.
+        """Generate a person.
 
         agerange -- age range the person should be in. If this is an
         inteter, the person will be this exact age. If it's a string
@@ -18,7 +24,8 @@ class PersonGenerator(Generator):
         Eiter a string in [low, mid, high] or an integer.
         name -- Set to None to activate the name generator. Names should
         be uninque if there's any reasonable way to do that, so don't
-        specify a name when creating multiple people at once!"""
+        specify a name when creating multiple people at once!
+        """
         if agerange == "child":
             age = random.randint(12, 18)
         elif agerange == "adult":
@@ -31,7 +38,6 @@ class PersonGenerator(Generator):
             age = agerange
         else:
             # unknown agerange
-            # TODO create exception for this (do we really need that?)
             raise
 
         if name is None:
@@ -50,12 +56,14 @@ class PersonGenerator(Generator):
 
         return Person(name=name, age=age, money=money)
 
+    # I respectfully disagree. 6 arguments is just fine.
+    # pylint: disable=too-many-arguments
     @classmethod
-    def gen_many(cls, session, n, agerange, money, name=None):
-        """ Generate people.
+    def gen_many(cls, session, num, agerange, money, name=None):
+        """Generate people.
 
         session -- sqlalchemy session
-        n -- number of people to create (int)
+        num -- number of people to create (int)
         agerange -- age range the person should be in. If this is an
         inteter, the person will be this exact age. If it's a string
         in [child, adult, twenties, older], it will be a random number
@@ -64,10 +72,10 @@ class PersonGenerator(Generator):
         Eiter a string in [low, mid, high] or an integer.
         name -- Set to None to activate the name generator. Names should
         be uninque if there's any reasonable way to do that, so don't
-        specify a name when creating multiple people at once!"""
-
+        specify a name when creating multiple people at once!
+        """
         result = []
-        for i in range(n):
+        for _ in range(num):
             result.append(cls._gen_one(agerange, money, name))
         session.add_all(result)
         session.flush()

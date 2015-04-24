@@ -1,5 +1,5 @@
+"""Generator for Horse models."""
 import random
-from sqlalchemy import func
 import ConfigParser
 
 from generator import Generator
@@ -8,11 +8,24 @@ from models.horse import Horse
 
 
 class HorseGenerator(Generator):
+
+    """Generator for Horse models."""
+
     def __init__(self):
+        """Set up config parser."""
         self._config = ConfigParser.SafeConfigParser()
         self._config.read("config/horses.cfg")
 
+    # Arguments are supposed to be different from parent method.
+    # pylint: disable=arguments-differ
     def _gen_one(self, breed, t_stamp, training="none"):
+        """Generate single Horse model.
+
+        breed - horse breed (also section in config)
+        t_stamp - TimeStamp at which the horse is called into creation
+         -> this is important for event generation
+        training - Unimplemented to date
+        """
         if breed == "random":
             breed = random.choice(self._config.sections())
         return Horse(
@@ -87,9 +100,17 @@ class HorseGenerator(Generator):
                 self._config.getint(breed, "genetic_horsemanship_min"),
                 self._config.getint(breed, "genetic_horsemanship_max")))
 
-    def gen_many(self, session, n, breed="random", t_stamp=TimeStamp(0, 0)):
+    def gen_many(self, session, num, breed="random", t_stamp=TimeStamp(0, 0)):
+        """Generate one or more Horse models.
+
+        session -- sqlalchemy session
+        num -- number of Horses to create
+        breed -- horse breed / config section
+        t_stamp -- TimeStamp object at which the horses are to be created
+        --> this is important for event generation
+        """
         result = []
-        for i in range(n):
+        for _ in range(num):
             result.append(self._gen_one(breed, t_stamp=t_stamp))
         session.add_all(result)
         session.flush()
