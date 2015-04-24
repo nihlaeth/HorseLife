@@ -248,7 +248,7 @@ ignore-comments=yes
 ignore-docstrings=yes
 
 # Ignore imports when computing similarities.
-ignore-imports=no
+ignore-imports=yes
 
 
 [SPELLING]
@@ -334,7 +334,7 @@ exclude-protected=_asdict,_fields,_replace,_source,_make
 [DESIGN]
 
 # Maximum number of arguments for function / method
-max-args=5
+max-args=6
 
 # Argument names that match this expression will be ignored. Default to name
 # with leading underscore
