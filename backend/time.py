@@ -101,10 +101,6 @@ class Time(object):
             now.end_of_night()
             self.pass_time(session, now)
 
-    # We know this could be a function, but it's definitely a part
-    # of the timekeeping system, and a private one at that.
-    # For the sake of encapsulation, we're keeping it this way.
-    # pylint: disable=no-self-use
     def _process_events(self, now, events, stables, horses):
         """Do event callbacks, update timestamps, etc."""
         while events[0].t_stamp <= now:

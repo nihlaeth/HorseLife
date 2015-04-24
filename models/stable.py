@@ -91,8 +91,6 @@ class Stable(BASE):
             ": ",
             str([str(horse) for horse in self.horses])])
 
-    # This could be a function, but is better at home here.
-    # pylint: disable=no-self-use
     def _get_limit(self, num):
         """Return next event boundary.
 

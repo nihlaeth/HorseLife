@@ -5,10 +5,6 @@ from support.messages.meter import Meter
 from support.messages.command import Command
 
 
-# There are a few methods here that could just as well be functions.
-# However, there is something to say for having everything neatly tucked
-# away and encapsulated, so we're keeping it this way.
-# pylint: disable=no-self-use
 class Display(object):
 
     """Common methods to inherit from by *Display classes."""

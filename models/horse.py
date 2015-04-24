@@ -139,10 +139,7 @@ class Horse(BASE):
         e_info = self._ch_stimulation(now)
         return {"clock": now, "e_info": e_info}
 
-    # Could be a function, but is better at home in here. It is duplicate
-    # code though.
     # TODO fix duplication - move to common parent
-    # pylint: disable=no-self-use
     def _get_limit(self, num):
         """Determine where the next event border is.
 
