@@ -1,13 +1,18 @@
+"""Test PersonGenerator."""
 from nose.tools import assert_equals, assert_less, assert_is_not
 
 from tests.tools.dummydb import DummyDB
 from generators.persongenerator import PersonGenerator
-from models.person import Person
 
 
-class TestPersonGenerator():
+class TestPersonGenerator(object):
+
+    """Test PersonGenerator."""
+
     def test_gen_one(self):
-        """ Test PersonGenerator._gen_one(agerange, money, name)"""
+        """Test PersonGenerator._gen_one(agerange, money, name)."""
+        # We're testing a protected member.
+        # pylint: disable=protected-access
         person = PersonGenerator._gen_one("child", "low", "Mary Sue")
         assert_less(person.age, 19)
         assert_equals(person.name, "Mary Sue")
@@ -20,7 +25,7 @@ class TestPersonGenerator():
         assert_is_not(person.name, None)
 
     def test_gen_many(self):
-        """ Test PersonGenerator.gen_many(session, n, agerange, money, name)"""
+        """Test PersonGenerator.gen_many(session, n, agerange, money, name)."""
         with DummyDB() as session:
             people = PersonGenerator.gen_many(session, 20, "adult", "mid")
             assert_equals(len(people), 20)
