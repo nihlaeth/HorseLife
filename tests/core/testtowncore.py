@@ -1,7 +1,7 @@
+"""Test TownCore."""
 from nose.tools import assert_equals
 import mock
 
-from support.messages.back import Back
 from support.messages.quit import Quit
 from support.messages.action import Action
 from support.messages.command import Command
@@ -13,24 +13,27 @@ from tests.tools.dummydb import DummyDB
 from tests.tools.settingfactory import SettingFactory
 
 
-class TestTownCore():
+class TestTownCore(object):
+
+    """Test TownCore."""
+
     @mock.patch.object(ContracterCore, "run")
     @mock.patch.object(TownDisplay, "display")
     @mock.patch.object(SessionScope, "__enter__")
     def test_run(self, m_db, m_display, m_contracter):
-        """ Test TownCore.run()"""
+        """Test TownCore.run()."""
         with DummyDB() as session:
             m_db.return_value = session
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time")])
 
-            # Test quit
-            quit = Quit()
-            m_display.return_value = quit
+            # Test quit_
+            quit_ = Quit()
+            m_display.return_value = quit_
             core = TownCore()
             result = core.run()
-            assert_equals(result, quit)
+            assert_equals(result, quit_)
 
             # Test command
             m_display.return_value = Command("assert False")
@@ -44,20 +47,20 @@ class TestTownCore():
             # Test actions
             # For now, just test that nothing dies when picking these
             # actions.
-            m_contracter.return_value = quit
+            m_contracter.return_value = quit_
             m_display.side_effect = [
-                    Action("bank", ""),
-                    Action("horses", ""),
-                    Action("contracter", ""),
-                    Action("tack", ""),
-                    Action("food", ""),
-                    Action("newspaper", ""),
-                    Action("veterinarian", ""),
-                    Action("farrier", ""),
-                    Action("competitions", ""),
-                    Action("employment", ""),
-                    Action("education", ""),
-                    quit]
+                Action("bank", ""),
+                Action("horses", ""),
+                Action("contracter", ""),
+                Action("tack", ""),
+                Action("food", ""),
+                Action("newspaper", ""),
+                Action("veterinarian", ""),
+                Action("farrier", ""),
+                Action("competitions", ""),
+                Action("employment", ""),
+                Action("education", ""),
+                quit_]
             result = core.run()
             m_contracter.assert_called_once_with()
-            assert_equals(result, quit)
+            assert_equals(result, quit_)
