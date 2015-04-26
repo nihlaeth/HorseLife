@@ -1,3 +1,4 @@
+"""Horse factory to simplify testing."""
 import factory
 
 from models.horse import Horse
@@ -5,7 +6,13 @@ from stablefactory import StableFactory
 
 
 class HorseFactory(factory.Factory):
-    class Meta:
+
+    """Horse factory to simplify testing."""
+
+    class Meta(object):
+
+        """Meta class."""
+
         model = Horse
 
     name = "Bless"
