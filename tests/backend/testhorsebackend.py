@@ -1,3 +1,4 @@
+"""Test HorseBackend."""
 from nose.tools import assert_equals, assert_less, assert_greater
 import mock
 import datetime
@@ -15,25 +16,30 @@ from tests.tools.eventfactory import EventFactory
 from tests.tools.callbackfactory import CallbackFactory
 
 
-class TestHorseBackend():
+class TestHorseBackend(object):
+
+    """Test HorseBackend."""
+
     def test_init(self):
-        """ Test HorseBackend.__init__(id)"""
+        """Test HorseBackend.__init__(id)."""
         assert_equals(HorseBackend(1).id_, 1)
 
     def test_one_id(self):
-        """ Test HorseBackend._one_id(session, id)"""
+        """Test HorseBackend._one_id(session, id)."""
         with DummyDB() as session:
             session.add(HorseFactory.build())
+            # The whole point it to test a protected method here...
+            # pylint: disable=protected-access
             assert_equals(HorseBackend._one_id(session, 1).mid, 1)
 
     def test_all_raw(self):
-        """ Test HorseBackend.all_raw(session)"""
+        """Test HorseBackend.all_raw(session)."""
         with DummyDB() as session:
             session.add_all(HorseFactory.build_batch(20))
             assert_equals(HorseBackend.all_raw(session).count(), 20)
 
     def test_all(self):
-        """ Test HorseBackend.all(session)"""
+        """Test HorseBackend.all(session)."""
         with DummyDB() as session:
             horses = HorseFactory.build_batch(10)
             session.add_all(horses)
@@ -41,7 +47,7 @@ class TestHorseBackend():
             assert_equals(len(backends), 10)
 
     def test_get(self):
-        """ Test HorseBackend.get(session, timestamp, key)"""
+        """Test HorseBackend.get(session, timestamp, key)."""
         with DummyDB() as session:
             session.add(HorseFactory.build(name="Spirit"))
             session.add(HorseFactory.build())
@@ -54,6 +60,9 @@ class TestHorseBackend():
             assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
                           "Spirit")
             # Now test the changing attributes (needs)
+            # t isn't exactly a great name, but it makes the code a lot
+            # more readable in this case.
+            # pylint: disable=invalid-name
             t = TimeStamp
             assert_equals(backend.get(session, t(0, 0), "food"), 100)
             assert_less(backend.get(session, t(0, 120), "food"), 100)
@@ -68,11 +77,11 @@ class TestHorseBackend():
             assert_greater(backend.get(session, t(1, 419), "energy"), 95)
             assert_equals(backend.get(session, t(0, 0), "stimulation"), 100)
             assert_greater(
-                    EventBackend.one(
-                        session,
-                        "stimulation",
-                        1).get(session, "time"),
-                    0)
+                EventBackend.one(
+                    session,
+                    "stimulation",
+                    1).get(session, "time"),
+                0)
             # Stimulation does not decay during the night!
             assert_equals(backend.get(
                 session,
@@ -88,7 +97,7 @@ class TestHorseBackend():
             assert_less(backend.get(session, t(0, 120), "hygiene"), 100)
 
     def test_set(self):
-        """ Test HorseBackend.set(session, key, value)"""
+        """Test HorseBackend.set(session, key, value)."""
         with DummyDB() as session:
             session.add(HorseFactory.build(name="Storm"))
             session.add_all([SettingFactory(name="Date"),
@@ -99,7 +108,7 @@ class TestHorseBackend():
                           "Mary")
 
     def test_groom(self):
-        """ Test HorseBackend.groom(session, timestamp)"""
+        """Test HorseBackend.groom(session, timestamp)."""
         with DummyDB() as session:
             session.add(HorseFactory.build(hygiene=0, stimulation=0))
             session.add_all([SettingFactory(name="Date"),
@@ -113,7 +122,7 @@ class TestHorseBackend():
             assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
 
     def test_pet(self):
-        """ Test HorseBackend.pet(session, timestamp)"""
+        """Test HorseBackend.pet(session, timestamp)."""
         with DummyDB() as session:
             session.add(HorseFactory.build(stimulation=0))
             session.add_all([SettingFactory(name="Date"),
@@ -125,16 +134,16 @@ class TestHorseBackend():
             assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
 
     def test_get_events(self):
-        """ Test HorseBackend.get_events(session, timestamp)"""
+        """Test HorseBackend.get_events(session, timestamp)."""
         with DummyDB() as session:
             session.add(
-                    HorseFactory.build(
-                        food=100,
-                        food_date=0,
-                        food_time=0,
-                        water=100,
-                        water_date=0,
-                        water_time=0))
+                HorseFactory.build(
+                    food=100,
+                    food_date=0,
+                    food_time=0,
+                    water=100,
+                    water_date=0,
+                    water_time=0))
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time", numeric=60)])
@@ -145,9 +154,8 @@ class TestHorseBackend():
             assert_greater(len(EventBackend.all(session)), 0)
 
     def test_callback(self):
-        """ Test HorseBackend.event_callback(session, subject, timestamp)"""
+        """Test HorseBackend.event_callback(session, subject, timestamp)."""
         with DummyDB() as session:
-            t1 = datetime.datetime.now()
             session.add(HorseFactory.build())
             session.add_all([
                 SettingFactory(name="Date"),
@@ -157,14 +165,13 @@ class TestHorseBackend():
                     callbacks=[CallbackFactory(
                         obj="HorseBackend",
                         obj_id=1)])])
-            t2 = datetime.datetime.now()
-            with mock.patch.object(Horse, "event") as m:
-                m.return_value = {
-                        "subject": "food-test",
-                        "t_stamp": TimeStamp(1000, 0)}
+            with mock.patch.object(Horse, "event") as m_event:
+                m_event.return_value = {
+                    "subject": "food-test",
+                    "t_stamp": TimeStamp(1000, 0)}
                 backend = HorseBackend(1)
                 backend.event_callback(session, "food-test", TimeStamp(0, 0))
-                m.assert_called_once_with("food-test", TimeStamp(0, 0))
+                m_event.assert_called_once_with("food-test", TimeStamp(0, 0))
         with DummyDB() as session:
             session.add_all([
                 HorseFactory(),
@@ -172,14 +179,18 @@ class TestHorseBackend():
             backend = HorseBackend(1)
             with profiled():
                 e_info = backend.event_callback(
-                        session,
-                        "food",
-                        TimeStamp(0, 0))
+                    session,
+                    "food",
+                    TimeStamp(0, 0))
             assert_equals(e_info["subject"], "food")
             assert_equals(e_info["t_stamp"].date, 0)
             assert_greater(e_info["t_stamp"].time, 0)
             # assert False
 
+    def test_integration(self):
+        """Test HorseBackend in it's natural environment."""
+        # t# is fine for timing!
+        # pylint: disable=invalid-name
         with DummyDB() as session:
             # Now for real!
             session.add_all([
@@ -202,12 +213,6 @@ class TestHorseBackend():
             assert_less(backend.get(session, t_stamp, "energy"), 100)
             t5 = datetime.datetime.now()
 
-            print "Adding objects to session took:"
-            print (t2 - t1).total_seconds()
-            print "\n\n"
-            print "Event injection test took:"
-            print (t3 - t2).total_seconds()
-            print "\n\n"
             print "Realistic event test took:"
             print (t4 - t3).total_seconds()
             print "-- setup took:"
@@ -221,4 +226,4 @@ class TestHorseBackend():
             print (t5 - t4).total_seconds()
             print "\n\n"
             print "Total test execution took:"
-            print (t5 - t1).total_seconds()
+            print (t5 - t3).total_seconds()

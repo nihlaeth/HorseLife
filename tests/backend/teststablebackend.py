@@ -1,3 +1,4 @@
+"""Test StableBackend."""
 import mock
 from nose.tools import assert_equals, assert_less, assert_greater
 
@@ -13,15 +14,18 @@ from tests.tools.eventfactory import EventFactory
 from tests.tools.callbackfactory import CallbackFactory
 
 
-class TestStableBackend():
+class TestStableBackend(object):
+
+    """Test StableBackend."""
+
     def test_all_raw(self):
-        """ Test StableBackend.all_raw(session)"""
+        """Test StableBackend.all_raw(session)."""
         with DummyDB() as session:
             session.add_all(StableFactory.build_batch(20))
             assert_equals(StableBackend.all_raw(session).count(), 20)
 
     def test_all(self):
-        """ Test StableBackend.all(session)"""
+        """Test StableBackend.all(session)."""
         with DummyDB() as session:
             stables = StableFactory.build_batch(3)
             session.add_all(stables)
@@ -30,31 +34,34 @@ class TestStableBackend():
             assert_equals(backends[2].id_, 3)
 
     def test_one_id(self):
-        """ Test StableBackend._one_id(session, id)"""
+        """Test StableBackend._one_id(session, id)."""
         with DummyDB() as session:
             stables = StableFactory.build_batch(2)
             session.add_all(stables)
+            # The whole point here is to test a protected method.
+            # pylint: disable=protected-access
             stable = StableBackend._one_id(session, 1)
             assert_equals(stable.mid, 1)
             stable = StableBackend._one_id(session, 2)
             assert_equals(stable.mid, 2)
 
     def test_get(self):
-        """ Test StableBackend.get(session, timestamp, key)"""
+        """Test StableBackend.get(session, timestamp, key)."""
         with DummyDB() as session:
-            session.add(StableFactory.build(name="Test1",
-                        horses=[HorseFactory()]))
+            session.add(StableFactory.build(
+                name="Test1",
+                horses=[HorseFactory()]))
             backend = StableBackend(1)
             backend.get_events(session, TimeStamp(0, 0))
             assert_equals(backend.get(session, None, "name"), "Test1")
             # Now see if cleanliness behaves as it should.
-            t1 = TimeStamp(0, 0)
-            t2 = TimeStamp(0, 120)
-            assert_equals(backend.get(session, t1, "cleanliness"), 100)
-            assert_less(backend.get(session, t2, "cleanliness"), 100)
+            time1 = TimeStamp(0, 0)
+            time2 = TimeStamp(0, 120)
+            assert_equals(backend.get(session, time1, "cleanliness"), 100)
+            assert_less(backend.get(session, time2, "cleanliness"), 100)
 
     def test_set(self):
-        """ Test StableBackend.set(session, key, value)"""
+        """Test StableBackend.set(session, key, value)."""
         with DummyDB() as session:
             session.add(StableFactory.build(name="Test1"))
             backend = StableBackend(1)
@@ -63,7 +70,7 @@ class TestStableBackend():
             assert_equals(backend.get(session, None, "name"), "Test2")
 
     def test_clean(self):
-        """ Test StableBackend.clean(session, timestamp)"""
+        """Test StableBackend.clean(session, timestamp)."""
         with DummyDB() as session:
             session.add_all([
                 StableFactory(cleanliness=0)])
@@ -77,7 +84,7 @@ class TestStableBackend():
                 "cleanliness"), 100)
 
     def test_food(self):
-        """ Test StableBackend.food(session)"""
+        """Test StableBackend.food(session)."""
         with DummyDB() as session:
             stable = StableFactory(items=[
                 StableItemFactory(name="food", value=0)])
@@ -88,7 +95,7 @@ class TestStableBackend():
             assert_equals(items[0].value, 100)
 
     def test_water(self):
-        """ Test StableBackend.water(session)"""
+        """Test StableBackend.water(session)."""
         with DummyDB() as session:
             stable = StableFactory(items=[
                 StableItemFactory(name="water", value=0)])
@@ -99,7 +106,7 @@ class TestStableBackend():
             assert_equals(items[0].value, 100)
 
     def test_get_events(self):
-        """ Test StableBackend.get_events(session, timestamp)"""
+        """Test StableBackend.get_events(session, timestamp)."""
         with DummyDB() as session:
             session.add(StableFactory())
             backend = StableBackend(1)
@@ -107,13 +114,15 @@ class TestStableBackend():
             assert_greater(len(EventBackend.all(session)), 0)
 
     def test_update_event(self):
-        """ Test StableBackend._update_event(session, e_info)"""
+        """Test StableBackend._update_event(session, e_info)."""
         with DummyDB() as session:
             session.add_all([
                 StableFactory(),
                 EventFactory(subject="flub")])
             backend = StableBackend(1)
 
+            # The whole point here is to test a protected method.
+            # pylint: disable=protected-access
             backend._update_event(session, {
                 "subject": "flub",
                 "t_stamp": TimeStamp(5, 20)})
@@ -123,7 +132,7 @@ class TestStableBackend():
             assert_equals(event.get(session, "time"), 20)
 
     def test_event_callback(self):
-        """ Test StableBackend.event_callback(session, subject, timestamp)"""
+        """Test StableBackend.event_callback(session, subject, timestamp)."""
         with DummyDB() as session:
             session.add_all([
                 StableFactory(),
@@ -131,15 +140,15 @@ class TestStableBackend():
                              callbacks=[CallbackFactory(
                                  obj="StableBackend",
                                  obj_id=1)])])
-            with mock.patch.object(Stable, "event") as m:
-                m.return_value = {
-                        "subject": "stablestest",
-                        "t_stamp": TimeStamp(1000, 0)}
+            with mock.patch.object(Stable, "event") as m_event:
+                m_event.return_value = {
+                    "subject": "stablestest",
+                    "t_stamp": TimeStamp(1000, 0)}
                 backend = StableBackend(1)
                 t_stamp = TimeStamp(0, 0)
                 backend.event_callback(session, "stablestest", t_stamp)
 
-                m.assert_called_once_with("stablestest", t_stamp)
+                m_event.assert_called_once_with("stablestest", t_stamp)
         # Now test it without the mock!
         with DummyDB() as session:
             session.add_all([

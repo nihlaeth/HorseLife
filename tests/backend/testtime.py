@@ -1,3 +1,4 @@
+"""Test Time."""
 from nose.tools import assert_equals
 import mock
 import datetime
@@ -8,8 +9,6 @@ from tests.tools.eventfactory import EventFactory
 from tests.tools.callbackfactory import CallbackFactory
 from tests.tools.dummydb import DummyDB
 from tests.tools.profiled import profiled
-from backend.settingbackend import SettingBackend
-from backend.eventbackend import EventBackend
 from backend.horsebackend import HorseBackend
 from backend.stablebackend import StableBackend
 from backend.time import Time, DAY
@@ -17,28 +16,33 @@ from models.horse import Horse
 from support.messages.timestamp import TimeStamp
 
 
-class TestTime():
+class TestTime(object):
+
+    """Test Time."""
+
     def test_get_day(self):
-        """ Test Time.get_day(session)"""
+        """Test Time.get_day(session)."""
         with DummyDB() as session:
             session.add_all([
                 SettingFactory(name="Date", numeric=0, text=""),
                 SettingFactory(name="Time")])
-            t = Time(session)
-            assert_equals(t.get_day(session), DAY.Monday)
+            time = Time(session)
+            # DAY members are dynamically generated.
+            # pylint: disable=no-member
+            assert_equals(time.get_day(session), DAY.Monday)
             # t._date.set(session, "numeric", 2)
             # assert_equals(t.get_day(session), DAY.Wednesday)
             # t._date.set(session, "numeric", 7)
             # assert_equals(t.get_day(session), DAY.Monday)
 
     def test_get_time(self):
-        """ Test Time.get_time(session)"""
+        """Test Time.get_time(session)."""
         with DummyDB() as session:
             session.add_all([
                 SettingFactory(name="Time", numeric=0, text=""),
                 SettingFactory(name="Date")])
-            t = Time(session)
-            assert_equals(t.get_time(session), "00:00")
+            time = Time(session)
+            assert_equals(time.get_time(session), "00:00")
             # t._time.set(session, "numeric", 60)
             # assert_equals(t.get_time(session), "01:00")
             # t._time.set(session, "numeric", 90)
@@ -47,47 +51,41 @@ class TestTime():
             # assert_equals(t.get_time(session), "14:59")
 
     def test_pass_time(self):
-        """ Test Time.pass_time(session)"""
+        """Test Time.pass_time(session)."""
         with DummyDB() as session:
-            t1 = datetime.datetime.now()
             session.add(SettingFactory(name="Time"))
             session.add(SettingFactory(name="Date"))
             session.add(EventFactory(date=5000))
-            t2 = datetime.datetime.now()
 
-            t = Time(session)
+            # Members of DAY are generated dynamically.
+            # pylint: disable=no-member
+            time = Time(session)
             now = TimeStamp(0, 480)
-            t.pass_time(session, now)
-            t3 = datetime.datetime.now()
-            assert_equals(t.get_day(session), DAY.Monday)
-            assert_equals(t.get_time(session), "08:00")
-            t4 = datetime.datetime.now()
+            time.pass_time(session, now)
+            assert_equals(time.get_day(session), DAY.Monday)
+            assert_equals(time.get_time(session), "08:00")
 
             now.add_min(1440)
-            t.pass_time(session, now)
-            t5 = datetime.datetime.now()
+            time.pass_time(session, now)
 
-            assert_equals(t.get_day(session), DAY.Tuesday)
-            assert_equals(t.get_time(session), "08:00")
-            t6 = datetime.datetime.now()
+            assert_equals(time.get_day(session), DAY.Tuesday)
+            assert_equals(time.get_time(session), "08:00")
 
             # Now test night functionality:
             # 900 minutes puts us at 23:00, which is past
             # bedtime. We should end up at 07:00 the next day.
 
             now.add_min(900)
-            t.pass_time(session, now)
-            t7 = datetime.datetime.now()
-            assert_equals(t.get_day(session), DAY.Wednesday)
-            assert_equals(t.get_time(session), "07:00")
+            time.pass_time(session, now)
+            assert_equals(time.get_day(session), DAY.Wednesday)
+            assert_equals(time.get_time(session), "07:00")
 
-            t8 = datetime.datetime.now()
             # Now test events!
-            with mock.patch.object(Horse, "event") as m:
+            with mock.patch.object(Horse, "event") as m_event:
                 t_stamp = TimeStamp(1000, 0)
-                m.return_value = {
-                        "subject": "food",
-                        "t_stamp": t_stamp}
+                m_event.return_value = {
+                    "subject": "food",
+                    "t_stamp": t_stamp}
                 session.add(EventFactory(
                     subject="food",
                     callbacks=[CallbackFactory(
@@ -96,70 +94,34 @@ class TestTime():
                 session.add(HorseFactory())
 
                 now.add_min(120)
-                t.pass_time(session, now)
-                m.assert_called_once_with("food", TimeStamp(0, 0))
-            t9 = datetime.datetime.now()
-
-            print "Setup"
-            print (t2 - t1).total_seconds()
-            print "\n\n"
-            print "Pass 480 minutes, 1 fake event"
-            print (t3 - t2).total_seconds()
-            print "\n\n"
-            print "Pass 1440 minutes, 1 fake future event"
-            print (t5 - t4).total_seconds()
-            print "\n\n"
-            print "Pass 900 minutes, 1 fake future event"
-            print (t7 - t6).total_seconds()
-            print "\n\n"
-            print "Patch test"
-            print (t9 - t8).total_seconds()
-            print "\n\n"
-            print "Total test time"
-            print (t9 - t1).total_seconds()
-
-            # assert False
+                time.pass_time(session, now)
+                m_event.assert_called_once_with("food", TimeStamp(0, 0))
 
     def test_integration(self):
-        """ Test Time.pass_time integration with running system."""
+        """Test Time.pass_time integration with running system."""
         with DummyDB() as session:
-            t1 = datetime.datetime.now()
             horse = HorseFactory()
             setting1 = SettingFactory(name="Date")
             setting2 = SettingFactory(name="Time")
             session.add_all([horse, setting1, setting2])
 
-            t = Time(session)
-            now = t.get_time_stamp(session)
+            time = Time(session)
+            now = time.get_time_stamp(session)
             HorseBackend(1).get_events(session, now)
             StableBackend(1).get_events(session, now)
 
-            t2 = datetime.datetime.now()
             now.add_min(480)
-            t.pass_time(session, now)
-            t3 = datetime.datetime.now()
+            time.pass_time(session, now)
 
             now.add_min(1440)
-            t.pass_time(session, now)
-            t4 = datetime.datetime.now()
+            time.pass_time(session, now)
 
-            print "Testing with a single instance"
-            print "Setup"
-            print (t2 - t1).total_seconds()
-            print "\n\n"
-            print "Pass time until 08:00"
-            print (t3 - t2).total_seconds()
-            print "\n\n"
-            print "Pass entire day"
-            print (t4 - t3).total_seconds()
-            print "\n\n"
-            print "Total"
-            print (t4 - t1).total_seconds()
-            print "\n\n"
-
-            # assert False
+    def test_performance(self):
+        """Test Time.pass_time under load."""
         # Now test with multiple instances!
         with DummyDB() as session:
+            # n and t# are fine names in this case!
+            # pylint: disable=invalid-name
             n = 2  # Keep this low to reduce total testing time!
             t1 = datetime.datetime.now()
             session.add_all(HorseFactory.build_batch(n))
@@ -186,7 +148,7 @@ class TestTime():
             t4 = datetime.datetime.now()
 
             now.add_min(1440)
-            with profiled():
+            with profiled(False):
                 t.pass_time(session, now)
 
             t5 = datetime.datetime.now()

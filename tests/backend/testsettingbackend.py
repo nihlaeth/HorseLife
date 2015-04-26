@@ -1,14 +1,17 @@
+"""Test SettingBackend."""
 from nose.tools import assert_equals
 
 from backend.settingbackend import SettingBackend
 from tests.tools.dummydb import DummyDB
 from tests.tools.settingfactory import SettingFactory
-from models.setting import Setting
 
 
-class TestSettingBackend():
+class TestSettingBackend(object):
+
+    """Test SettingBackend."""
+
     def test_all(self):
-        """ Test SettingBackend.all(session)"""
+        """Test SettingBackend.all(session)."""
         with DummyDB() as session:
             settings = SettingFactory.build_batch(3)
             session.add_all(settings)
@@ -17,7 +20,7 @@ class TestSettingBackend():
             assert_equals(backends[2].id_, 3)
 
     def test_one(self):
-        """ Test SettingBackend.one(session, name)"""
+        """Test SettingBackend.one(session, name)."""
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             settings = SettingFactory.build_batch(3)
@@ -28,18 +31,20 @@ class TestSettingBackend():
             assert_equals(backend.id_, 3)
 
     def test_one_id(self):
-        """ Test SettingBackend._one_id(session, id)"""
+        """Test SettingBackend._one_id(session, id)."""
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             settings = SettingFactory.build_batch(3)
             session.add_all(settings)
+            # The whole point here is to test a protected method.
+            # pylint: disable=protected-access
             setting = SettingBackend._one_id(session, 2)
             assert_equals(setting.name, "Test1")
             setting = SettingBackend._one_id(session, 3)
             assert_equals(setting.name, "Test2")
 
     def test_get(self):
-        """ Test SettingBackend.get(session, key)"""
+        """Test SettingBackend.get(session, key)."""
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             session.add(SettingFactory.build(numeric=34, text="blah"))
@@ -49,7 +54,7 @@ class TestSettingBackend():
             assert_equals(backend.get(session, None, "text"), "blah")
 
     def test_set(self):
-        """ Test SettingBackend.set(session, key, value)"""
+        """Test SettingBackend.set(session, key, value)."""
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             session.add(SettingFactory.build())
