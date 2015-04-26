@@ -33,15 +33,12 @@ For planned features, see above. This is about stuff that NEEDS to happen
 in the codebase as it is right now. More a list for myself than for anyone
 else's benefit, but I need to dump it somewhere (where I will see it).
 
-* Add some comments. I know you get what this does right now, in a few weeks, you won't. Trust me on this one. For once.
-* Check tests to see what can be isolated better
 * Add notification system
 * Add story progression
 * Have needs check if their last_checked < now - don't do any of the work if it is equal to or greater than now.
 * Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
 * Implement money
-* Look at performance of TestStableCore, also at that of pass_time (still).
-* Do a scan of the entire (reworked) code, see what needs refactoring.
+* Look at performance of TestStableCore.
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
