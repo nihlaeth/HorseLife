@@ -1,15 +1,22 @@
+"""Test interface.cli.display."""
 from nose.tools import assert_equals
 import mock
 
 from interface.cli.display import Display
 
 
-class TestDisplay():
+class TestDisplay(object):
+
+    """Test interface.cli.display."""
+
     def __init__(self):
+        """Set display."""
         self.display = Display()
 
     def test_get_int(self):
-        """ Test Display._get_int(max)"""
+        """Test Display._get_int(max)."""
+        # Testing a protected member.
+        # pylint: disable=protected-access
         with mock.patch("__builtin__.raw_input", side_effect=["1"]):
             assert_equals(self.display._get_int(2), 1)
 
@@ -22,7 +29,7 @@ class TestDisplay():
             assert_equals(self.display._get_int(10), 9)
 
     def test_get_string(self):
-        """ Test Display.get_string(min_length, prompt)"""
+        """Test Display.get_string(min_length, prompt)."""
         with mock.patch("__builtin__.raw_input",
                         side_effect=["test"]):
             assert_equals(self.display.get_string(2, "gimme a string: "),
@@ -33,7 +40,8 @@ class TestDisplay():
                           "yes")
 
     def test_format_title(self):
-        """ Test Display._format_title()"""
+        """Test Display._format_title()."""
+        # pylint: disable=protected-access
         self.display._screen_width = 20
         self.display._title = "test"
         assert_equals(
@@ -41,17 +49,19 @@ class TestDisplay():
             "====================\n===     test     ===\n====================")
 
     def test_repeat(self):
-        """ Test Display._repeat(string, n)"""
+        """Test Display._repeat(string, n)."""
+        # pylint: disable=protected-access
         assert_equals(self.display._repeat("n", 5), "nnnnn")
         assert_equals(self.display._repeat(0, 5), "00000")
         assert_equals(
-                self.display._repeat(["test", 0], 5),
-                "['test', 0]['test', 0]['test', 0]['test', 0]['test', 0]")
+            self.display._repeat(["test", 0], 5),
+            "['test', 0]['test', 0]['test', 0]['test', 0]['test', 0]")
         assert_equals(self.display._repeat("test", 0), "")
         assert_equals(self.display._repeat("a", -1), "")
 
     def test_wrap_text(self):
-        """ Test Display._wrap_text(text)"""
+        """Test Display._wrap_text(text)."""
+        # pylint: disable=protected-access
         self.display._screen_width = 10
         text1 = "wrap this text"
         assert_equals(self.display._wrap_text(text1), "wrap this\ntext")
@@ -71,7 +81,8 @@ class TestDisplay():
         assert_equals(self.display._wrap_text(text2), wrappedtext)
 
     def test_display(self):
-        """ Test Display.display()"""
+        """Test Display.display()."""
+        # pylint: disable=protected-access
         data = ["option zero", "option one"]
         menu = ["quit", "save"]
         self.display.init(data, menu)
