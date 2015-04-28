@@ -33,8 +33,8 @@ For planned features, see above. This is about stuff that NEEDS to happen
 in the codebase as it is right now. More a list for myself than for anyone
 else's benefit, but I need to dump it somewhere (where I will see it).
 
+* Get database loading to work correctly (:memory: implementation, and saving them in the correct directory).
 * Add notification system
-* Add story progression
 * Have needs check if their last_checked < now - don't do any of the work if it is equal to or greater than now.
 * Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
 * Implement money
