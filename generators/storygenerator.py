@@ -5,7 +5,7 @@ from generator import Generator
 from models.story import Story
 
 
-# pylint: disable=arguments-differ,too-many-function-args
+# pylint: disable=arguments-differ
 class StoryGenerator(Generator):
 
     """Generator for Story models."""

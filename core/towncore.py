@@ -44,8 +44,8 @@ class TownCore(Core):
                     Action("employment", "Employment agency"),
                     Action("education", "College")]
                 menu = [Back(), Quit()]
-
-                self._display.init(actions, menu, info)
+                story = self.get_story(session)
+                self._display.init(actions, menu, info, story)
                 choice = self._display.display()
                 result = None
                 if isinstance(choice, Quit) or isinstance(choice, Back):
@@ -55,6 +55,8 @@ class TownCore(Core):
                 elif isinstance(choice, Action):
                     if choice.action == "contracter":
                         result = ContracterCore().run()
+                    elif choice.action == "story":
+                        self.mark_story(session)
 
                 if isinstance(result, Quit):
                     return result

@@ -127,7 +127,8 @@ class StableCore(Core):
                                 [HorseBackend(horse.id)]))
 
                 menu = [Back(), Quit()]
-                self._display.init(actions, menu, info)
+                story = self.get_story(session)
+                self._display.init(actions, menu, info, story)
                 choice = self._display.display()
                 result = self._choice(session, choice, time, now)
                 if result is not None:
@@ -158,6 +159,8 @@ class StableCore(Core):
             elif choice.action == "pet":
                 new_time = self._horse.pet(session, now)
                 time.pass_time(session, new_time)
+            elif choice.action == "story":
+                self.mark_story(session)
 
     def __str__(self):
         """Return string representation of object."""

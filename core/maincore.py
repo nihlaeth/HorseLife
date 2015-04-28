@@ -5,6 +5,7 @@ from buildingcore import BuildingCore
 from towncore import TownCore
 from support.messages.quit import Quit
 from support.messages.command import Command
+from support.messages.action import Action
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
 from backend.time import Time
@@ -33,9 +34,10 @@ class MainCore(Core):
 
                 menu = []
                 menu.append(Quit())
-
-                self._display.init(actions, menu, info)
+                story = self.get_story(session)
+                self._display.init(actions, menu, info, story)
                 choice = self._display.display()
+                result = None
                 if isinstance(choice, Quit):
                     return choice
                 elif isinstance(choice, BuildingCore):
@@ -45,6 +47,9 @@ class MainCore(Core):
                 elif isinstance(choice, Command):
                     exec(choice.command)
                     result = None
+                elif isinstance(choice, Action):
+                    if choice.action == "story":
+                        self.mark_story(session)
 
                 if result is not None:
                     if isinstance(result, Quit):

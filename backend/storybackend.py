@@ -27,10 +27,31 @@ class StoryBackend(Backend):
         This checks to see if there are any story parts on this location,
         and if their dependencies have been met. If so, return the first.
         """
-        # TODO actually perform the correct checks
-        return StoryBackend(
-            session,
-            session.query(Story).filter_by(location=location)[0].mid)
+        valid_stories = session.query(Story).filter_by(
+            location=location,
+            read=False)
+        if valid_stories.count() < 1:
+            return None
+        # Now check dependencies
+        for story in valid_stories:
+            if story.depends_on == "None":
+                return StoryBackend(session, story.mid)
+            else:
+                deps = story.depends_on.split(",")
+                failed = False
+                for dependency in deps:
+                    read = StoryBackend._check_read(session, dependency)
+                    if not read:
+                        failed = True
+                if not failed:
+                    return StoryBackend(session, story.mid)
+        return None
+
+    @classmethod
+    def _check_read(cls, session, text_id):
+        """Test if story part has been read or not - internal use only."""
+        story = session.query(Story).filter_by(text_id=text_id)
+        return story.read
 
     @classmethod
     def _one_id(cls, session, id_):
@@ -47,6 +68,7 @@ class StoryBackend(Backend):
 
         self.text_id = model.text_id
         self.text = self._config.get(self.text_id, "text")
+        self.text = self.text.replace("\\n", "\n")
         self.action = Action("story", "Dismiss")
 
     def mark_read(self, session):

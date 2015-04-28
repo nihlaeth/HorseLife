@@ -80,7 +80,7 @@ class Display(object):
             return Command(self.get_string(0, "Command: "))
         elif self._story is not None and choice == 0:
             return self._story.action
-        elif choice < len(self._data):
+        elif choice - offset < len(self._data):
             return self._data[choice - offset]
         else:
             return self._menu[choice - len(self._data) - offset]

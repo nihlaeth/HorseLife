@@ -17,9 +17,11 @@ from models.stableitem import StableItem
 from models.horse import Horse
 from models.setting import Setting
 from models.person import Person
+from models.story import Story
 from generators.stablegenerator import StableGenerator
 from generators.horsegenerator import HorseGenerator
 from generators.settinggenerator import SettingGenerator
+from generators.storygenerator import StoryGenerator
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
 from backend.time import Time
@@ -78,6 +80,7 @@ class HorseLife(object):
                 # Generate events for these objects
                 StableBackend(1).get_events(session, TimeStamp(0, 0))
                 HorseBackend(1).get_events(session, TimeStamp(0, 0))
+                StoryGenerator().gen_many(session)
                 SettingGenerator.gen_many(
                     session,
                     {

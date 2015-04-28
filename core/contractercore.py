@@ -81,7 +81,8 @@ class ContracterCore(Core):
                                           "Look at other building types"))
                 menu = [Back(), Quit()]
 
-                self._display.init(actions, menu, info)
+                story = self.get_story(session)
+                self._display.init(actions, menu, info, story)
                 choice = self._display.display()
                 if isinstance(choice, Quit) or isinstance(choice, Back):
                     return choice
@@ -106,6 +107,8 @@ class ContracterCore(Core):
                             now)[0].mid
                         stable = StableBackend(stable_id)
                         stable.get_events(session, now)
+                    if choice.action == "story":
+                        self.mark_story(session)
 
                 session.commit()
 

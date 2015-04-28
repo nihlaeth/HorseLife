@@ -11,6 +11,7 @@ class TestStoryGenerator(object):
 
     def test_gen_one(self):
         """Test StoryGenerator._gen_one(text_id)."""
+        # pylint: disable=protected-access
         story = StoryGenerator()._gen_one("welcome")
         assert_equals(story.text_id, "welcome")
         assert_equals(story.read, False)
