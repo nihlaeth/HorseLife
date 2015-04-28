@@ -5,6 +5,7 @@ from support.messages.meter import Meter
 from support.messages.command import Command
 
 
+# pylint: disable=too-many-instance-attributes
 class Display(object):
 
     """Common methods to inherit from by *Display classes."""
@@ -18,8 +19,9 @@ class Display(object):
         self._data = None
         self._menu = None
         self._info = None
+        self._story = None
 
-    def init(self, data, menu, info=None):
+    def init(self, data, menu, info=None, story=None):
         """Initialize with backend data.
 
         Arguments:
@@ -32,6 +34,7 @@ class Display(object):
         if info is None:
             info = []
         self._info = info
+        self._story = story
 
     def display(self):
         """Display screen and return user choice (class)."""
@@ -49,6 +52,13 @@ class Display(object):
 
         count = 0
 
+        if self._story is not None:
+            print self._separator
+            print self._wrap_text(self._story.text)
+            print "".join([str(count), ") ", str(self._story.action)])
+            count += 1
+            print self._separator
+
         for action in self._data:
             print self._wrap_text(''.join([
                 str(count),
@@ -64,13 +74,16 @@ class Display(object):
 
         choice = self._get_int(count)
 
+        offset = 0 if self._story is None else 1
         if choice == 555:
             # debug console
             return Command(self.get_string(0, "Command: "))
+        elif self._story is not None and choice == 0:
+            return self._story.action
         elif choice < len(self._data):
-            return self._data[choice]
+            return self._data[choice - offset]
         else:
-            return self._menu[choice-len(self._data)]
+            return self._menu[choice - len(self._data) - offset]
 
     def hide(self):
         """Just a placeholder."""
