@@ -21,6 +21,6 @@ class Setting(BASE):
         """Get attribute."""
         return {"attr": getattr(self, key), "e_info": None}
 
-    def set(self, _, key):
+    def set(self, key, value):
         """Set attribute."""
         setattr(self, key, value)

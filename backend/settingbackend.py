@@ -43,7 +43,7 @@ class SettingBackend(Backend):
         Backend.__init__(self, id_)
         self._str = "SettingBackend"
 
-    def set(self, session, name, key):
+    def set(self, session, key, value):
         """Set attribute on encapsulated model.
 
         session -- sqlalchemy session
@@ -51,4 +51,4 @@ class SettingBackend(Backend):
         value -- new value
         """
         setting = SettingBackend._one_id(session, self.id_)
-        setattr(setting, name, key)
+        setting.set(key, value)
