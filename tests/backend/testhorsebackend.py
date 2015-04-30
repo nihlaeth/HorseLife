@@ -11,6 +11,7 @@ from support.messages.timestamp import TimeStamp
 from tests.tools.dummydb import DummyDB
 from tests.tools.profiled import profiled
 from tests.tools.horsefactory import HorseFactory
+from tests.tools.stablefactory import StableFactory
 from tests.tools.settingfactory import SettingFactory
 from tests.tools.eventfactory import EventFactory
 from tests.tools.callbackfactory import CallbackFactory
@@ -95,6 +96,49 @@ class TestHorseBackend(object):
             assert_less(backend.get(session, t(0, 120), "exercise"), 100)
             assert_equals(backend.get(session, t(0, 0), "hygiene"), 100)
             assert_less(backend.get(session, t(0, 120), "hygiene"), 100)
+
+    def test_environment(self):
+        """Test Horse._update_environment()."""
+        with DummyDB() as session:
+            stable = StableFactory(
+                surface=9,
+                light=0,
+                outside_surface=0,
+                cleanliness=0)
+            horse = HorseFactory(stable=stable)
+            session.add_all([stable, horse])
+            backend = HorseBackend(1)
+            t_stamp = TimeStamp(0, 0)
+            # With these base settings, environment should be 0.
+            assert_equals(backend.get(session, t_stamp, "environment"), 0)
+            # Maximize surface
+            stable.surface = 16
+            assert_equals(backend.get(session, t_stamp, "environment"), 25)
+            # See if we go over 25 if the stable is larger
+            stable.surface = 1000
+            assert_equals(backend.get(session, t_stamp, "environment"), 25)
+
+            # Check light
+            stable.surface = 9
+            stable.light = 100
+            assert_equals(backend.get(session, t_stamp, "environment"), 25)
+
+            # Check outside_surface
+            stable.light = 0
+            stable.outside_surface = 1
+            assert_equals(backend.get(session, t_stamp, "environment"), 12.5)
+
+            # Check cleanliness
+            stable.outside_surface = 0
+            stable.cleanliness = 100
+            assert_equals(backend.get(session, t_stamp, "environment"), 25)
+
+            # Now check what happens if we add a buddy
+            stable.cleanliness = 0
+            stable.surface = 18  # Two horses need more room.
+            session.add(HorseFactory(stable=stable))
+            assert_equals(len(stable.horses), 2)
+            assert_equals(backend.get(session, t_stamp, "environment"), 30/4.)
 
     def test_set(self):
         """Test HorseBackend.set(session, key, value)."""
