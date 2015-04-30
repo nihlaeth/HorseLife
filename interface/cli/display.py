@@ -2,7 +2,7 @@
 from textwrap import fill
 
 from support.messages.meter import Meter
-from support.messages.command import Command
+from support.messages.action import Action
 
 
 # pylint: disable=too-many-instance-attributes
@@ -42,20 +42,26 @@ class Display(object):
 
         print ''.join([self._wrap_text(self._description), "\n\n"])
 
+        call_list = []
+        count = 0
+
         for string in self._info:
             if isinstance(string, Meter):
                 print self._meter(string)
+            elif isinstance(string, Action):
+                print "".join([str(count), ") ", str(string)])
+                call_list.append(string)
+                count += 1
             else:
                 print self._wrap_text(str(string))
 
         print "\n\n"
 
-        count = 0
-
         if self._story is not None:
             print self._separator
             print self._wrap_text(self._story.text)
             print "".join([str(count), ") ", str(self._story.action)])
+            call_list.append(self._story.action)
             count += 1
             print self._separator
 
@@ -64,26 +70,18 @@ class Display(object):
                 str(count),
                 ") ",
                 str(action)]))
+            call_list.append(action)
             count += 1
 
         print ''.join(["\n\n", self._separator, "\n\n"])
 
         for item in self._menu:
             print self._wrap_text(''.join([str(count), ") ", str(item)]))
+            call_list.append(item)
             count += 1
 
         choice = self._get_int(count)
-
-        offset = 0 if self._story is None else 1
-        if choice == 555:
-            # debug console
-            return Command(self.get_string(0, "Command: "))
-        elif self._story is not None and choice == 0:
-            return self._story.action
-        elif choice - offset < len(self._data):
-            return self._data[choice - offset]
-        else:
-            return self._menu[choice - len(self._data) - offset]
+        return call_list[choice]
 
     def hide(self):
         """Just a placeholder."""
