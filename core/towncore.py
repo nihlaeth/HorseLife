@@ -7,7 +7,6 @@ from support.messages.back import Back
 from support.messages.command import Command
 from support.messages.action import Action
 from backend.session import SessionScope
-from backend.time import Time
 
 
 class TownCore(Core):
@@ -27,7 +26,7 @@ class TownCore(Core):
         """Run with it."""
         while True:
             with SessionScope() as session:
-                info = [" ".join(["Time", Time(session).get_time(session)])]
+                info = self._info(session)
                 info.append("Where do you want to visit?")
 
                 actions = [

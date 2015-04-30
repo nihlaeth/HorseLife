@@ -40,13 +40,13 @@ class StableCore(Core):
 
                 time = Time(session)
                 now = time.get_time_stamp(session)
-                info = [" ".join(["Time:", time.get_time(session)]),
-                        "",
-                        "Cleanliness:",
-                        Meter(self._stable.get(
-                            session,
-                            now,
-                            "cleanliness"))]
+                info = self._info(session)
+                info.append("")
+                info.append("Cleanliness:")
+                info.append(Meter(self._stable.get(
+                    session,
+                    now,
+                    "cleanliness")))
 
                 if self._horse is not None:
                     info.append("")

@@ -19,6 +19,11 @@ class MessageBackend(Backend):
         return MessageBackend(session.query(Message).filter_by(mid=mid)[0].mid)
 
     @classmethod
+    def unread(cls, session):
+        """Return number of unread messages."""
+        return session.query(Message).filter_by(read=False).count()
+
+    @classmethod
     def _one_id(cls, session, mid):
         """Return raw model."""
         return session.query(Message).filter_by(mid=mid)[0]

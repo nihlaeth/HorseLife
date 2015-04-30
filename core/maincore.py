@@ -8,7 +8,6 @@ from support.messages.command import Command
 from support.messages.action import Action
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
-from backend.time import Time
 
 
 class MainCore(Core):
@@ -26,8 +25,6 @@ class MainCore(Core):
             with SessionScope() as session:
                 stables = StableBackend.all(session)
 
-                info = [" ".join(["Time", Time(session).get_time(session)])]
-
                 actions = [TownCore()]
                 for stable in stables:
                     actions.append(BuildingCore(stable))
@@ -35,7 +32,7 @@ class MainCore(Core):
                 menu = []
                 menu.append(Quit())
                 story = self.get_story(session)
-                self._display.init(actions, menu, info, story)
+                self._display.init(actions, menu, self._info(session), story)
                 choice = self._display.display()
                 result = None
                 if isinstance(choice, Quit):

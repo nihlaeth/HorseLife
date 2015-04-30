@@ -33,7 +33,7 @@ class ContracterCore(Core):
             with SessionScope() as session:
                 time = Time(session)
                 now = time.get_time_stamp(session)
-                info = [" ".join(["Time", time.get_time(session)])]
+                info = self._info(session)
 
                 if self._screen == "home":
                     info.append("What do you want constructed?")

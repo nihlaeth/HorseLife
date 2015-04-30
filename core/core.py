@@ -1,5 +1,8 @@
 """Interface to inherit from for *Core classes."""
 from backend.storybackend import StoryBackend
+from backend.time import Time
+from backend.messagebackend import MessageBackend
+from support.messages.action import Action
 
 
 class Core(object):
@@ -33,3 +36,29 @@ class Core(object):
     def mark_story(self, session):
         """Mark story as read."""
         self.story.mark_read(session)
+
+    def _info(self, session):
+        """Construct info block."""
+        time = Time(session)
+        info = []
+        # Current date and time
+        info.append(" ".join([
+            "Day:",
+            str(time.get_day(session)),
+            str(time.get_time_stamp(session).date),
+            "Time:",
+            time.get_time(session)]))
+        # Messages (how many unread?)
+        messages = MessageBackend.all(session)
+        unread = MessageBackend.unread(session)
+        summary = " ".join([str(len(messages)), "messages"])
+        if unread > 0:
+            summary = " ".join([
+                "!!!",
+                str(len(unread)),
+                "unread messages,",
+                summary,
+                "total"])
+        info.append(summary)
+        info.append(Action("messages", "Read messages"))
+        return info
