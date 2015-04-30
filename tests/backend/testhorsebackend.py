@@ -140,6 +140,60 @@ class TestHorseBackend(object):
             assert_equals(len(stable.horses), 2)
             assert_equals(backend.get(session, t_stamp, "environment"), 30/4.)
 
+    def test_happiness(self):
+        """Test Horse._update_happiness()."""
+        with DummyDB() as session:
+            stable = StableFactory(
+                surface=9,
+                light=0,
+                outside_surface=0,
+                cleanliness=0)
+            horse = HorseFactory(
+                stable=stable,
+                food=100,
+                water=100,
+                exercise=0,
+                hygiene=0,
+                stimulation=0,
+                social=0)
+            session.add_all([stable, horse])
+            backend = HorseBackend(1)
+            t_stamp = TimeStamp(0, 0)
+            # Baseline test: happiness should be zero here.
+            assert_equals(backend.get(session, t_stamp, "happiness"), 0)
+
+            horse.exercise = 100
+            assert_equals(backend.get(session, t_stamp, "happiness"), 20)
+
+            horse.exercise = 0
+            horse.hygiene = 100
+            assert_equals(backend.get(session, t_stamp, "happiness"), 20)
+
+            horse.hygiene = 0
+            horse.stimulation = 100
+            assert_equals(backend.get(session, t_stamp, "happiness"), 20)
+
+            horse.stimulation = 0
+            horse.social = 100
+            assert_equals(backend.get(session, t_stamp, "happiness"), 20)
+
+            horse.food = 25
+            assert_equals(backend.get(session, t_stamp, "happiness"), 5)
+
+            horse.water = 0
+            assert_equals(backend.get(session, t_stamp, "happiness"), 0)
+
+            horse.food = 100
+            horse.water = 100
+            horse.social = 0
+            stable.surface = 200
+            stable.light = 100
+            stable.outside_surface = 1
+            stable.cleanliness = 100
+            session.add(HorseFactory(stable=stable))
+
+            assert_greater(backend.get(session, t_stamp, "happiness"), 15)
+
     def test_set(self):
         """Test HorseBackend.set(session, key, value)."""
         with DummyDB() as session:
