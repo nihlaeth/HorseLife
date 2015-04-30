@@ -20,3 +20,7 @@ class Setting(BASE):
     def get(self, _, key):
         """Get attribute."""
         return {"attr": getattr(self, key), "e_info": None}
+
+    def set(self, _, key):
+        """Set attribute."""
+        setattr(self, key, value)
