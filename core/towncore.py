@@ -2,6 +2,7 @@
 from interface.cli.towndisplay import TownDisplay
 from core import Core
 from contractercore import ContracterCore
+from messagecore import MessageCore
 from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.command import Command
@@ -56,6 +57,9 @@ class TownCore(Core):
                         result = ContracterCore().run()
                     elif choice.action == "story":
                         self.mark_story(session)
+                    elif choice.action == "messages":
+                        core = MessageCore()
+                        result = core.run()
 
                 if isinstance(result, Quit):
                     return result

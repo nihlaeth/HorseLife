@@ -3,6 +3,7 @@ import ConfigParser
 
 from interface.cli.contracterdisplay import ContracterDisplay
 from core import Core
+from messagecore import MessageCore
 from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.command import Command
@@ -84,6 +85,7 @@ class ContracterCore(Core):
                 story = self.get_story(session)
                 self._display.init(actions, menu, info, story)
                 choice = self._display.display()
+                result = None
                 if isinstance(choice, Quit) or isinstance(choice, Back):
                     return choice
                 elif isinstance(choice, Command):
@@ -96,7 +98,7 @@ class ContracterCore(Core):
                             "arenas",
                             "tack-feed"]:
                         self._screen = choice.action
-                    if choice.action == "buy-stable":
+                    elif choice.action == "buy-stable":
                         # TODO once you have money implemented, check if
                         # you have enough cash and decrease it with the
                         # price.
@@ -107,10 +109,15 @@ class ContracterCore(Core):
                             now)[0].mid
                         stable = StableBackend(stable_id)
                         stable.get_events(session, now)
-                    if choice.action == "story":
+                    elif choice.action == "story":
                         self.mark_story(session)
+                    elif choice.action == "messages":
+                        core = MessageCore()
+                        result = core.run()
 
-                session.commit()
+                if result is not None:
+                    if isinstance(result, Quit):
+                        return result
 
     def __str__(self):
         """Return string representation of object."""

@@ -55,7 +55,7 @@ class Core(object):
         if unread > 0:
             summary = " ".join([
                 "!!!",
-                str(len(unread)),
+                str(unread),
                 "unread messages,",
                 summary,
                 "total"])

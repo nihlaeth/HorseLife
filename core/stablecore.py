@@ -1,5 +1,6 @@
 """Game logic for Stable screen."""
 from core import Core
+from messagecore import MessageCore
 from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.meter import Meter
@@ -132,7 +133,8 @@ class StableCore(Core):
                 choice = self._display.display()
                 result = self._choice(session, choice, time, now)
                 if result is not None:
-                    return result
+                    if isinstance(result, Quit):
+                        return result
 
     def _choice(self, session, choice, time, now):
         """Handle user choice."""
@@ -161,6 +163,9 @@ class StableCore(Core):
                 time.pass_time(session, new_time)
             elif choice.action == "story":
                 self.mark_story(session)
+            elif choice.action == "messages":
+                core = MessageCore()
+                return core.run()
 
     def __str__(self):
         """Return string representation of object."""

@@ -3,6 +3,7 @@ from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
 from towncore import TownCore
+from messagecore import MessageCore
 from support.messages.quit import Quit
 from support.messages.command import Command
 from support.messages.action import Action
@@ -47,6 +48,9 @@ class MainCore(Core):
                 elif isinstance(choice, Action):
                     if choice.action == "story":
                         self.mark_story(session)
+                    if choice.action == "messages":
+                        core = MessageCore()
+                        result = core.run()
 
                 if result is not None:
                     if isinstance(result, Quit):

@@ -3,6 +3,7 @@ import factory
 
 from models.message import Message
 
+
 class MessageFactory(factory.Factory):
 
     """Factory for Message model to simplify testing."""
