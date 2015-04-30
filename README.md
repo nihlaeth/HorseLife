@@ -34,7 +34,7 @@ in the codebase as it is right now. More a list for myself than for anyone
 else's benefit, but I need to dump it somewhere (where I will see it).
 
 * Implement health need.
-* Add notification system
+* Create a message viewing core & display
 * Have needs check if their last_checked < now - don't do any of the work if it is equal to or greater than now.
 * Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
 * Implement money (plus a transaction tracking system).
@@ -42,6 +42,8 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
+* Refactor message (Action, menu item, that kind of thing) handling, move standard stuff to Core class
+* Add level system
 
 ## Code style
 So far, I've been keeping the code up to the pep8 and pep257 standard. I've been pretty religious about this (even providing docstrings for self evident methods like __str__ and such), so I'd like any contributions to adhere to those as well.
