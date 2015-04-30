@@ -145,9 +145,9 @@ class StableCore(Core):
                 new_time = self._stable.clean(session, now)
                 time.pass_time(session, new_time)
             elif choice.action == "change name":
-                self._horse.name = self._display.get_string(
+                self._horse.set(session, "name", self._display.get_string(
                     4,
-                    "Name: ")
+                    "Name: "))
             elif choice.action == "groom":
                 new_time = self._horse.groom(session, now)
                 time.pass_time(session, new_time)
