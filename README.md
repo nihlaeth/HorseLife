@@ -44,6 +44,7 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Start working on training system
 * Refactor message (Action, menu item, that kind of thing) handling, move standard stuff to Core class
 * Add level system
+* Find an elegant solution to the str() - no session problem.
 
 ## Code style
 So far, I've been keeping the code up to the pep8 and pep257 standard. I've been pretty religious about this (even providing docstrings for self evident methods like __str__ and such), so I'd like any contributions to adhere to those as well.
