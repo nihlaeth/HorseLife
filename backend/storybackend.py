@@ -50,7 +50,7 @@ class StoryBackend(Backend):
     @classmethod
     def _check_read(cls, session, text_id):
         """Test if story part has been read or not - internal use only."""
-        story = session.query(Story).filter_by(text_id=text_id)
+        story = session.query(Story).filter_by(text_id=text_id)[0]
         return story.read
 
     @classmethod
