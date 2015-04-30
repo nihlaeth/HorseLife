@@ -407,7 +407,8 @@ class Horse(BASE):
 
         # cleanliness has a value between 0 and 100, so dividing it by
         # 4 should give us a scale between 0 and 25.
-        cleanliness_score = stable.cleanliness / 4.
+        cleanliness_info = stable.get(now, "cleanliness")
+        cleanliness_score = cleanliness_info["attr"] / 4.
 
         # light also has a value between 0 and 100, so dividing by 4
         # does the trick.
@@ -436,7 +437,7 @@ class Horse(BASE):
             cleanliness_score +
             light_score +
             stimulation_score)
-        return self.environment
+        return cleanliness_info["e_info"]
 
     def _update_happiness(self, now):
         """Calculate happiness value.
@@ -447,19 +448,20 @@ class Horse(BASE):
         """
         # As there are 5 dependencies, every one of them should be
         # on a scale of 0 to 20.
-        # TODO: return event update info as well
-        self._ch_exercise(now)
+        result = []
+        result.append(self._ch_exercise(now))
         exercise_score = self.exercise / 5.
 
-        self._ch_hygiene(now)
+        result.append(self._ch_hygiene(now))
         hygiene_score = self.hygiene / 5.
 
-        self._ch_stimulation(now)
+        result.append(self._ch_stimulation(now))
         stimulation_score = self.stimulation / 5.
 
-        environment_score = self._update_environment(now) / 5.
+        result.append(self._update_environment(now)[0])
+        environment_score = self.environment / 5.
 
-        self._ch_social(now)
+        result.append(self._ch_social(now))
         social_score = self.social / 5.
 
         self.happiness = (
@@ -471,14 +473,14 @@ class Horse(BASE):
 
         # food and water are primal needs, they influence the entire
         # happiness scale.
-        self._ch_food(now)
-        self._ch_water(now)
+        result.append(self._ch_food(now))
+        result.append(self._ch_water(now))
         if self.food < 10 or self.water < 10:
             self.happiness = 0
         elif self.food < 30 or self.water < 30:
             self.happiness /= 4.
-        
-        return self.happiness
+
+        return result
 
     def get_events(self, now):
         """Get a single event for every need meter and return event info."""
@@ -526,32 +528,32 @@ class Horse(BASE):
         the event in question.
         """
         if key == "food":
-            e_info = self._ch_food(now)
+            e_info = [self._ch_food(now)]
             result = self.food
         elif key == "water":
-            e_info = self._ch_water(now)
+            e_info = [self._ch_water(now)]
             result = self.water
         elif key == "energy":
-            e_info = self._ch_energy(now)
+            e_info = [self._ch_energy(now)]
             result = self.energy
         elif key == "stimulation":
-            e_info = self._ch_stimulation(now)
+            e_info = [self._ch_stimulation(now)]
             result = self.stimulation
         elif key == "social":
-            e_info = self._ch_social(now)
+            e_info = [self._ch_social(now)]
             result = self.social
         elif key == "exercise":
-            e_info = self._ch_exercise(now)
+            e_info = [self._ch_exercise(now)]
             result = self.exercise
         elif key == "hygiene":
-            e_info = self._ch_hygiene(now)
+            e_info = [self._ch_hygiene(now)]
             result = self.hygiene
         elif key == "environment":
-            e_info = None
-            result = self._update_environment(now)
+            e_info = self._update_environment(now)
+            result = self.environment
         elif key == "happiness":
-            e_info = None
-            result = self._update_happiness(now)
+            e_info = self._update_happiness(now)
+            result = self.happiness
         else:
             e_info = None
             result = getattr(self, key)

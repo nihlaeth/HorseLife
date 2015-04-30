@@ -5,6 +5,7 @@ import datetime
 
 from backend.horsebackend import HorseBackend
 from backend.eventbackend import EventBackend
+from backend.stablebackend import StableBackend
 from backend.time import Time
 from models.horse import Horse
 from support.messages.timestamp import TimeStamp
@@ -109,6 +110,8 @@ class TestHorseBackend(object):
             session.add_all([stable, horse])
             backend = HorseBackend(1)
             t_stamp = TimeStamp(0, 0)
+            backend.get_events(session, t_stamp)
+            StableBackend(1).get_events(session, t_stamp)
             # With these base settings, environment should be 0.
             assert_equals(backend.get(session, t_stamp, "environment"), 0)
             # Maximize surface
@@ -159,6 +162,8 @@ class TestHorseBackend(object):
             session.add_all([stable, horse])
             backend = HorseBackend(1)
             t_stamp = TimeStamp(0, 0)
+            backend.get_events(session, t_stamp)
+            StableBackend(1).get_events(session, t_stamp)
             # Baseline test: happiness should be zero here.
             assert_equals(backend.get(session, t_stamp, "happiness"), 0)
 

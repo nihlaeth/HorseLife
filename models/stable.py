@@ -135,7 +135,7 @@ class Stable(BASE):
         event.
         """
         if key == "cleanliness":
-            e_info = self._ch_cleanliness(now)
+            e_info = [self._ch_cleanliness(now)]
             result = self.cleanliness
         else:
             e_info = None

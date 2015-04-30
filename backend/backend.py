@@ -46,7 +46,8 @@ class Backend(object):
         instance = self._one_id(session, self.id_)
         info = instance.get(t_stamp, key)
         if info["e_info"] is not None:
-            self._update_event(session, info["e_info"])
+            for event in info["e_info"]:
+                self._update_event(session, event)
         return info["attr"]
 
     def set(self, session, key, value):
