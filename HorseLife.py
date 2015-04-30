@@ -63,10 +63,8 @@ class HorseLife(object):
 
     def load_game(self, database, new=False):
         """Load and populate database, then load Main screen."""
-        # load database
-        # when we're done testing, put in a permanent database,
-        # and allow the user to pick
-        # a db (savegame)
+        if database != ":memory:":
+            database = "".join(["saves/", database])
         self.engine = create_engine('sqlite:///%s' % database, echo=False)
         s.SESSION.configure(bind=self.engine)
 
