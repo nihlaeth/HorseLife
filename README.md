@@ -42,7 +42,6 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
-* Refactor message (Action, menu item, that kind of thing) handling, move standard stuff to Core class
 * Add level system
 * Find an elegant solution to the str() - no session problem.
 
