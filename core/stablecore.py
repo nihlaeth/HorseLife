@@ -30,6 +30,63 @@ class StableCore(Core):
         self._display = StableDisplay()
         self._horse = None
 
+    def _horse_info(self, session, info, now):
+        """Provide information on the horse."""
+        info.append("")
+        info.append(''.join([
+            "Name: ",
+            self._horse.get(session, None, "name")]))
+        info.append("Happiness:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "happiness")))
+        info.append("Health:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "health")))
+        info.append("Food:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "food")))
+        info.append("Water:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "water")))
+        info.append("Energy:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "energy")))
+        info.append("Exercise:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "energy")))
+        info.append("Hygiene:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "hygiene")))
+        info.append("Stimulation:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "stimulation")))
+        info.append("Environment:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "environment")))
+        info.append("Social:")
+        info.append(Meter(self._horse.get(
+            session,
+            now,
+            "social")))
+
     def run(self):
         """Run with it."""
         while True:
@@ -50,61 +107,8 @@ class StableCore(Core):
                     "cleanliness")))
 
                 if self._horse is not None:
-                    info.append("")
-                    info.append(''.join([
-                        "Name: ",
-                        self._horse.get(session, None, "name")]))
-                    info.append("Happiness:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "happiness")))
-                    info.append("Health:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "health")))
-                    info.append("Food:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "food")))
-                    info.append("Water:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "water")))
-                    info.append("Energy:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "energy")))
-                    info.append("Exercise:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "energy")))
-                    info.append("Hygiene:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "hygiene")))
-                    info.append("Stimulation:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "stimulation")))
-                    info.append("Environment:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "environment")))
-                    info.append("Social:")
-                    info.append(Meter(self._horse.get(
-                        session,
-                        now,
-                        "social")))
-
+                    # Lists are passed by reference by default
+                    self._horse_info(session, info, now)
                 actions = []
                 actions.append(Action("clean", "Clean stable"))
                 actions.append(Action("feed", "Fill food tray"))
@@ -132,9 +136,8 @@ class StableCore(Core):
                 self._display.init(actions, menu, info, story)
                 choice = self._display.display()
                 result = self._choice(session, choice, time, now)
-                if result is not None:
-                    if isinstance(result, Quit):
-                        return result
+                if isinstance(result, Quit) or isinstance(result, Back):
+                    return result
 
     def _choice(self, session, choice, time, now):
         """Handle user choice."""
