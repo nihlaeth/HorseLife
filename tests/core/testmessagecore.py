@@ -7,7 +7,6 @@ from tests.tools.messagefactory import MessageFactory
 from tests.tools.settingfactory import SettingFactory
 from support.messages.action import Action
 from support.messages.quit import Quit
-from support.messages.command import Command
 from support.messages.back import Back
 from backend.session import SessionScope
 from core.messagecore import MessageCore
@@ -18,9 +17,10 @@ class TestMessageCore(object):
 
     """Test MessageCore."""
 
+    @mock.patch("core.messagecore.debug")
     @mock.patch.object(SessionScope, "__enter__")
     @mock.patch.object(MessageDisplay, "display")
-    def test_run(self, m_display, m_db):
+    def test_run(self, m_display, m_db, m_debug):
         """Test MessageCore.run()."""
         with DummyDB() as session:
             messages = MessageFactory.build_batch(20)
@@ -30,6 +30,8 @@ class TestMessageCore(object):
                 SettingFactory(name="Time")])
             quit_ = Quit()
 
+            m_debug.return_value = False
+
             m_db.return_value = session
 
             # Test quit!
@@ -37,15 +39,6 @@ class TestMessageCore(object):
             core = MessageCore()
             result = core.run()
             assert_equals(result, quit_)
-
-            # Test command
-            m_display.return_value = Command("assert False")
-            try:
-                core.run()
-            except AssertionError:
-                assert True  # This should fail!
-            else:
-                assert False  # Command did not get executed
 
             # Test reading a message, doing a bunch of other actions and
             # then pressing back two times - once delete is implemented,

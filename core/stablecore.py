@@ -1,11 +1,13 @@
 """Game logic for Stable screen."""
+import pdb
+
 from core import Core
 from messagecore import MessageCore
+from support.debug import debug
 from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.meter import Meter
 from support.messages.action import Action
-from support.messages.command import Command
 from interface.cli.stabledisplay import StableDisplay
 from backend.session import SessionScope
 from backend.horsebackend import HorseBackend
@@ -135,6 +137,8 @@ class StableCore(Core):
                 story = self.get_story(session)
                 self._display.init(actions, menu, info, story)
                 choice = self._display.display()
+                if debug():
+                    pdb.set_trace()
                 result = self._choice(session, choice, time, now)
                 if isinstance(result, Quit) or isinstance(result, Back):
                     return result
@@ -143,8 +147,6 @@ class StableCore(Core):
         """Handle user choice."""
         if isinstance(choice, Quit) or isinstance(choice, Back):
             return choice
-        elif isinstance(choice, Command):
-            exec(choice.command)
         elif isinstance(choice, Action):
             if choice.action == "clean":
                 new_time = self._stable.clean(session, now)

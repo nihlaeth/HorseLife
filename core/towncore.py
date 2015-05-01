@@ -1,11 +1,13 @@
 """Game logic for Town screen."""
+import pdb
+
 from interface.cli.towndisplay import TownDisplay
 from core import Core
 from contractercore import ContracterCore
 from messagecore import MessageCore
+from support.debug import debug
 from support.messages.quit import Quit
 from support.messages.back import Back
-from support.messages.command import Command
 from support.messages.action import Action
 from backend.session import SessionScope
 
@@ -47,11 +49,11 @@ class TownCore(Core):
                 story = self.get_story(session)
                 self._display.init(actions, menu, info, story)
                 choice = self._display.display()
+                if debug():
+                    pdb.set_trace()
                 result = None
                 if isinstance(choice, Quit) or isinstance(choice, Back):
                     return choice
-                elif isinstance(choice, Command):
-                    exec(choice.command)
                 elif isinstance(choice, Action):
                     if choice.action == "contracter":
                         result = ContracterCore().run()

@@ -1,11 +1,13 @@
 """Game logic for Main screen."""
+import pdb
+
 from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
 from towncore import TownCore
 from messagecore import MessageCore
+from support.debug import debug
 from support.messages.quit import Quit
-from support.messages.command import Command
 from support.messages.action import Action
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
@@ -35,6 +37,8 @@ class MainCore(Core):
                 story = self.get_story(session)
                 self._display.init(actions, menu, self._info(session), story)
                 choice = self._display.display()
+                if debug():
+                    pdb.set_trace()
                 result = None
                 if isinstance(choice, Quit):
                     return choice
@@ -42,9 +46,6 @@ class MainCore(Core):
                     result = choice.run()
                 elif isinstance(choice, TownCore):
                     result = choice.run()
-                elif isinstance(choice, Command):
-                    exec(choice.command)
-                    result = None
                 elif isinstance(choice, Action):
                     if choice.action == "story":
                         self.mark_story(session)

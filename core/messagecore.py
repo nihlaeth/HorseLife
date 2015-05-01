@@ -1,9 +1,11 @@
 """Game logic for Message screen."""
+import pdb
+
 from interface.cli.messagedisplay import MessageDisplay
 from core import Core
+from support.debug import debug
 from support.messages.quit import Quit
 from support.messages.back import Back
-from support.messages.command import Command
 from support.messages.action import Action
 from support.messages.timestamp import TimeStamp
 from backend.session import SessionScope
@@ -54,6 +56,8 @@ class MessageCore(Core):
                 self._display.init(actions, menu, info, story)
 
                 choice = self._display.display()
+                if debug():
+                    pdb.set_trace()
                 result = self._choice(session, choice)
                 if isinstance(result, Quit) or isinstance(result, Back):
                     return result
@@ -67,8 +71,6 @@ class MessageCore(Core):
                 self._screen = "list"
             else:
                 return choice
-        elif isinstance(choice, Command):
-            exec(choice.command)
         elif isinstance(choice, Action):
             if choice.action == "message":
                 self._screen = "message"

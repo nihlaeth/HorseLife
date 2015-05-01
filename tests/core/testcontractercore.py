@@ -10,7 +10,6 @@ from interface.cli.contracterdisplay import ContracterDisplay
 from backend.session import SessionScope
 from core.contractercore import ContracterCore
 from support.messages.quit import Quit
-from support.messages.command import Command
 from support.messages.action import Action
 from support.messages.timestamp import TimeStamp
 
@@ -19,10 +18,11 @@ class TestContracterCore(object):
 
     """Test ContracterCore."""
 
+    @mock.patch("core.contractercore.debug")
     @mock.patch.object(StableGenerator, "gen_many")
     @mock.patch.object(ContracterDisplay, "display")
     @mock.patch.object(SessionScope, "__enter__")
-    def test_run(self, m_db, m_display, m_stablegen):
+    def test_run(self, m_db, m_display, m_stablegen, m_debug):
         """Test ContracterCore.run()."""
         with DummyDB() as session:
             m_db.return_value = session
@@ -30,21 +30,15 @@ class TestContracterCore(object):
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time")])
 
+            # Turn off pdb
+            m_debug.return_value = False
+
             # Test quit_
             quit_ = Quit()
             m_display.return_value = quit_
             core = ContracterCore()
             result = core.run()
             assert_equals(result, quit_)
-
-            # Test command
-            m_display.return_value = Command("assert False")
-            try:
-                core.run()
-            except AssertionError:
-                assert True
-            else:
-                assert False
 
             # Test buying a stable
             stable = StableFactory()

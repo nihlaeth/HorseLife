@@ -1,12 +1,13 @@
 """Game logic for loading a saved or new game."""
 import os
+import pdb
 
 from core import Core
 from interface.cli.loaddisplay import LoadDisplay
+from support.debug import debug
 from support.messages.savedgame import SavedGame
 from support.messages.newgame import NewGame
 from support.messages.quit import Quit
-from support.messages.command import Command
 
 
 class LoadCore(Core):
@@ -31,14 +32,14 @@ class LoadCore(Core):
 
             self._display.init(actions, menu)
             choice = self._display.display()
+            if debug():
+                pdb.set_trace()
             if isinstance(choice, NewGame):
                 name = self._display.get_string(4, "Name your game: ")
                 choice.file_name = name
                 return choice
             elif isinstance(choice, SavedGame):
                 return choice
-            elif isinstance(choice, Command):
-                exec(choice.command)
             elif isinstance(choice, Quit):
                 return choice
 

@@ -7,20 +7,24 @@ from interface.cli.loaddisplay import LoadDisplay
 from support.messages.savedgame import SavedGame
 from support.messages.newgame import NewGame
 from support.messages.quit import Quit
-from support.messages.command import Command
 
 
 class TestLoadCore(object):
 
     """Test LoadCore."""
 
+    @mock.patch("core.loadcore.debug")
     @mock.patch("os.listdir")
     @mock.patch.object(LoadDisplay, "init")
     @mock.patch.object(LoadDisplay, "get_string")
     @mock.patch.object(LoadDisplay, "display")
-    def test_run(self, m_display, m_getstr, m_init, m_listdir):
+    def test_run(self, m_display, m_getstr, m_init, m_listdir, m_debug):
         """Test LoadCore.run()."""
         core = LoadCore()
+
+        # Disable pdb
+        m_debug.return_value = False
+
         # Test SavedGame
         saved_game = SavedGame(":memory:")
         m_display.return_value = saved_game
@@ -44,17 +48,6 @@ class TestLoadCore(object):
         result = core.run()
         m_display.assert_called_with()
         assert_equals(result, quit_)
-
-        # Test Command
-        command = Command("assert False")
-        m_display.return_value = command
-        try:
-            core.run()
-        except AssertionError:
-            # test passed!
-            m_display.assert_called_with()
-        else:
-            assert False
 
         # Test directory listing
         m_listdir.return_value = ["file1", "file2"]

@@ -12,7 +12,6 @@ from backend.horsebackend import HorseBackend
 from interface.cli.stabledisplay import StableDisplay
 from support.messages.quit import Quit
 from support.messages.action import Action
-from support.messages.command import Command
 from support.messages.timestamp import TimeStamp
 from core.stablecore import StableCore
 
@@ -21,10 +20,11 @@ class TestStableCore(object):
 
     """Test StableCore."""
 
+    @mock.patch("core.stablecore.debug")
     @mock.patch.object(StableDisplay, "get_string")
     @mock.patch.object(StableDisplay, "display")
     @mock.patch.object(SessionScope, "__enter__")
-    def test_run(self, m_db, m_display, m_getstr):
+    def test_run(self, m_db, m_display, m_getstr, m_debug):
         """Test StableCore.run()."""
         with DummyDB() as session:
             m_db.return_value = session
@@ -33,6 +33,8 @@ class TestStableCore(object):
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),
                 stable_raw])
+
+            m_debug.return_value = False
 
             stable = StableBackend(1)
             stable.get_events(session, TimeStamp(0, 0))
@@ -47,15 +49,6 @@ class TestStableCore(object):
 
             m_display.assert_called_once_with()
             assert_equals(result, quit_)
-
-            # Test Command
-            m_display.return_value = Command("assert False")
-            try:
-                core.run()
-            except AssertionError:
-                assert True
-            else:
-                assert False
 
             # Now test actions
             # Get a horse in that stable!

@@ -4,7 +4,6 @@ import mock
 
 from support.messages.quit import Quit
 from support.messages.action import Action
-from support.messages.command import Command
 from backend.session import SessionScope
 from interface.cli.towndisplay import TownDisplay
 from core.contractercore import ContracterCore
@@ -17,10 +16,11 @@ class TestTownCore(object):
 
     """Test TownCore."""
 
+    @mock.patch("core.towncore.debug")
     @mock.patch.object(ContracterCore, "run")
     @mock.patch.object(TownDisplay, "display")
     @mock.patch.object(SessionScope, "__enter__")
-    def test_run(self, m_db, m_display, m_contracter):
+    def test_run(self, m_db, m_display, m_contracter, m_debug):
         """Test TownCore.run()."""
         with DummyDB() as session:
             m_db.return_value = session
@@ -28,21 +28,14 @@ class TestTownCore(object):
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time")])
 
+            m_debug.return_value = False
+
             # Test quit_
             quit_ = Quit()
             m_display.return_value = quit_
             core = TownCore()
             result = core.run()
             assert_equals(result, quit_)
-
-            # Test command
-            m_display.return_value = Command("assert False")
-            try:
-                core.run()
-            except AssertionError:
-                assert True
-            else:
-                assert False
 
             # Test actions
             # For now, just test that nothing dies when picking these

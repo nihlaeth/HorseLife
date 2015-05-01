@@ -117,7 +117,7 @@ class Display(object):
             response = int(raw_input(prompt))
         except ValueError:
             response = -1
-        while (response < 0 or response >= limit) and response != 555:
+        while response < 0 or response >= limit:
             print "Invalid choice, try again."
             try:
                 response = int(raw_input(prompt))

@@ -1,12 +1,13 @@
 """Game logic for contracter store."""
 import ConfigParser
+import pdb
 
+from support.debug import debug
 from interface.cli.contracterdisplay import ContracterDisplay
 from core import Core
 from messagecore import MessageCore
 from support.messages.quit import Quit
 from support.messages.back import Back
-from support.messages.command import Command
 from support.messages.action import Action
 from backend.session import SessionScope
 from backend.time import Time
@@ -85,6 +86,8 @@ class ContracterCore(Core):
                 story = self.get_story(session)
                 self._display.init(actions, menu, info, story)
                 choice = self._display.display()
+                if debug():
+                    pdb.set_trace()
                 result = self._choice(session, choice, now)
                 if isinstance(result, Quit) or isinstance(result, Back):
                     return result
@@ -98,8 +101,6 @@ class ContracterCore(Core):
                 self._screen = "home"
             else:
                 return choice
-        elif isinstance(choice, Command):
-            exec(choice.command)
         elif isinstance(choice, Action):
             if choice.action in [
                     "home",
