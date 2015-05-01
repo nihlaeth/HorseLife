@@ -54,28 +54,34 @@ class MessageCore(Core):
                 self._display.init(actions, menu, info, story)
 
                 choice = self._display.display()
-                if isinstance(choice, Quit):
-                    return choice
-                elif isinstance(choice, Back):
-                    if self._screen != "list":
-                        self._screen = "list"
-                    else:
-                        return choice
-                elif isinstance(choice, Command):
-                    exec(choice.command)
-                elif isinstance(choice, Action):
-                    if choice.action == "message":
-                        self._screen = "message"
-                        self._message = MessageBackend(choice.arguments[0])
-                    elif choice.action == "delete":
-                        # TODO: implement delete - needs a backend method
-                        pass
+                result = self._choice(session, choice)
+                if isinstance(result, Quit) or isinstance(result, Back):
+                    return result
 
-                    # Figure out if this message needs to be marked as read
-                    if choice.action == "mark-unread":
-                        self._message.set(session, "read", False)
-                    else:
-                        self._message.set(session, "read", True)
+    def _choice(self, session, choice):
+        """Handle user choice."""
+        if isinstance(choice, Quit):
+            return choice
+        elif isinstance(choice, Back):
+            if self._screen != "list":
+                self._screen = "list"
+            else:
+                return choice
+        elif isinstance(choice, Command):
+            exec(choice.command)
+        elif isinstance(choice, Action):
+            if choice.action == "message":
+                self._screen = "message"
+                self._message = MessageBackend(choice.arguments[0])
+            elif choice.action == "delete":
+                # TODO: implement delete - needs a backend method
+                pass
+
+            # Figure out if this message needs to be marked as read
+            if choice.action == "mark-unread":
+                self._message.set(session, "read", False)
+            else:
+                self._message.set(session, "read", True)
 
     def __str__(self):
         """Return string representation for object."""
