@@ -85,39 +85,47 @@ class ContracterCore(Core):
                 story = self.get_story(session)
                 self._display.init(actions, menu, info, story)
                 choice = self._display.display()
-                result = None
-                if isinstance(choice, Quit) or isinstance(choice, Back):
-                    return choice
-                elif isinstance(choice, Command):
-                    exec(choice.command)
-                elif isinstance(choice, Action):
-                    if choice.action in [
-                            "home",
-                            "stables",
-                            "pastures",
-                            "arenas",
-                            "tack-feed"]:
-                        self._screen = choice.action
-                    elif choice.action == "buy-stable":
-                        # TODO once you have money implemented, check if
-                        # you have enough cash and decrease it with the
-                        # price.
-                        stable_id = StableGenerator().gen_many(
-                            session,
-                            1,
-                            choice.arguments[0],
-                            now)[0].mid
-                        stable = StableBackend(stable_id)
-                        stable.get_events(session, now)
-                    elif choice.action == "story":
-                        self.mark_story(session)
-                    elif choice.action == "messages":
-                        core = MessageCore()
-                        result = core.run()
+                result = self._choice(session, choice, now)
+                if isinstance(result, Quit) or isinstance(result, Back):
+                    return result
 
-                if result is not None:
-                    if isinstance(result, Quit):
-                        return result
+    def _choice(self, session, choice, now):
+        """Handle user choice."""
+        if isinstance(choice, Quit):
+            return choice
+        if isinstance(choice, Back):
+            if self._screen != "home":
+                self._screen = "home"
+            else:
+                return choice
+        elif isinstance(choice, Command):
+            exec(choice.command)
+        elif isinstance(choice, Action):
+            if choice.action in [
+                    "home",
+                    "stables",
+                    "pastures",
+                    "arenas",
+                    "tack-feed"]:
+                self._screen = choice.action
+            elif choice.action == "buy-stable":
+                # TODO once you have money implemented, check if
+                # you have enough cash and decrease it with the
+                # price.
+                stable_id = StableGenerator().gen_many(
+                    session,
+                    1,
+                    choice.arguments[0],
+                    now)[0].mid
+                stable = StableBackend(stable_id)
+                stable.get_events(session, now)
+            elif choice.action == "story":
+                self.mark_story(session)
+            elif choice.action == "messages":
+                core = MessageCore()
+                result = core.run()
+                if isinstance(result, Quit):
+                    return result
 
     def __str__(self):
         """Return string representation of object."""
