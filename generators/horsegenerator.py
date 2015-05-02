@@ -53,6 +53,7 @@ class HorseGenerator(Generator):
             stimulation=100,
             stimulation_date=t_stamp.date,
             stimulation_time=t_stamp.time,
+            stimulation_msg=False,
             exercise=100,
             exercise_date=t_stamp.date,
             exercise_time=t_stamp.time,

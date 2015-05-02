@@ -50,6 +50,7 @@ class HorseFactory(factory.Factory):
     stimulation = 100
     stimulation_date = 0
     stimulation_time = 0
+    stimulation_msg = False
 
     environment = 100
 

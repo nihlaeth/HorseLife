@@ -1,6 +1,6 @@
 """Horse model."""
 import copy
-from sqlalchemy import Column, Integer, Float, String, ForeignKey
+from sqlalchemy import Column, Integer, Float, String, ForeignKey, Boolean
 
 from base import BASE
 from support.messages.timestamp import TimeStamp
@@ -57,6 +57,7 @@ class Horse(BASE):
     stimulation = Column(Float)
     stimulation_date = Column(Integer)
     stimulation_time = Column(Integer)
+    stimulation_msg = Column(Boolean)
 
     environment = Column(Float)
 
@@ -302,8 +303,7 @@ class Horse(BASE):
             self.stimulation = 100
 
         # See if there's a message to be delivered
-        # TODO add a var to ensure messages don't get spammy!
-        if self.stimulation < 25:
+        if self.stimulation < 25 and not self.stimulation_msg:
             msg = {
                 "subject": "%s is getting bored!" % self.name,
                 "t_stamp": now,
@@ -316,8 +316,12 @@ class Horse(BASE):
                     "keep them entertained, or better yet, "
                     "a stablemate. Some time in the pasture "
                     "will also do them good. Good luck!" % self.name)}
+            self.stimulation_msg = True
         else:
             msg = None
+            if self.stimulation >= 25:
+                # Stimulation is at healthy levels, reset msg attribute.
+                self.stimulation_msg = False
         t_next = copy.copy(now)
         next_limit = self._get_limit(self.stimulation)
         if next_limit < 0:
