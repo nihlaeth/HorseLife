@@ -114,7 +114,7 @@ class Backend(object):
             # TODO: get this ugly import out of here... for now
             # it's preventing a circular / dependency problem.
             from generators.messagegenerator import MessageGenerator
-            MessageGenerator.gen_many(session, e_info["msg"])
+            MessageGenerator.gen_many(session, [e_info["msg"]])
 
     def event_callback(self, session, subject, t_stamp):
         """Execute event.

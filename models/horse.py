@@ -301,11 +301,28 @@ class Horse(BASE):
             # method might.
             self.stimulation = 100
 
+        # See if there's a message to be delivered
+        # TODO add a var to ensure messages don't get spammy!
+        if self.stimulation < 25:
+            msg = {
+                "subject": "%s is getting bored!" % self.name,
+                "t_stamp": now,
+                "text": (
+                    "Bored horses can develop bad habits, "
+                    "like weaving for example. But more "
+                    "importantly, they get unhappy when "
+                    "they're bored. So go entertain %s!"
+                    " You could also get them a toy to "
+                    "keep them entertained, or better yet, "
+                    "a stablemate. Some time in the pasture "
+                    "will also do them good. Good luck!" % self.name)}
+        else:
+            msg = None
         t_next = copy.copy(now)
         next_limit = self._get_limit(self.stimulation)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "stimulation", "t_stamp": t_next, "msg": None}
+            return {"subject": "stimulation", "t_stamp": t_next, "msg": msg}
 
         t_next.add_min((self.stimulation - next_limit) *
                        stimulation_decay_time)
@@ -319,7 +336,7 @@ class Horse(BASE):
             else:
                 t_next.start_of_night(event=True)
 
-        return {"subject": "stimulation", "t_stamp": t_next, "msg": None}
+        return {"subject": "stimulation", "t_stamp": t_next, "msg": msg}
 
     def _ch_social(self, now):
         """Calculate current value of social meter."""
