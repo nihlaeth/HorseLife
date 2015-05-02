@@ -95,7 +95,12 @@ class Backend(object):
         e_info -- dict containing event information
 
         example e_info:
-        {"subject": "some_event", "t_stamp": TimeStamp(0, 0)}
+        {"subject": "some_event", "t_stamp": TimeStamp(0, 0), "msg": None}
+
+        Note: "msg" has nothing to do with the event. It's simply a way
+        for an event to emit a message to the user. It doesn't exactly
+        deserve a beauty award, but I figured this was the best place
+        for it.
 
         Note: this only updates the timestamp at which the event is
         next to be activated. If you wish to update callbacks, look
@@ -105,6 +110,11 @@ class Backend(object):
         """
         event = EventBackend.one(session, e_info["subject"], self.id_)
         event.update(session, e_info["t_stamp"])
+        if e_info["msg"] is not None:
+            # TODO: get this ugly import out of here... for now
+            # it's preventing a circular / dependency problem.
+            from generators.messagegenerator import MessageGenerator
+            MessageGenerator.gen_many(session, e_info["msg"])
 
     def event_callback(self, session, subject, t_stamp):
         """Execute event.

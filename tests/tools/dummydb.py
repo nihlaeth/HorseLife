@@ -11,6 +11,8 @@ from models.person import Person
 from models.setting import Setting
 from models.stable import Stable
 from models.stableitem import StableItem
+from models.message import Message
+from models.story import Story
 
 
 class DummyDB(object):

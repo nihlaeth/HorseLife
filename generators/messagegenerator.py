@@ -15,7 +15,8 @@ class MessageGenerator(Generator):
             subject=subject,
             time=t_stamp.time,
             date=t_stamp.date,
-            text=text)
+            text=text,
+            read=False)
 
     @classmethod
     def gen_many(cls, session, messages):

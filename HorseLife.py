@@ -18,10 +18,12 @@ from models.horse import Horse
 from models.setting import Setting
 from models.person import Person
 from models.story import Story
+from models.message import Message
 from generators.stablegenerator import StableGenerator
 from generators.horsegenerator import HorseGenerator
 from generators.settinggenerator import SettingGenerator
 from generators.storygenerator import StoryGenerator
+from generators.messagegenerator import MessageGenerator
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
 from backend.time import Time
@@ -79,6 +81,10 @@ class HorseLife(object):
                 StableBackend(1).get_events(session, TimeStamp(0, 0))
                 HorseBackend(1).get_events(session, TimeStamp(0, 0))
                 StoryGenerator().gen_many(session)
+                MessageGenerator.gen_many(session, [
+                    {"subject": "Welcome",
+                     "t_stamp": TimeStamp(0, 0),
+                     "text": "Welcome to HorseLife! Have fun!"}])
                 SettingGenerator.gen_many(
                     session,
                     {

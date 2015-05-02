@@ -121,11 +121,11 @@ class Stable(BASE):
         next_limit = self._get_limit(self.cleanliness)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "cleanliness", "t_stamp": t_next}
+            return {"subject": "cleanliness", "t_stamp": t_next, "msg": None}
 
         t_next.add_min((self.cleanliness - next_limit) *
                        cleanliness_decay_time)
-        return {"subject": "cleanliness", "t_stamp": t_next}
+        return {"subject": "cleanliness", "t_stamp": t_next, "msg": None}
 
     def get(self, now, key):
         """Get attribute.

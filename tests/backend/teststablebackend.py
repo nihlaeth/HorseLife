@@ -125,7 +125,8 @@ class TestStableBackend(object):
             # pylint: disable=protected-access
             backend._update_event(session, {
                 "subject": "flub",
-                "t_stamp": TimeStamp(5, 20)})
+                "t_stamp": TimeStamp(5, 20),
+                "msg": None})
 
             event = EventBackend(1)
             assert_equals(event.get(session, "date"), 5)

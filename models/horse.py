@@ -198,10 +198,10 @@ class Horse(BASE):
         else:
             # Food dropped to zero or below. Figure out what to do here.
             t_next.add_min(1440)
-            return {"subject": "food", "t_stamp": t_next}
+            return {"subject": "food", "t_stamp": t_next, "msg": None}
 
         t_next.add_min((self.food - next_limit) * food_decay_time)
-        return {"subject": "food", "t_stamp": t_next}
+        return {"subject": "food", "t_stamp": t_next, "msg": None}
 
     def _drink(self):
         """Have the horse drink.
@@ -242,10 +242,10 @@ class Horse(BASE):
             next_limit = self._drink()
         else:
             t_next.add_min(1440)
-            return {"subject": "water", "t_stamp": t_next}
+            return {"subject": "water", "t_stamp": t_next, "msg": None}
 
         t_next.add_min((self.water - next_limit) * water_decay_time)
-        return {"subject": "water", "t_stamp": t_next}
+        return {"subject": "water", "t_stamp": t_next, "msg": None}
 
     def _ch_energy(self, now):
         """Calculate current value of energy meter."""
@@ -277,7 +277,7 @@ class Horse(BASE):
         else:
             # Make sure horse loses energy until it's night
             t_next.start_of_night(event=True)
-        return {"subject": "energy", "t_stamp": t_next}
+        return {"subject": "energy", "t_stamp": t_next, "msg": None}
 
     def _ch_stimulation(self, now):
         """Calculate current value of stimulation meter."""
@@ -305,7 +305,7 @@ class Horse(BASE):
         next_limit = self._get_limit(self.stimulation)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "stimulation", "t_stamp": t_next}
+            return {"subject": "stimulation", "t_stamp": t_next, "msg": None}
 
         t_next.add_min((self.stimulation - next_limit) *
                        stimulation_decay_time)
@@ -319,7 +319,7 @@ class Horse(BASE):
             else:
                 t_next.start_of_night(event=True)
 
-        return {"subject": "stimulation", "t_stamp": t_next}
+        return {"subject": "stimulation", "t_stamp": t_next, "msg": None}
 
     def _ch_social(self, now):
         """Calculate current value of social meter."""
@@ -335,10 +335,10 @@ class Horse(BASE):
         next_limit = self._get_limit(self.social)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "social", "t_stamp": t_next}
+            return {"subject": "social", "t_stamp": t_next, "msg": None}
 
         t_next.add_min((self.social - next_limit) * social_decay_time)
-        return {"subject": "social", "t_stamp": t_next}
+        return {"subject": "social", "t_stamp": t_next, "msg": None}
 
     def _ch_exercise(self, now):
         """Calculate current value of exercise meter."""
@@ -354,10 +354,10 @@ class Horse(BASE):
         next_limit = self._get_limit(self.exercise)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "exercise", "t_stamp": t_next}
+            return {"subject": "exercise", "t_stamp": t_next, "msg": None}
 
         t_next.add_min((self.exercise - next_limit) * exercise_decay_time)
-        return {"subject": "exercise", "t_stamp": t_next}
+        return {"subject": "exercise", "t_stamp": t_next, "msg": None}
 
     def _ch_hygiene(self, now):
         """Calculate current value of hygiene meter."""
@@ -373,10 +373,10 @@ class Horse(BASE):
         next_limit = self._get_limit(self.hygiene)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "hygiene", "t_stamp": t_next}
+            return {"subject": "hygiene", "t_stamp": t_next, "msg": None}
 
         t_next.add_min((self.hygiene - next_limit) * hygiene_decay_time)
-        return {"subject": "hygiene", "t_stamp": t_next}
+        return {"subject": "hygiene", "t_stamp": t_next, "msg": None}
 
     def _update_environment(self, now):
         """Set environment.
