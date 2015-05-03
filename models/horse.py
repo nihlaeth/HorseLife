@@ -39,6 +39,7 @@ class Horse(BASE):
     water = Column(Float)
     water_date = Column(Integer)
     water_time = Column(Integer)
+    water_msg = Column(Integer)
 
     happiness = Column(Float)
 
@@ -235,6 +236,22 @@ class Horse(BASE):
         self.water_date = now.date
         self.water_time = now.time
 
+        if self.water < 25 and not self.water_msg:
+            msg = {
+                "subject": "%s is very thirsty!" % self.name,
+                "t_stamp": now,
+                "text": (
+                    "Horses need access to water, depriving a "
+                    "horse of water could kill them. Go and water "
+                    "%s! You could also buy an automatic waterer for"
+                    " in the stable, that way, your horse always has "
+                    "access to water." % self.name)}
+            self.water_msg = True
+        else:
+            msg = None
+            if self.water >= 25:
+                self.water_msg = False
+
         t_next = copy.copy(now)
         if self.water >= 80:
             # No need to drink
@@ -243,10 +260,10 @@ class Horse(BASE):
             next_limit = self._drink()
         else:
             t_next.add_min(1440)
-            return {"subject": "water", "t_stamp": t_next, "msg": None}
+            return {"subject": "water", "t_stamp": t_next, "msg": msg}
 
         t_next.add_min((self.water - next_limit) * water_decay_time)
-        return {"subject": "water", "t_stamp": t_next, "msg": None}
+        return {"subject": "water", "t_stamp": t_next, "msg": msg}
 
     def _ch_energy(self, now):
         """Calculate current value of energy meter."""

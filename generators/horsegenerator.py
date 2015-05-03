@@ -43,6 +43,7 @@ class HorseGenerator(Generator):
             water=100,
             water_date=t_stamp.date,
             water_time=t_stamp.time,
+            water_msg=False,
             happiness=100,
             energy=100,
             energy_date=t_stamp.date,

@@ -32,6 +32,7 @@ class HorseFactory(factory.Factory):
     water = 100
     water_date = 0
     water_time = 0
+    water_msg = False
 
     happiness = 100
 
