@@ -35,11 +35,12 @@ class Horse(BASE):
     food = Column(Float)
     food_date = Column(Integer)
     food_time = Column(Integer)
+    food_msg = Column(Boolean)
 
     water = Column(Float)
     water_date = Column(Integer)
     water_time = Column(Integer)
-    water_msg = Column(Integer)
+    water_msg = Column(Boolean)
 
     happiness = Column(Float)
 
@@ -191,6 +192,20 @@ class Horse(BASE):
         self.food_date = now.date
         self.food_time = now.time
 
+        if self.food < 25 and not self.food_msg:
+            msg = {
+                "subject": "%s is hungry!" % self.name,
+                "t_stamp": now,
+                "text": (
+                    "Obviously, horses need food to survive."
+                    " Go feed %s, horses definitely don't like"
+                    " being hungry!" % self.name)}
+            self.food_msg = True
+        else:
+            msg = None
+            if self.food >= 25:
+                self.food_msg = False
+
         t_next = copy.copy(now)
         if self.food >= 80:
             # No need to eat right now
@@ -200,10 +215,10 @@ class Horse(BASE):
         else:
             # Food dropped to zero or below. Figure out what to do here.
             t_next.add_min(1440)
-            return {"subject": "food", "t_stamp": t_next, "msg": None}
+            return {"subject": "food", "t_stamp": t_next, "msg": msg}
 
         t_next.add_min((self.food - next_limit) * food_decay_time)
-        return {"subject": "food", "t_stamp": t_next, "msg": None}
+        return {"subject": "food", "t_stamp": t_next, "msg": msg}
 
     def _drink(self):
         """Have the horse drink.

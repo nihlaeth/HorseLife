@@ -28,6 +28,7 @@ class HorseFactory(factory.Factory):
     food = 100
     food_date = 0
     food_time = 0
+    food_msg = False
 
     water = 100
     water_date = 0

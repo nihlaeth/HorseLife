@@ -40,6 +40,7 @@ class HorseGenerator(Generator):
             food=100,
             food_date=t_stamp.date,
             food_time=t_stamp.time,
+            food_msg=False,
             water=100,
             water_date=t_stamp.date,
             water_time=t_stamp.time,
