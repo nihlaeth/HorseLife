@@ -49,6 +49,14 @@ class Event(BASE):
         self.date = timestamp.date
         self.time = timestamp.time
 
+    def get(self, _, key):
+        """Get attribute."""
+        return {"attr": getattr(self, key), "e_info": None}
+
+    def set(self, key, value):
+        """Set attribute."""
+        setattr(self, key, value)
+
     def __str__(self):
         """Return a string representation of the object."""
         return ' '.join(["Event:",

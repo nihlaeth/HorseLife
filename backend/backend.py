@@ -1,5 +1,4 @@
 """Provides an interface for the *Base classes."""
-from eventbackend import EventBackend
 from generators.eventgenerator import EventGenerator
 
 
@@ -108,6 +107,7 @@ class Backend(object):
         with the event after calling it, the game will get stuck in
         an infinite loop.
         """
+        from eventbackend import EventBackend
         event = EventBackend.one(session, e_info["subject"], self.id_)
         event.update(session, e_info["t_stamp"])
         if e_info["msg"] is not None:

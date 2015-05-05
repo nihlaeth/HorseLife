@@ -4,10 +4,11 @@
 # and some of them handle events, this resulted in circular imports.
 # So for now, EventBackend doesn't inherit anything.
 # from backend import Backend
+from backend import Backend
 from models.event import Event
 
 
-class EventBackend(object):
+class EventBackend(Backend):
 
     """Abstraction layer for Event model."""
 
@@ -30,6 +31,7 @@ class EventBackend(object):
         """
         return session.query(Event).order_by(Event.date, Event.time)
 
+    # pylint: disable=arguments-differ
     @classmethod
     def one(cls, session, subject, obj_id):
         """Return a single encapsulated event.
@@ -85,29 +87,7 @@ class EventBackend(object):
 
         id -- model id (int)
         """
-        self.id_ = id_
-
-    def get(self, session, key):
-        """Get attribute from encapsulated event.
-
-        session -- sqlalchemy session
-        key -- attribute name (str)
-
-        Note: there are no active attributes in event, so no
-        timestamp is needed.
-        """
-        event = EventBackend._one_id(session, self.id_)
-        return getattr(event, key)
-
-    def set(self, session, key, value):
-        """Set attribute on encapsulated event.
-
-        session -- sqlalchemy session
-        key -- attribute name (str)
-        value -- new value
-        """
-        event = EventBackend._one_id(session, self.id_)
-        setattr(event, key, value)
+        Backend.__init__(self, id_)
 
     def update(self, session, timestamp):
         """Update timestamp on encapsulated model.

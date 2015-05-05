@@ -82,7 +82,7 @@ class TestHorseBackend(object):
                 EventBackend.one(
                     session,
                     "stimulation",
-                    1).get(session, "time"),
+                    1).get(session, None, "time"),
                 0)
             # Stimulation does not decay during the night!
             assert_equals(backend.get(

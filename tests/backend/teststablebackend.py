@@ -129,8 +129,8 @@ class TestStableBackend(object):
                 "msg": None})
 
             event = EventBackend(1)
-            assert_equals(event.get(session, "date"), 5)
-            assert_equals(event.get(session, "time"), 20)
+            assert_equals(event.get(session, None, "date"), 5)
+            assert_equals(event.get(session, None, "time"), 20)
 
     def test_event_callback(self):
         """Test StableBackend.event_callback(session, subject, timestamp)."""
@@ -159,4 +159,4 @@ class TestStableBackend(object):
             t_stamp = TimeStamp(0, 0)
             backend.event_callback(session, "cleanliness", t_stamp)
             event = EventBackend.one(session, "cleanliness", 1)
-            assert_greater(event.get(session, "time"), 0)
+            assert_greater(event.get(session, None, "time"), 0)
