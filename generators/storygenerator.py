@@ -21,7 +21,8 @@ class StoryGenerator(Generator):
             text_id=text_id,
             read=False,
             depends_on=self._config.get(text_id, "depends_on"),
-            location=self._config.get(text_id, "location"))
+            location=self._config.get(text_id, "location"),
+            level=self._config.get(text_id, "level"))
 
     def gen_many(self, session):
         """Generate all story parts in config as Story models."""

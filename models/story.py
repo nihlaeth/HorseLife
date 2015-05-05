@@ -21,3 +21,4 @@ class Story(BASE):
     read = Column(Boolean)
     depends_on = Column(String)
     location = Column(String)
+    level = Column(Integer)

@@ -20,16 +20,20 @@ class StoryBackend(Backend):
         models = session.query(Story)
         return [StoryBackend(session, model.mid) for model in models]
 
+    # pylint: disable=arguments-differ
     @classmethod
-    def one(cls, session, location):
+    def one(cls, session, location, level):
         """Return correct story for this location in this point of time.
 
         This checks to see if there are any story parts on this location,
         and if their dependencies have been met. If so, return the first.
         """
-        valid_stories = session.query(Story).filter_by(
-            location=location,
-            read=False)
+        # Normally, you'd always use the 'is' operator to compare
+        # to a boolean value. But sqlalchemy does not eat that.
+        valid_stories = session.query(Story).filter(
+            Story.location == location,
+            Story.read == False,
+            Story.level <= level)
         if valid_stories.count() < 1:
             return None
         # Now check dependencies

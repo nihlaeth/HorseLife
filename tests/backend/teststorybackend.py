@@ -21,7 +21,7 @@ class TestStoryBackend(object):
         """Test StoryBackend.one(session, location)."""
         with DummyDB() as session:
             session.add(StoryFactory())
-            backend = StoryBackend.one(session, "MainCore")
+            backend = StoryBackend.one(session, "MainCore", 0)
             assert_equals(backend.id_, 1)
 
     def test_init(self):

@@ -32,7 +32,12 @@ class Core(object):
     def get_story(self, session):
         """Get appropriate story for this core class."""
         location = type(self).__name__
-        self.story = StoryBackend.one(session, location)
+        if self._level is None:
+            self._level = Level(session)
+        self.story = StoryBackend.one(
+            session,
+            location,
+            self._level.level(session))
         return self.story
 
     def mark_story(self, session):

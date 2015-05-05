@@ -17,3 +17,4 @@ class StoryFactory(factory.Factory):
     read = False
     location = "MainCore"
     depends_on = "None"
+    level = 0
