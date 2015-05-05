@@ -51,10 +51,12 @@ class Horse(BASE):
     exercise = Column(Float)
     exercise_date = Column(Integer)
     exercise_time = Column(Integer)
+    exercise_msg = Column(Boolean)
 
     hygiene = Column(Float)
     hygiene_date = Column(Integer)
     hygiene_time = Column(Integer)
+    hygiene_msg = Column(Boolean)
 
     stimulation = Column(Float)
     stimulation_date = Column(Integer)
@@ -66,6 +68,7 @@ class Horse(BASE):
     social = Column(Float)
     social_date = Column(Integer)
     social_time = Column(Integer)
+    social_msg = Column(Boolean)
 
     # passive stats - change slowly
     endurance = Column(Integer)
@@ -384,14 +387,30 @@ class Horse(BASE):
         self.social_date = now.date
         self.social_time = now.time
 
+        if self.social < 25 and not self.social_msg:
+            msg = {
+                "subject": "%s is getting lonely!" % self.name,
+                "t_stamp": now,
+                "text": (
+                    "Horses are herd animals, and need some company"
+                    " to stay happy. Have them run around in a paddock"
+                    " or pasture a few hours a day with some horsey "
+                    "friends and they'll be very happy. Or better yet,"
+                    " get them a stable mate!")}
+            self.social_msg = True
+        else:
+            msg = None
+            if self.social >= 25:
+                self.social_msg = False
+
         t_next = copy.copy(now)
         next_limit = self._get_limit(self.social)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "social", "t_stamp": t_next, "msg": None}
+            return {"subject": "social", "t_stamp": t_next, "msg": msg}
 
         t_next.add_min((self.social - next_limit) * social_decay_time)
-        return {"subject": "social", "t_stamp": t_next, "msg": None}
+        return {"subject": "social", "t_stamp": t_next, "msg": msg}
 
     def _ch_exercise(self, now):
         """Calculate current value of exercise meter."""
@@ -403,14 +422,26 @@ class Horse(BASE):
         self.exercise_date = now.date
         self.exercise_time = now.time
 
+        if self.exercise < 25 and not self.exercise_msg:
+            msg = {
+                "subject": "%s is getting resless!" % self.name,
+                "t_stamp": now,
+                "text": (
+                    "Your horse wants to run around for a bit! Keeping"
+                    " a horse in a stable all day is very bad for them.")}
+            self.exercise_msg = True
+        else:
+            msg = None
+            if self.exercise >= 25:
+                self.exercise_msg = False
         t_next = copy.copy(now)
         next_limit = self._get_limit(self.exercise)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "exercise", "t_stamp": t_next, "msg": None}
+            return {"subject": "exercise", "t_stamp": t_next, "msg": msg}
 
         t_next.add_min((self.exercise - next_limit) * exercise_decay_time)
-        return {"subject": "exercise", "t_stamp": t_next, "msg": None}
+        return {"subject": "exercise", "t_stamp": t_next, "msg": msg}
 
     def _ch_hygiene(self, now):
         """Calculate current value of hygiene meter."""
@@ -422,14 +453,28 @@ class Horse(BASE):
         self.hygiene_date = now.date
         self.hygiene_time = now.time
 
+        if self.hygiene < 25 and not self.hygiene_msg:
+            msg = {
+                "subject": "%s is getting dirty!" % self.name,
+                "t_stamp": now,
+                "text": (
+                    "Nobody likes being dirty, but if this goes on too"
+                    " long, it could cause infections. Go and give %s "
+                    "a good grooming!" % self.name)}
+            self.hygiene_msg = True
+        else:
+            msg = None
+            if self.hygiene >= 25:
+                self.hygiene_msg = False
+
         t_next = copy.copy(now)
         next_limit = self._get_limit(self.hygiene)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "hygiene", "t_stamp": t_next, "msg": None}
+            return {"subject": "hygiene", "t_stamp": t_next, "msg": msg}
 
         t_next.add_min((self.hygiene - next_limit) * hygiene_decay_time)
-        return {"subject": "hygiene", "t_stamp": t_next, "msg": None}
+        return {"subject": "hygiene", "t_stamp": t_next, "msg": msg}
 
     def _update_environment(self, now):
         """Set environment.

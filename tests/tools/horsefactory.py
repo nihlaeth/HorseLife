@@ -44,10 +44,12 @@ class HorseFactory(factory.Factory):
     exercise = 100
     exercise_date = 0
     exercise_time = 0
+    exercise_msg = False
 
     hygiene = 100
     hygiene_date = 0
     hygiene_time = 0
+    hygiene_msg = False
 
     stimulation = 100
     stimulation_date = 0
@@ -59,5 +61,6 @@ class HorseFactory(factory.Factory):
     social = 100
     social_date = 0
     social_time = 0
+    social_msg = False
 
     stable = factory.SubFactory(StableFactory)
