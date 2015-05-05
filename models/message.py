@@ -2,6 +2,8 @@
 from base import BASE
 from sqlalchemy import Column, String, Integer, Boolean
 
+from support.messages.timestamp import TimeStamp
+
 
 # pylint: disable=no-init
 class Message(BASE):
@@ -22,6 +24,10 @@ class Message(BASE):
         """Get attribute."""
         return {"attr": getattr(self, key), "e_info": None}
 
+    def get_time_stamp(self):
+        """Return TimeStamp object."""
+        return TimeStamp(self.date, self.time)
+
     def set(self, key, value):
         """Set attribute."""
         setattr(self, key, value)
@@ -29,7 +35,6 @@ class Message(BASE):
     def __str__(self):
         """Message representation."""
         return " ".join([
-            str(self.date),
-            str(self.time),
+            str(self.get_time_stamp()),
             "--",
             self.subject])

@@ -11,7 +11,8 @@ from tests.tools.dummydb import DummyDB
 from tests.tools.profiled import profiled
 from backend.horsebackend import HorseBackend
 from backend.stablebackend import StableBackend
-from backend.time import Time, DAY
+from backend.settingbackend import SettingBackend
+from backend.time import Time
 from models.horse import Horse
 from support.messages.timestamp import TimeStamp
 
@@ -19,36 +20,6 @@ from support.messages.timestamp import TimeStamp
 class TestTime(object):
 
     """Test Time."""
-
-    def test_get_day(self):
-        """Test Time.get_day(session)."""
-        with DummyDB() as session:
-            session.add_all([
-                SettingFactory(name="Date", numeric=0, text=""),
-                SettingFactory(name="Time")])
-            time = Time(session)
-            # DAY members are dynamically generated.
-            # pylint: disable=no-member
-            assert_equals(time.get_day(session), DAY.Monday)
-            # t._date.set(session, "numeric", 2)
-            # assert_equals(t.get_day(session), DAY.Wednesday)
-            # t._date.set(session, "numeric", 7)
-            # assert_equals(t.get_day(session), DAY.Monday)
-
-    def test_get_time(self):
-        """Test Time.get_time(session)."""
-        with DummyDB() as session:
-            session.add_all([
-                SettingFactory(name="Time", numeric=0, text=""),
-                SettingFactory(name="Date")])
-            time = Time(session)
-            assert_equals(time.get_time(session), "00:00")
-            # t._time.set(session, "numeric", 60)
-            # assert_equals(t.get_time(session), "01:00")
-            # t._time.set(session, "numeric", 90)
-            # assert_equals(t.get_time(session), "01:30")
-            # t._time.set(session, "numeric", 899)
-            # assert_equals(t.get_time(session), "14:59")
 
     def test_pass_time(self):
         """Test Time.pass_time(session)."""
@@ -62,14 +33,16 @@ class TestTime(object):
             time = Time(session)
             now = TimeStamp(0, 480)
             time.pass_time(session, now)
-            assert_equals(time.get_day(session), DAY.Monday)
-            assert_equals(time.get_time(session), "08:00")
+            s_date = SettingBackend.one(session, "Date")
+            s_time = SettingBackend.one(session, "Time")
+            assert_equals(s_date.get(session, None, "numeric"), 0)
+            assert_equals(s_time.get(session, None, "numeric"), 480)
 
             now.add_min(1440)
             time.pass_time(session, now)
 
-            assert_equals(time.get_day(session), DAY.Tuesday)
-            assert_equals(time.get_time(session), "08:00")
+            assert_equals(s_date.get(session, None, "numeric"), 1)
+            assert_equals(s_time.get(session, None, "numeric"), 480)
 
             # Now test night functionality:
             # 900 minutes puts us at 23:00, which is past
@@ -77,8 +50,8 @@ class TestTime(object):
 
             now.add_min(900)
             time.pass_time(session, now)
-            assert_equals(time.get_day(session), DAY.Wednesday)
-            assert_equals(time.get_time(session), "07:00")
+            assert_equals(s_date.get(session, None, "numeric"), 2)
+            assert_equals(s_time.get(session, None, "numeric"), 420)
 
             # Now test events!
             with mock.patch.object(Horse, "event") as m_event:

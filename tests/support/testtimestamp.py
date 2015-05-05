@@ -1,7 +1,7 @@
 """Test TimeStamp."""
 from nose.tools import assert_equals
 
-from support.messages.timestamp import TimeStamp
+from support.messages.timestamp import TimeStamp, DAY
 
 
 class TestTimeStamp(object):
@@ -13,6 +13,28 @@ class TestTimeStamp(object):
         t_stamp = TimeStamp(0, 5)
         assert_equals(t_stamp.date, 0)
         assert_equals(t_stamp.time, 5)
+
+    def test_get_day(self):
+        """Test Time.get_day(session)."""
+        t_stamp = TimeStamp(0, 0)
+        # DAY members are dynamically generated.
+        # pylint: disable=no-member
+        assert_equals(t_stamp.get_str_day(), DAY.Monday)
+        t_stamp.date = 2
+        assert_equals(t_stamp.get_str_day(), DAY.Wednesday)
+        t_stamp.date = 7
+        assert_equals(t_stamp.get_str_day(), DAY.Monday)
+
+    def test_get_time(self):
+        """Test Time.get_time(session)."""
+        t_stamp = TimeStamp(0, 0)
+        assert_equals(t_stamp.get_str_time(), "00:00")
+        t_stamp.time = 60
+        assert_equals(t_stamp.get_str_time(), "01:00")
+        t_stamp.time = 90
+        assert_equals(t_stamp.get_str_time(), "01:30")
+        t_stamp.time = 899
+        assert_equals(t_stamp.get_str_time(), "14:59")
 
     def test_comparison(self):
         """Test TimeStamp comparison methods."""

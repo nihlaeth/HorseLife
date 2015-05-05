@@ -1,5 +1,16 @@
 """TimeStamp message."""
+from enum import Enum
 from message import Message
+
+
+DAY = Enum(
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday")
 
 
 class TimeStamp(Message):
@@ -22,6 +33,18 @@ class TimeStamp(Message):
             self.date += self.time / 1440
             self.time %= 1440
         return self
+
+    def get_str_day(self):
+        """Return string representation of the date (day of week)."""
+        return DAY[self.date % 7]
+
+    def get_str_time(self):
+        """Return string representation of the time (24h format)."""
+        hours = self.time / 60
+        minutes = self.time % 60
+        return ":".join([
+            str(hours) if hours > 9 else "0" + str(hours),
+            str(minutes) if minutes > 9 else "0" + str(minutes)])
 
     def end_of_night(self, event=False):
         """Skip self to the end of the night."""
@@ -64,12 +87,20 @@ class TimeStamp(Message):
         else:
             return False
 
+    def __repr__(self):
+        """Return raw data."""
+        return " ".join([
+            "Timestamp: Date:",
+            str(self.date),
+            "Time:",
+            str(self.time)])
+
     def __str__(self):
         """Return string representation of object."""
-        return ' '.join(["Timestamp: Date:",
-                         str(self.date),
-                         "Time:",
-                         str(self.time)])
+        return ' '.join([
+            str(self.get_str_day()),
+            str(self.date),
+            self.get_str_time()])
 
     def __eq__(self, other):
         """Operator ==."""

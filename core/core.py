@@ -47,14 +47,10 @@ class Core(object):
     def _info(self, session):
         """Construct info block."""
         time = Time(session)
+        now = time.get_time_stamp(session)
         info = []
         # Current date and time
-        info.append(" ".join([
-            "Day:",
-            str(time.get_day(session)),
-            str(time.get_time_stamp(session).date),
-            "Time:",
-            time.get_time(session)]))
+        info.append(str(now))
         # Current level
         # TODO: add meter to show progress towards next level
         if self._level is None:

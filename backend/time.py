@@ -1,24 +1,11 @@
 """Timekeeping mechanism."""
 from operator import attrgetter
-from enum import Enum
 
 from settingbackend import SettingBackend
 from horsebackend import HorseBackend
 from stablebackend import StableBackend
 from eventbackend import EventBackend
 from support.messages.timestamp import TimeStamp
-
-
-# Simple enum to translate between index numbers and weekdays.
-# Note: week starts on Monday(0). Also note the captialization.
-DAY = Enum(
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saurday",
-    "Sunday")
 
 
 class Time(object):
@@ -29,21 +16,6 @@ class Time(object):
         """Get the id's of the relevant settings."""
         self._time_id = SettingBackend.one(session, "Time").id_
         self._date_id = SettingBackend.one(session, "Date").id_
-
-    def get_day(self, session):
-        """Return day of the week."""
-        date = SettingBackend(session, self._date_id)
-        return DAY[date.get(session, None, "numeric") % 7]
-
-    def get_time(self, session):
-        """Deprecated -- use get_time_stamp."""
-        time_ = SettingBackend(session, self._time_id)
-        total_minutes = time_.get(session, None, "numeric")
-        hours = total_minutes / 60
-        minutes = total_minutes % 60
-        return ":".join([
-            str(hours) if hours > 9 else "0" + str(hours),
-            str(minutes) if minutes > 9 else "0" + str(minutes)])
 
     def get_time_stamp(self, session):
         """Return TimeStamp object indicating current time.
