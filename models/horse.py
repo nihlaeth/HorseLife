@@ -197,7 +197,7 @@ class Horse(BASE):
 
         # TODO have stable handle it's own items. Don't mess around
         # in there!
-        if self.food < 25 and not self.food_msg:
+        if self.food <= 25 and not self.food_msg:
             msg = {
                 "subject": "%s is hungry!" % self.name,
                 "t_stamp": now,
@@ -208,7 +208,7 @@ class Horse(BASE):
             self.food_msg = True
         else:
             msg = None
-            if self.food >= 25:
+            if self.food > 25:
                 self.food_msg = False
 
         t_next = copy.copy(now)
@@ -256,7 +256,7 @@ class Horse(BASE):
         self.water_date = now.date
         self.water_time = now.time
 
-        if self.water < 25 and not self.water_msg:
+        if self.water <= 25 and not self.water_msg:
             msg = {
                 "subject": "%s is very thirsty!" % self.name,
                 "t_stamp": now,
@@ -269,7 +269,7 @@ class Horse(BASE):
             self.water_msg = True
         else:
             msg = None
-            if self.water >= 25:
+            if self.water > 25:
                 self.water_msg = False
 
         t_next = copy.copy(now)
@@ -340,7 +340,7 @@ class Horse(BASE):
             self.stimulation = 100
 
         # See if there's a message to be delivered
-        if self.stimulation < 25 and not self.stimulation_msg:
+        if self.stimulation <= 25 and not self.stimulation_msg:
             msg = {
                 "subject": "%s is getting bored!" % self.name,
                 "t_stamp": now,
@@ -356,7 +356,7 @@ class Horse(BASE):
             self.stimulation_msg = True
         else:
             msg = None
-            if self.stimulation >= 25:
+            if self.stimulation > 25:
                 # Stimulation is at healthy levels, reset msg attribute.
                 self.stimulation_msg = False
         t_next = copy.copy(now)
@@ -389,7 +389,7 @@ class Horse(BASE):
         self.social_date = now.date
         self.social_time = now.time
 
-        if self.social < 25 and not self.social_msg:
+        if self.social <= 25 and not self.social_msg:
             msg = {
                 "subject": "%s is getting lonely!" % self.name,
                 "t_stamp": now,
@@ -402,7 +402,7 @@ class Horse(BASE):
             self.social_msg = True
         else:
             msg = None
-            if self.social >= 25:
+            if self.social > 25:
                 self.social_msg = False
 
         t_next = copy.copy(now)
@@ -424,7 +424,7 @@ class Horse(BASE):
         self.exercise_date = now.date
         self.exercise_time = now.time
 
-        if self.exercise < 25 and not self.exercise_msg:
+        if self.exercise <= 25 and not self.exercise_msg:
             msg = {
                 "subject": "%s is getting resless!" % self.name,
                 "t_stamp": now,
@@ -434,7 +434,7 @@ class Horse(BASE):
             self.exercise_msg = True
         else:
             msg = None
-            if self.exercise >= 25:
+            if self.exercise > 25:
                 self.exercise_msg = False
         t_next = copy.copy(now)
         next_limit = self._get_limit(self.exercise)
@@ -455,7 +455,7 @@ class Horse(BASE):
         self.hygiene_date = now.date
         self.hygiene_time = now.time
 
-        if self.hygiene < 25 and not self.hygiene_msg:
+        if self.hygiene <= 25 and not self.hygiene_msg:
             msg = {
                 "subject": "%s is getting dirty!" % self.name,
                 "t_stamp": now,
@@ -466,7 +466,7 @@ class Horse(BASE):
             self.hygiene_msg = True
         else:
             msg = None
-            if self.hygiene >= 25:
+            if self.hygiene > 25:
                 self.hygiene_msg = False
 
         t_next = copy.copy(now)

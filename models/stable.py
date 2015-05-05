@@ -1,6 +1,6 @@
 """Stable model."""
 import copy
-from sqlalchemy import Column, Integer, Float, String
+from sqlalchemy import Column, Integer, Float, String, Boolean
 from sqlalchemy.orm import relationship
 
 from base import BASE
@@ -26,6 +26,7 @@ class Stable(BASE):
     cleanliness = Column(Float)
     cleanliness_date = Column(Integer)
     cleanliness_time = Column(Integer)
+    cleanliness_msg = Column(Boolean)
 
     items = relationship("StableItem", backref="stableitems")
     horses = relationship("Horse", backref="stable")
@@ -118,15 +119,31 @@ class Stable(BASE):
             self.cleanliness_date = now.date
             self.cleanliness_time = now.time
 
+        if self.cleanliness <= 25 and not self.cleanliness_msg:
+            msg = {
+                "subject": "%s is getting dirty!" % self.__str__(),
+                "t_stamp": now,
+                "text": (
+                    "Stables need regular cleaning, both for the health"
+                    " of the horse(s) inside, and the integrity of the"
+                    " building. Plus waste attracts vermin, and we don't"
+                    " want that, do we? So go get your hands dirty and"
+                    " clean that stable!")}
+            self.cleanliness_msg = True
+        else:
+            msg = None
+            if self.cleanliness > 25:
+                self.cleanliness_msg = False
+
         t_next = copy.copy(now)
         next_limit = self._get_limit(self.cleanliness)
         if next_limit < 0:
             t_next.add_min(1440)
-            return {"subject": "cleanliness", "t_stamp": t_next, "msg": None}
+            return {"subject": "cleanliness", "t_stamp": t_next, "msg": msg}
 
         t_next.add_min((self.cleanliness - next_limit) *
                        cleanliness_decay_time)
-        return {"subject": "cleanliness", "t_stamp": t_next, "msg": None}
+        return {"subject": "cleanliness", "t_stamp": t_next, "msg": msg}
 
     def _get_food(self, now):
         """Get up to date food value."""
