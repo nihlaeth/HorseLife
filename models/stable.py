@@ -156,7 +156,9 @@ class Stable(BASE):
         # See if the horse wants to eat.
         events = []
         for horse in self.horses:
-            events.append(horse.get(now, "food")["e_info"][0])
+            result = horse.get(now, "food")
+            if result["e_info"] is not None:
+                events.append(result["e_info"][0])
         return {"attr": food[0].value, "e_info": events}
 
     def _get_water(self, now):
@@ -170,7 +172,9 @@ class Stable(BASE):
         # See if horse wants to drink.
         events = []
         for horse in self.horses:
-            events.append(horse.get(now, "water")["e_info"][0])
+            result = horse.get(now, "water")
+            if result["e_info"] is not None:
+                events.append(result["e_info"][0])
         return {"attr": water[0].value, "e_info": events}
 
     def get(self, now, key):
@@ -181,7 +185,13 @@ class Stable(BASE):
         event.
         """
         if key == "cleanliness":
-            e_info = [self._ch_cleanliness(now)]
+            last_checked = TimeStamp(
+                self.cleanliness_date,
+                self.cleanliness_time)
+            if now == last_checked:
+                e_info = None
+            else:
+                e_info = [self._ch_cleanliness(now)]
             result = self.cleanliness
         elif key == "food":
             data = self._get_food(now)

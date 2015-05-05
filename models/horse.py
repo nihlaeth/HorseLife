@@ -558,7 +558,9 @@ class Horse(BASE):
         result.append(self._ch_stimulation(now))
         stimulation_score = self.stimulation / 5.
 
-        result.append(self._update_environment(now)[0])
+        data = self._update_environment(now)
+        if data is not None:
+            result.append(data[0])
         environment_score = self.environment / 5.
 
         result.append(self._ch_social(now))
@@ -628,25 +630,55 @@ class Horse(BASE):
         the event in question.
         """
         if key == "food":
-            e_info = [self._ch_food(now)]
+            last_checked = TimeStamp(self.food_date, self.food_time)
+            if now == last_checked:
+                e_info = None
+            else:
+                e_info = [self._ch_food(now)]
             result = self.food
         elif key == "water":
-            e_info = [self._ch_water(now)]
+            last_checked = TimeStamp(self.water_date, self.water_time)
+            if now == last_checked:
+                e_info = None
+            else:
+                e_info = [self._ch_water(now)]
             result = self.water
         elif key == "energy":
-            e_info = [self._ch_energy(now)]
+            last_checked = TimeStamp(self.energy_date, self.energy_time)
+            if now == last_checked:
+                e_info = None
+            else:
+                e_info = [self._ch_energy(now)]
             result = self.energy
         elif key == "stimulation":
-            e_info = [self._ch_stimulation(now)]
+            last_checked = TimeStamp(
+                self.stimulation_date,
+                self.stimulation_time)
+            if now == last_checked:
+                e_info = None
+            else:
+                e_info = [self._ch_stimulation(now)]
             result = self.stimulation
         elif key == "social":
-            e_info = [self._ch_social(now)]
+            last_checked = TimeStamp(self.social_date, self.social_time)
+            if now == last_checked:
+                e_info = None
+            else:
+                e_info = [self._ch_social(now)]
             result = self.social
         elif key == "exercise":
-            e_info = [self._ch_exercise(now)]
+            last_checked = TimeStamp(self.exercise_date, self.exercise_time)
+            if now == last_checked:
+                e_info = None
+            else:
+                e_info = [self._ch_exercise(now)]
             result = self.exercise
         elif key == "hygiene":
-            e_info = [self._ch_hygiene(now)]
+            last_checked = TimeStamp(self.hygiene_date, self.hygiene_time)
+            if now == last_checked:
+                e_info = None
+            else:
+                e_info = [self._ch_hygiene(now)]
             result = self.hygiene
         elif key == "environment":
             e_info = self._update_environment(now)
