@@ -120,9 +120,11 @@ class StableCore(Core):
                     actions.append(Action("pet", "Pet horse"))
                     actions.append(Action("treat", "Feed treat"))
                     actions.append(Action("training journal",
-                                          "View training journal"))
+                                          "View training journal",
+                                          level=1))
                     actions.append(Action("pedigree",
-                                          "View pedigree papers"))
+                                          "View pedigree papers",
+                                          level=5))
                     actions.append(Action("change name", "Change name"))
 
                 if len(horses) > 1:
