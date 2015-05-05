@@ -90,8 +90,10 @@ class TestStableBackend(object):
                 StableItemFactory(name="food", value=0)])
             session.add(stable)
             backend = StableBackend(1)
-            backend.food(session)
+            new_time = backend.food(session, TimeStamp(0, 0))
             items = backend.get(session, None, "items")
+            assert_equals(isinstance(new_time, TimeStamp), True)
+            assert_equals(new_time.time, 5)
             assert_equals(items[0].value, 100)
 
     def test_water(self):
@@ -101,8 +103,9 @@ class TestStableBackend(object):
                 StableItemFactory(name="water", value=0)])
             session.add(stable)
             backend = StableBackend(1)
-            backend.water(session)
+            new_time = backend.water(session, TimeStamp(0, 0))
             items = backend.get(session, None, "items")
+            assert_equals(new_time.time, 5)
             assert_equals(items[0].value, 100)
 
     def test_get_events(self):

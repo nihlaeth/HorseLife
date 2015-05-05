@@ -47,7 +47,7 @@ class StableBackend(Backend):
         self._update_event(session, result["e_info"])
         return result["clock"]
 
-    def food(self, session):
+    def food(self, session, now):
         """Add food to encapsulated stable.
 
         session -- sqlalchemy session
@@ -57,15 +57,17 @@ class StableBackend(Backend):
         In the future, we'll want to do something with types of food.
         """
         stable = self._one_id(session, self.id_)
-        return stable.food()
+        result = stable.food(now)
+        return result["clock"]
 
-    def water(self, session):
+    def water(self, session, now):
         """Provide water for encapsulated stable.
 
         session -- sqlalchemy
         """
         stable = self._one_id(session, self.id_)
-        return stable.water()
+        result = stable.water(now)
+        return result["clock"]
 
     def __repr__(self):
         """Return string representation of encapsulated model."""

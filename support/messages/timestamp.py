@@ -21,6 +21,7 @@ class TimeStamp(Message):
         if self.time >= 1440:
             self.date += self.time / 1440
             self.time %= 1440
+        return self
 
     def end_of_night(self, event=False):
         """Skip self to the end of the night."""

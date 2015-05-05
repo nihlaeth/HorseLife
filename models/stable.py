@@ -30,19 +30,20 @@ class Stable(BASE):
     items = relationship("StableItem", backref="stableitems")
     horses = relationship("Horse", backref="stable")
 
-    def food(self):
+    def food(self, now):
         """Fill the food tray in the stable."""
-        # TODO have time factor in here (return current + 5 minutes)
+        print str(now)
         for item in self.items:
             if item.name == "food":
                 item.value = 100
+        return {"clock": now.add_min(5)}
 
-    def water(self):
+    def water(self, now):
         """Fill water tray in the stable."""
-        # TODO have time factor in here (return current + 5 minutes)
         for item in self.items:
             if item.name == "water":
                 item.value = 100
+        return {"clock": now.add_min(5)}
 
     def clean(self, now):
         """Clean stable (takes about 15 minutes)."""

@@ -161,10 +161,12 @@ class StableCore(Core):
                 new_time = self._horse.groom(session, now)
                 time.pass_time(session, new_time)
             elif choice.action == "feed":
-                self._stable.food(session)
+                new_time = self._stable.food(session, now)
+                time.pass_time(session, new_time)
                 # TODO fetch food from storage
             elif choice.action == "water":
-                self._stable.water(session)
+                new_time = self._stable.water(session, now)
+                time.pass_time(session, new_time)
             elif choice.action == "pet":
                 new_time = self._horse.pet(session, now)
                 time.pass_time(session, new_time)
