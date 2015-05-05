@@ -45,6 +45,9 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * add messages for all needs
 * move integer / readable time format from backend/time.py to TimeStamp class
 * Pretty time in the UI.
+* Earn xp with actions.
+* Display meters for food and water in stable.
+* Display level progress meter.
 
 ## Code style
 So far, I've been keeping the code up to the pep8 and pep257 standard. I've been pretty religious about this (even providing docstrings for self evident methods like __str__ and such), so I'd like any contributions to adhere to those as well.
