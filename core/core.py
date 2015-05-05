@@ -41,9 +41,12 @@ class Core(object):
             self._level.level(session))
         return self.story
 
-    def mark_story(self, session):
+    def mark_story(self, session, now):
         """Mark story as read."""
         self.story.mark_read(session)
+        if self._level is None:
+            self._level = Level(session)
+        self._level.add_xp(session, now, 10)
 
     def _info(self, session):
         """Construct info block."""

@@ -24,12 +24,13 @@ class Level(object):
 
     def progress(self, session):
         """Return percentage of progress towards next level."""
-        xp_current = self._last_level**2 * 10
-        xp_next = (self._last_level + 1)**2 * 10
+        self._last_level = self.level(session)
+        xp_current = (self._last_level * 10)**2
+        xp_next = ((self._last_level + 1) * 10)**2
         xp = self._xp.get(session, None, "numeric")
         xp = xp - xp_current
         total = xp_next - xp_current
-        return xp / total
+        return xp / float(total) * 100
 
     def add_xp(self, session, now, xp):
         """Increase experience."""
@@ -44,11 +45,11 @@ class Level(object):
         config = ConfigParser.SafeConfigParser()
         config.read("config/levels.cfg")
         sections = config.sections()
-        for level in range(self._last_level + 1, level + 1):
-            if str(level) in sections:
+        for level_pass in range(self._last_level + 1, level + 1):
+            if str(level_pass) in sections:
                 msg = {
-                    "subject": config.get(str(level), "subject"),
+                    "subject": config.get(str(level_pass), "subject"),
                     "t_stamp": now,
-                    "text": config.get(str(level), "text")}
+                    "text": config.get(str(level_pass), "text")}
                 MessageGenerator.gen_many(session, [msg])
         self._last_level = level

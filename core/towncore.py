@@ -10,6 +10,7 @@ from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.action import Action
 from backend.session import SessionScope
+from backend.time import Time
 
 
 class TownCore(Core):
@@ -63,7 +64,9 @@ class TownCore(Core):
                     if choice.action == "contracter":
                         result = ContracterCore().run()
                     elif choice.action == "story":
-                        self.mark_story(session)
+                        self.mark_story(
+                            session,
+                            Time(session).get_time_stamp(session))
                     elif choice.action == "messages":
                         core = MessageCore()
                         result = core.run()

@@ -1,5 +1,5 @@
 """Test Level."""
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_greater
 
 from backend.level import Level
 from tests.tools.dummydb import DummyDB
@@ -24,9 +24,11 @@ class TestLevel(object):
     def test_level(self):
         """Test Level.level(session)."""
         with DummyDB() as session:
-            session.add(SettingFactory(name="Experience", numeric=1000))
+            session.add(SettingFactory(name="Experience", numeric=100))
             level = Level(session)
-            assert_equals(level.level(session), 3)
+            assert_equals(level.level(session), 1)
+            level.add_xp(session, TimeStamp(0, 0), 300)
+            assert_equals(level.level(session), 2)
 
     def test_add_xp(self):
         """Test Level.add_xp(session, t_stamp, xp)."""
@@ -36,6 +38,22 @@ class TestLevel(object):
             level.add_xp(session, TimeStamp(0, 0), 500)
             setting = SettingBackend(session, 1)
             assert_equals(setting.get(session, None, "numeric"), 500)
+
+    def test_progress(self):
+        """Test Level.progress(session)."""
+        with DummyDB() as session:
+            session.add(SettingFactory(name="Experience"))
+            s_backend = SettingBackend(session, 1)
+            level = Level(session)
+            assert_equals(level.progress(session), 0)
+            s_backend.set(session, "numeric", 50)
+            assert_equals(level.progress(session), 50)
+            s_backend.set(session, "numeric", 99)
+            assert_greater(level.progress(session), 90)
+            s_backend.set(session, "numeric", 100)
+            assert_equals(level.progress(session), 0)
+            s_backend.set(session, "numeric", 250)
+            assert_equals(level.progress(session), 50)
 
     def test_level_up(self):
         """Test Level._level_up(self, session, level, t_stamp)."""

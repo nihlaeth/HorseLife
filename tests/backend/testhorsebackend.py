@@ -218,6 +218,7 @@ class TestHorseBackend(object):
             session.add(HorseFactory.build(hygiene=0, stimulation=0))
             session.add_all([SettingFactory(name="Date"),
                              SettingFactory(name="Time"),
+                             SettingFactory(name="Experience"),
                              EventFactory(subject="stimulation"),
                              EventFactory(subject="hygiene")])
             backend = HorseBackend(session, 1)
@@ -232,6 +233,7 @@ class TestHorseBackend(object):
             session.add(HorseFactory.build(stimulation=0))
             session.add_all([SettingFactory(name="Date"),
                              SettingFactory(name="Time"),
+                             SettingFactory(name="Experience"),
                              EventFactory(subject="stimulation")])
             backend = HorseBackend(session, 1)
             t_stamp = backend.pet(session, TimeStamp(0, 0))

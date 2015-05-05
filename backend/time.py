@@ -89,8 +89,7 @@ class Time(object):
                 if obj == "StableBackend":
                     e_info = stables[str(obj_id)].event(
                         subject,
-                        t_stamp,
-                        night=True)
+                        t_stamp)
                 elif obj == "HorseBackend":
                     e_info = horses[str(obj_id)].event(
                         subject,

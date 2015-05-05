@@ -1,5 +1,6 @@
 """Provide abstraction layer for Stable model."""
 from backend import Backend
+from level import Level
 from models.stable import Stable
 
 
@@ -45,6 +46,9 @@ class StableBackend(Backend):
         stable = self._one_id(session, self.id_)
         result = stable.clean(now)
         self._update_event(session, result["e_info"])
+        if self._level is None:
+            self._level = Level(session)
+        self._level.add_xp(session, now, 5)
         return result["clock"]
 
     def food(self, session, now):
@@ -58,6 +62,9 @@ class StableBackend(Backend):
         """
         stable = self._one_id(session, self.id_)
         result = stable.food(now)
+        if self._level is None:
+            self._level = Level(session)
+        self._level.add_xp(session, now, 1)
         return result["clock"]
 
     def water(self, session, now):
@@ -67,4 +74,7 @@ class StableBackend(Backend):
         """
         stable = self._one_id(session, self.id_)
         result = stable.water(now)
+        if self._level is None:
+            self._level = Level(session)
+        self._level.add_xp(session, now, 1)
         return result["clock"]

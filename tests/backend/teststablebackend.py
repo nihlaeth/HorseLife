@@ -12,6 +12,7 @@ from tests.tools.horsefactory import HorseFactory
 from tests.tools.stableitemfactory import StableItemFactory
 from tests.tools.eventfactory import EventFactory
 from tests.tools.callbackfactory import CallbackFactory
+from tests.tools.settingfactory import SettingFactory
 
 
 class TestStableBackend(object):
@@ -73,6 +74,7 @@ class TestStableBackend(object):
         """Test StableBackend.clean(session, timestamp)."""
         with DummyDB() as session:
             session.add_all([
+                SettingFactory(name="Experience"),
                 StableFactory(cleanliness=0)])
             backend = StableBackend(session, 1)
             backend.get_events(session, TimeStamp(0, 0))
@@ -88,7 +90,9 @@ class TestStableBackend(object):
         with DummyDB() as session:
             stable = StableFactory(items=[
                 StableItemFactory(name="food", value=0)])
-            session.add(stable)
+            session.add_all([
+                stable,
+                SettingFactory(name="Experience")])
             backend = StableBackend(session, 1)
             new_time = backend.food(session, TimeStamp(0, 0))
             items = backend.get(session, None, "items")
@@ -101,7 +105,9 @@ class TestStableBackend(object):
         with DummyDB() as session:
             stable = StableFactory(items=[
                 StableItemFactory(name="water", value=0)])
-            session.add(stable)
+            session.add_all([
+                stable,
+                SettingFactory(name="Experience")])
             backend = StableBackend(session, 1)
             new_time = backend.water(session, TimeStamp(0, 0))
             items = backend.get(session, None, "items")

@@ -3,6 +3,7 @@ from nose.tools import assert_equals
 
 from tests.tools.dummydb import DummyDB
 from tests.tools.eventfactory import EventFactory
+from tests.tools.settingfactory import SettingFactory
 from backend.eventbackend import EventBackend
 from support.messages.timestamp import TimeStamp
 
@@ -21,6 +22,7 @@ class TestEventBackend(object):
         """Test EventBackend.all(session)."""
         with DummyDB() as session:
             session.add_all(EventFactory.build_batch(10))
+            session.add(SettingFactory(name="Experience"))
             backends = EventBackend.all(session)
             assert_equals(len(backends), 10)
 

@@ -9,6 +9,7 @@ from messagecore import MessageCore
 from support.debug import debug
 from support.messages.quit import Quit
 from support.messages.action import Action
+from backend.time import Time
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
 
@@ -48,7 +49,9 @@ class MainCore(Core):
                     result = choice.run()
                 elif isinstance(choice, Action):
                     if choice.action == "story":
-                        self.mark_story(session)
+                        self.mark_story(
+                            session,
+                            Time(session).get_time_stamp(session))
                     if choice.action == "messages":
                         core = MessageCore()
                         result = core.run()

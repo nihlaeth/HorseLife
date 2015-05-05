@@ -158,6 +158,8 @@ class Display(object):
     def _meter(self, meter):
         """Return a graphical meter."""
         percent_filled = float(meter.percent) / 100.
+        if meter.percent < 0:
+            percent_filled = 0
         columnsfilled = int((self._screen_width - 2) * percent_filled)
         return ''.join([
             "[",

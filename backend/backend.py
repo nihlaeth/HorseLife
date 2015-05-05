@@ -30,6 +30,7 @@ class Backend(object):
         self.id_ = id_
         self._cls = "Backend"
         self._str = str(self._one_id(session, id_))
+        self._level = None
 
     def get(self, session, t_stamp, key):
         """Get an attribute from the encapsulated db model.

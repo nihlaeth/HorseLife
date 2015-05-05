@@ -175,7 +175,7 @@ class StableCore(Core):
                 new_time = self._horse.pet(session, now)
                 time.pass_time(session, new_time)
             elif choice.action == "story":
-                self.mark_story(session)
+                self.mark_story(session, now)
             elif choice.action == "messages":
                 core = MessageCore()
                 return core.run()
