@@ -35,14 +35,12 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 
 * Decide on a format to use for returning loads of data and stick with it, this "use a dict this time, but a list the next, and some other combination the third time" is NOT working positively for your workflow...
 * Implement health need.
-* Have needs check if their last_checked < now - don't do any of the work if it is equal to or greater than now.
 * Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
 * Implement money (plus a transaction tracking system).
 * Look at performance of TestStableCore.
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
-* move integer / readable time format from backend/time.py to TimeStamp class
 * Figure out why Horse model isn't firing messages
 
 ## Code style
