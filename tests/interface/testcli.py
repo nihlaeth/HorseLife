@@ -3,6 +3,7 @@ from nose.tools import assert_equals
 import mock
 
 from interface.cli.display import Display
+from support.messages.action import Action
 
 
 class TestDisplay(object):
@@ -83,12 +84,14 @@ class TestDisplay(object):
     def test_display(self):
         """Test Display.display()."""
         # pylint: disable=protected-access
-        data = ["option zero", "option one"]
+        option_zero = Action("option zero", "")
+        option_one = Action("option one", "")
+        data = [option_zero, option_one]
         menu = ["quit", "save"]
         self.display.init(data, menu)
         self.display._title = "test"
         self.display._screen_width = 20
 
         with mock.patch('__builtin__.raw_input', side_effect=["0", "3"]):
-            assert_equals(self.display.display(), "option zero")
+            assert_equals(self.display.display(), option_zero)
             assert_equals(self.display.display(), "save")

@@ -36,7 +36,7 @@ class Display(object):
         self._info = info
         self._story = story
 
-    def display(self):
+    def display(self, level=0):
         """Display screen and return user choice (class)."""
         print self._format_title()
 
@@ -66,12 +66,13 @@ class Display(object):
             print self._separator
 
         for action in self._data:
-            print self._wrap_text(''.join([
-                str(count),
-                ") ",
-                str(action)]))
-            call_list.append(action)
-            count += 1
+            if action.min_level <= level:
+                print self._wrap_text(''.join([
+                    str(count),
+                    ") ",
+                    str(action)]))
+                call_list.append(action)
+                count += 1
 
         print ''.join(["\n\n", self._separator, "\n\n"])
 
