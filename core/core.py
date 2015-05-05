@@ -4,6 +4,7 @@ from backend.time import Time
 from backend.level import Level
 from backend.messagebackend import MessageBackend
 from support.messages.action import Action
+from support.messages.meter import Meter
 
 
 class Core(object):
@@ -52,10 +53,14 @@ class Core(object):
         # Current date and time
         info.append(str(now))
         # Current level
-        # TODO: add meter to show progress towards next level
         if self._level is None:
             self._level = Level(session)
-        info.append(" ".join(["Level:", str(self._level.level(session))]))
+        info.append(" ".join([
+            "Level:",
+            str(self._level.level(session)),
+            "Progress:"]))
+        info.append(Meter(self._level.progress(session)))
+        info.append("")
         # Messages (how many unread?)
         messages = MessageBackend.all(session)
         unread = MessageBackend.unread(session)

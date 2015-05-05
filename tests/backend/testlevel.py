@@ -26,14 +26,14 @@ class TestLevel(object):
         with DummyDB() as session:
             session.add(SettingFactory(name="Experience", numeric=1000))
             level = Level(session)
-            assert_equals(level.level(session), 1)
+            assert_equals(level.level(session), 3)
 
     def test_add_xp(self):
         """Test Level.add_xp(session, t_stamp, xp)."""
         with DummyDB() as session:
             session.add(SettingFactory(name="Experience"))
             level = Level(session)
-            level.add_xp(session, None, 500)
+            level.add_xp(session, TimeStamp(0, 0), 500)
             setting = SettingBackend(session, 1)
             assert_equals(setting.get(session, None, "numeric"), 500)
 

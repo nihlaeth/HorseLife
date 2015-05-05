@@ -6,6 +6,8 @@ from settingbackend import SettingBackend
 from generators.messagegenerator import MessageGenerator
 
 
+# xp is universally understood.
+# pylint: disable=invalid-name
 class Level(object):
 
     """Level system."""
@@ -18,10 +20,17 @@ class Level(object):
     def level(self, session):
         """Translate experience into a level."""
         experience = self._xp.get(session, None, "numeric")
-        return int(math.sqrt(float(experience)) / 31.)
+        return int(math.sqrt(float(experience)) / 10.)
 
-    # xp is universally understood.
-    # pylint: disable=invalid-name
+    def progress(self, session):
+        """Return percentage of progress towards next level."""
+        xp_current = self._last_level**2 * 10
+        xp_next = (self._last_level + 1)**2 * 10
+        xp = self._xp.get(session, None, "numeric")
+        xp = xp - xp_current
+        total = xp_next - xp_current
+        return xp / total
+
     def add_xp(self, session, now, xp):
         """Increase experience."""
         experience = self._xp.get(session, None, "numeric")
