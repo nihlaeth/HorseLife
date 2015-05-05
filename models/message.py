@@ -25,3 +25,11 @@ class Message(BASE):
     def set(self, key, value):
         """Set attribute."""
         setattr(self, key, value)
+
+    def __str__(self):
+        """Message representation."""
+        return " ".join([
+            str(self.date),
+            str(self.time),
+            "--",
+            self.subject])

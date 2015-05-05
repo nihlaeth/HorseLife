@@ -19,7 +19,7 @@ class HorseBackend(Backend):
         session -- sqlalchemy session
         """
         horses = session.query(Horse).order_by(Horse.mid)
-        return [HorseBackend(horse.mid) for horse in horses]
+        return [HorseBackend(session, horse.mid) for horse in horses]
 
     @classmethod
     def _one_id(cls, session, id_):
@@ -30,10 +30,10 @@ class HorseBackend(Backend):
         """
         return session.query(Horse).filter_by(mid=id_)[0]
 
-    def __init__(self, id_):
-        """Backend sets self.id_, self._str is for inherited methods."""
-        Backend.__init__(self, id_)
-        self._str = "HorseBackend"
+    def __init__(self, session, id_):
+        """Backend sets self.id_, self._cls is for inherited methods."""
+        Backend.__init__(self, session, id_)
+        self._cls = "HorseBackend"
 
     def groom(self, session, now):
         """Groom encapsulated horse and return the current time.

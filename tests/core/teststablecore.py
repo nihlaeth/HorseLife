@@ -37,14 +37,14 @@ class TestStableCore(object):
 
             m_debug.return_value = False
 
-            stable = StableBackend(1)
+            stable = StableBackend(session, 1)
             stable.get_events(session, TimeStamp(0, 0))
 
             # Test Quit
             quit_ = Quit()
             m_display.return_value = quit_
 
-            core = StableCore(StableBackend(1))
+            core = StableCore(StableBackend(session, 1))
 
             result = core.run()
 
@@ -54,12 +54,12 @@ class TestStableCore(object):
             # Now test actions
             # Get a horse in that stable!
             session.add(HorseFactory(stable=stable_raw))
-            HorseBackend(1).get_events(session, TimeStamp(0, 0))
+            HorseBackend(session, 1).get_events(session, TimeStamp(0, 0))
             m_getstr.return_value = "Bless"
 
             # Get a fresh core instance, to make sure it processes the
             # horse we put in the stable.
-            core = StableCore(StableBackend(1))
+            core = StableCore(StableBackend(session, 1))
 
             # For now, just make sure nothing dies when performing
             # these actions. We're not testing their effect (yet).

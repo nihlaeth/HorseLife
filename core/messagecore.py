@@ -74,7 +74,7 @@ class MessageCore(Core):
         elif isinstance(choice, Action):
             if choice.action == "message":
                 self._screen = "message"
-                self._message = MessageBackend(choice.arguments[0])
+                self._message = MessageBackend(session, choice.arguments[0])
             elif choice.action == "delete":
                 # TODO: implement delete - needs a backend method
                 pass

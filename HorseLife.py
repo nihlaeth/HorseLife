@@ -78,8 +78,8 @@ class HorseLife(object):
                 horses = HorseGenerator().gen_many(session, 1, "Mixed breed")
                 stables[0].horses = [horses[0]]
                 # Generate events for these objects
-                StableBackend(1).get_events(session, TimeStamp(0, 0))
-                HorseBackend(1).get_events(session, TimeStamp(0, 0))
+                StableBackend(session, 1).get_events(session, TimeStamp(0, 0))
+                HorseBackend(session, 1).get_events(session, TimeStamp(0, 0))
                 StoryGenerator().gen_many(session)
                 MessageGenerator.gen_many(session, [
                     {"subject": "Welcome",

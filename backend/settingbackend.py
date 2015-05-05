@@ -14,7 +14,7 @@ class SettingBackend(Backend):
         session -- sqlalchemy session
         """
         models = session.query(Setting).order_by(Setting.mid)
-        return [SettingBackend(model.mid) for model in models]
+        return [SettingBackend(session, model.mid) for model in models]
 
     @classmethod
     def one(cls, session, name):
@@ -24,6 +24,7 @@ class SettingBackend(Backend):
         name -- setting name (str)
         """
         return SettingBackend(
+            session,
             session.query(Setting).filter_by(name=name)[0].mid)
 
     @classmethod
@@ -35,13 +36,13 @@ class SettingBackend(Backend):
         """
         return session.query(Setting).filter_by(mid=id_)[0]
 
-    def __init__(self, id_):
+    def __init__(self, session, id_):
         """Set model id.
 
         id -- model id (int)
         """
-        Backend.__init__(self, id_)
-        self._str = "SettingBackend"
+        Backend.__init__(self, session, id_)
+        self._cls = "SettingBackend"
 
     def set(self, session, key, value):
         """Set attribute on encapsulated model.

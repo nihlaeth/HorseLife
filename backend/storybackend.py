@@ -64,7 +64,7 @@ class StoryBackend(Backend):
 
     def __init__(self, session, id_):
         """Get story properties."""
-        Backend.__init__(self, id_)
+        Backend.__init__(self, session, id_)
         self._config = ConfigParser.SafeConfigParser()
         self._config.read("config/story.cfg")
         self.id_ = id_

@@ -34,13 +34,15 @@ class TestMessageBackend(object):
 
     def test_init(self):
         """Test MessageBackend.__init__(id)."""
-        assert_equals(MessageBackend(1).id_, 1)
+        with DummyDB() as session:
+            session.add(MessageFactory())
+            assert_equals(MessageBackend(session, 1).id_, 1)
 
     def test_set(self):
         """Test MessageBackend.set(session, key, value)."""
         with DummyDB() as session:
             session.add(MessageFactory())
-            backend = MessageBackend(1)
+            backend = MessageBackend(session, 1)
             backend.set(session, "date", 20)
             assert_equals(backend.get(session, None, "date"), 20)
 
@@ -48,6 +50,6 @@ class TestMessageBackend(object):
         """Test MessageBackend.get(session, t_stamp, key)."""
         with DummyDB() as session:
             session.add(MessageFactory())
-            backend = MessageBackend(1)
+            backend = MessageBackend(session, 1)
             assert_equals(backend.get(session, None, "subject"), "Hey")
             assert_equals(backend.get(session, None, "read"), False)

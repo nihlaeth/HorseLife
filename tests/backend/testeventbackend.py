@@ -13,7 +13,9 @@ class TestEventBackend(object):
 
     def test_init(self):
         """Test EventBackend.__init__(id)."""
-        assert_equals(EventBackend(1).id_, 1)
+        with DummyDB() as session:
+            session.add(EventFactory())
+            assert_equals(EventBackend(session, 1).id_, 1)
 
     def test_all(self):
         """Test EventBackend.all(session)."""
@@ -43,14 +45,14 @@ class TestEventBackend(object):
         """Test EventBackend.get(session, key)."""
         with DummyDB() as session:
             session.add(EventFactory())
-            backend = EventBackend(1)
+            backend = EventBackend(session, 1)
             assert_equals(backend.get(session, None, "time"), 0)
 
     def test_set(self):
         """Test EventBackend.set(session, key, value)."""
         with DummyDB() as session:
             session.add(EventFactory())
-            backend = EventBackend(1)
+            backend = EventBackend(session, 1)
             backend.set(session, "time", 20)
             assert_equals(backend.get(session, None, "time"), 20)
 
@@ -58,7 +60,7 @@ class TestEventBackend(object):
         """Test EventBackend.update(session, timestamp)."""
         with DummyDB() as session:
             session.add(EventFactory())
-            backend = EventBackend(1)
+            backend = EventBackend(session, 1)
             backend.update(session, TimeStamp(1, 1))
             assert_equals(backend.get(session, None, "date"), 1)
             assert_equals(backend.get(session, None, "time"), 1)

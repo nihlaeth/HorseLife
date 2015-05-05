@@ -12,8 +12,10 @@ class TestPersonBackend(object):
 
     def test_init(self):
         """Test PersonBackend.__init__(id)."""
-        backend = PersonBackend(1)
-        assert_equals(backend.id_, 1)
+        with DummyDB() as session:
+            session.add(PersonFactory())
+            backend = PersonBackend(session, 1)
+            assert_equals(backend.id_, 1)
 
     def test_one_id(self):
         """Test PersonBackend._one_id(session, id)."""

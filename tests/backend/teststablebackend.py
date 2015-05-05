@@ -51,7 +51,7 @@ class TestStableBackend(object):
             session.add(StableFactory.build(
                 name="Test1",
                 horses=[HorseFactory()]))
-            backend = StableBackend(1)
+            backend = StableBackend(session, 1)
             backend.get_events(session, TimeStamp(0, 0))
             assert_equals(backend.get(session, None, "name"), "Test1")
             # Now see if cleanliness behaves as it should.
@@ -64,7 +64,7 @@ class TestStableBackend(object):
         """Test StableBackend.set(session, key, value)."""
         with DummyDB() as session:
             session.add(StableFactory.build(name="Test1"))
-            backend = StableBackend(1)
+            backend = StableBackend(session, 1)
             assert_equals(backend.get(session, None, "name"), "Test1")
             backend.set(session, "name", "Test2")
             assert_equals(backend.get(session, None, "name"), "Test2")
@@ -74,7 +74,7 @@ class TestStableBackend(object):
         with DummyDB() as session:
             session.add_all([
                 StableFactory(cleanliness=0)])
-            backend = StableBackend(1)
+            backend = StableBackend(session, 1)
             backend.get_events(session, TimeStamp(0, 0))
             t_stamp = backend.clean(session, TimeStamp(0, 0))
             assert_equals(t_stamp.time, 15)
@@ -89,7 +89,7 @@ class TestStableBackend(object):
             stable = StableFactory(items=[
                 StableItemFactory(name="food", value=0)])
             session.add(stable)
-            backend = StableBackend(1)
+            backend = StableBackend(session, 1)
             new_time = backend.food(session, TimeStamp(0, 0))
             items = backend.get(session, None, "items")
             assert_equals(isinstance(new_time, TimeStamp), True)
@@ -102,7 +102,7 @@ class TestStableBackend(object):
             stable = StableFactory(items=[
                 StableItemFactory(name="water", value=0)])
             session.add(stable)
-            backend = StableBackend(1)
+            backend = StableBackend(session, 1)
             new_time = backend.water(session, TimeStamp(0, 0))
             items = backend.get(session, None, "items")
             assert_equals(new_time.time, 5)
@@ -112,7 +112,7 @@ class TestStableBackend(object):
         """Test StableBackend.get_events(session, timestamp)."""
         with DummyDB() as session:
             session.add(StableFactory())
-            backend = StableBackend(1)
+            backend = StableBackend(session, 1)
             backend.get_events(session, TimeStamp(0, 0))
             assert_greater(len(EventBackend.all(session)), 0)
 
@@ -122,7 +122,7 @@ class TestStableBackend(object):
             session.add_all([
                 StableFactory(),
                 EventFactory(subject="flub")])
-            backend = StableBackend(1)
+            backend = StableBackend(session, 1)
 
             # The whole point here is to test a protected method.
             # pylint: disable=protected-access
@@ -131,7 +131,7 @@ class TestStableBackend(object):
                 "t_stamp": TimeStamp(5, 20),
                 "msg": None})
 
-            event = EventBackend(1)
+            event = EventBackend(session, 1)
             assert_equals(event.get(session, None, "date"), 5)
             assert_equals(event.get(session, None, "time"), 20)
 
@@ -148,7 +148,7 @@ class TestStableBackend(object):
                 m_event.return_value = {
                     "subject": "stablestest",
                     "t_stamp": TimeStamp(1000, 0)}
-                backend = StableBackend(1)
+                backend = StableBackend(session, 1)
                 t_stamp = TimeStamp(0, 0)
                 backend.event_callback(session, "stablestest", t_stamp)
 
@@ -157,7 +157,7 @@ class TestStableBackend(object):
         with DummyDB() as session:
             session.add_all([
                 StableFactory()])
-            backend = StableBackend(1)
+            backend = StableBackend(session, 1)
             backend.get_events(session, TimeStamp(0, 0))
             t_stamp = TimeStamp(0, 0)
             backend.event_callback(session, "cleanliness", t_stamp)

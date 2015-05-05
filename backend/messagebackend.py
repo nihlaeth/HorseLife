@@ -11,12 +11,14 @@ class MessageBackend(Backend):
     def all(cls, session):
         """Return a list of all messages (encapsulated)."""
         models = session.query(Message).order_by(Message.date, Message.time)
-        return [MessageBackend(model.mid) for model in models]
+        return [MessageBackend(session, model.mid) for model in models]
 
     @classmethod
     def one(cls, session, mid):
         """Return encapsulated message."""
-        return MessageBackend(session.query(Message).filter_by(mid=mid)[0].mid)
+        return MessageBackend(
+            session,
+            session.query(Message).filter_by(mid=mid)[0].mid)
 
     @classmethod
     def unread(cls, session):
@@ -28,10 +30,10 @@ class MessageBackend(Backend):
         """Return raw model."""
         return session.query(Message).filter_by(mid=mid)[0]
 
-    def __init__(self, mid):
+    def __init__(self, session, mid):
         """Set model id."""
-        Backend.__init__(self, mid)
-        self._str = "MessageBackend"
+        Backend.__init__(self, session, mid)
+        self._cls = "MessageBackend"
 
     def set(self, session, key, value):
         """Set attribute on encapsulated model."""

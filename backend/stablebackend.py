@@ -19,7 +19,7 @@ class StableBackend(Backend):
         session -- sqlalchemy session
         """
         stables = session.query(Stable).order_by(Stable.name)
-        return [StableBackend(stable.mid) for stable in stables]
+        return [StableBackend(session, stable.mid) for stable in stables]
 
     @classmethod
     def _one_id(cls, session, id_):
@@ -30,10 +30,10 @@ class StableBackend(Backend):
         """
         return session.query(Stable).filter_by(mid=id_)[0]
 
-    def __init__(self, id_):
-        """Backend sets _id, _str is for use with inherited methods."""
-        Backend.__init__(self, id_)
-        self._str = "StableBackend"
+    def __init__(self, session, id_):
+        """Backend sets _id, _cls is for use with inherited methods."""
+        Backend.__init__(self, session, id_)
+        self._cls = "StableBackend"
 
     def clean(self, session, now):
         """Execute clean method on encapsulated model.
@@ -68,15 +68,3 @@ class StableBackend(Backend):
         stable = self._one_id(session, self.id_)
         result = stable.water(now)
         return result["clock"]
-
-    def __repr__(self):
-        """Return string representation of encapsulated model."""
-        # TODO find elegant way to get repr info
-        # without a session - and have the info not
-        # be stale.
-        return "Stable -- no session == no info"
-
-    def __str__(self):
-        """Return string representation of encapsulated model."""
-        # TODO same as above
-        return "Stable -- no session == no info"

@@ -24,7 +24,9 @@ class TestHorseBackend(object):
 
     def test_init(self):
         """Test HorseBackend.__init__(id)."""
-        assert_equals(HorseBackend(1).id_, 1)
+        with DummyDB() as session:
+            session.add(HorseFactory())
+            assert_equals(HorseBackend(session, 1).id_, 1)
 
     def test_one_id(self):
         """Test HorseBackend._one_id(session, id)."""
@@ -55,9 +57,9 @@ class TestHorseBackend(object):
             session.add(HorseFactory.build())
             session.add_all([SettingFactory(name="Date"),
                              SettingFactory(name="Time")])
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             backend.get_events(session, TimeStamp(0, 0))
-            backend2 = HorseBackend(2)
+            backend2 = HorseBackend(session, 2)
             backend2.get_events(session, TimeStamp(0, 0))
             assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
                           "Spirit")
@@ -108,10 +110,10 @@ class TestHorseBackend(object):
                 cleanliness=0)
             horse = HorseFactory(stable=stable)
             session.add_all([stable, horse])
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             t_stamp = TimeStamp(0, 0)
             backend.get_events(session, t_stamp)
-            StableBackend(1).get_events(session, t_stamp)
+            StableBackend(session, 1).get_events(session, t_stamp)
             # With these base settings, environment should be 0.
             assert_equals(backend.get(session, t_stamp, "environment"), 0)
             # Maximize surface
@@ -160,10 +162,10 @@ class TestHorseBackend(object):
                 stimulation=0,
                 social=0)
             session.add_all([stable, horse])
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             t_stamp = TimeStamp(0, 0)
             backend.get_events(session, t_stamp)
-            StableBackend(1).get_events(session, t_stamp)
+            StableBackend(session, 1).get_events(session, t_stamp)
             # Baseline test: happiness should be zero here.
             assert_equals(backend.get(session, t_stamp, "happiness"), 0)
 
@@ -205,7 +207,7 @@ class TestHorseBackend(object):
             session.add(HorseFactory.build(name="Storm"))
             session.add_all([SettingFactory(name="Date"),
                              SettingFactory(name="Time")])
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             backend.set(session, "name", "Mary")
             assert_equals(backend.get(session, TimeStamp(0, 0), "name"),
                           "Mary")
@@ -218,7 +220,7 @@ class TestHorseBackend(object):
                              SettingFactory(name="Time"),
                              EventFactory(subject="stimulation"),
                              EventFactory(subject="hygiene")])
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             t_stamp = backend.groom(session, TimeStamp(0, 0))
             assert_equals(t_stamp.time, 30)
             assert_equals(backend.get(session, t_stamp, "hygiene"), 100)
@@ -231,7 +233,7 @@ class TestHorseBackend(object):
             session.add_all([SettingFactory(name="Date"),
                              SettingFactory(name="Time"),
                              EventFactory(subject="stimulation")])
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             t_stamp = backend.pet(session, TimeStamp(0, 0))
             assert_equals(t_stamp.time, 5)
             assert_greater(backend.get(session, t_stamp, "stimulation"), 0)
@@ -250,7 +252,7 @@ class TestHorseBackend(object):
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time", numeric=60)])
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             time = Time(session)
             now = time.get_time_stamp(session)
             backend.get_events(session, now)
@@ -272,14 +274,14 @@ class TestHorseBackend(object):
                 m_event.return_value = {
                     "subject": "food-test",
                     "t_stamp": TimeStamp(1000, 0)}
-                backend = HorseBackend(1)
+                backend = HorseBackend(session, 1)
                 backend.event_callback(session, "food-test", TimeStamp(0, 0))
                 m_event.assert_called_once_with("food-test", TimeStamp(0, 0))
         with DummyDB() as session:
             session.add_all([
                 HorseFactory(),
                 EventFactory(subject="food", obj_id="1")])
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             with profiled():
                 e_info = backend.event_callback(
                     session,
@@ -301,7 +303,7 @@ class TestHorseBackend(object):
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time")])
             t3 = datetime.datetime.now()
-            backend = HorseBackend(1)
+            backend = HorseBackend(session, 1)
             time = Time(session)
             now = time.get_time_stamp(session)
             t3_1 = datetime.datetime.now()

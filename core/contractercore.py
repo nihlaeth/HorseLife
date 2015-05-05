@@ -118,7 +118,7 @@ class ContracterCore(Core):
                     1,
                     choice.arguments[0],
                     now)[0].mid
-                stable = StableBackend(stable_id)
+                stable = StableBackend(session, stable_id)
                 stable.get_events(session, now)
             elif choice.action == "story":
                 self.mark_story(session)

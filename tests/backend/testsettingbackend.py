@@ -48,7 +48,7 @@ class TestSettingBackend(object):
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             session.add(SettingFactory.build(numeric=34, text="blah"))
-            backend = SettingBackend(1)
+            backend = SettingBackend(session, 1)
             assert_equals(backend.get(session, None, "name"), "Test0")
             assert_equals(backend.get(session, None, "numeric"), 34)
             assert_equals(backend.get(session, None, "text"), "blah")
@@ -58,7 +58,7 @@ class TestSettingBackend(object):
         with DummyDB() as session:
             SettingFactory.reset_sequence()
             session.add(SettingFactory.build())
-            backend = SettingBackend(1)
+            backend = SettingBackend(session, 1)
             assert_equals(backend.get(session, None, "name"), "Test0")
             backend.set(session, "name", "Test2")
             assert_equals(backend.get(session, None, "name"), "Test2")

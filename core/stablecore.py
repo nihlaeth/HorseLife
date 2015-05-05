@@ -96,7 +96,7 @@ class StableCore(Core):
                 # Get horses
                 horses = self._stable.get(session, None, "horses")
                 if len(horses) > 0 and self._horse is None:
-                    self._horse = HorseBackend(horses[0].mid)
+                    self._horse = HorseBackend(session, horses[0].mid)
 
                 time = Time(session)
                 now = time.get_time_stamp(session)
@@ -133,7 +133,7 @@ class StableCore(Core):
                             actions.append(Action(
                                 "fetch",
                                 ''.join(["Fetch ", horse.name]),
-                                [HorseBackend(horse.id)]))
+                                [HorseBackend(session, horse.id)]))
 
                 menu = [Back(), Quit()]
                 story = self.get_story(session)

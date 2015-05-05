@@ -19,7 +19,7 @@ class EventBackend(Backend):
         session -- sqlalchemy session
         """
         models = session.query(Event).order_by(Event.date, Event.time)
-        return [EventBackend(model.mid) for model in models]
+        return [EventBackend(session, model.mid) for model in models]
 
     @classmethod
     def all_raw(cls, session):
@@ -46,6 +46,7 @@ class EventBackend(Backend):
         the callbacks to determine.
         """
         return EventBackend(
+            session,
             session.query(Event).filter(
                 Event.subject == subject,
                 Event.obj_id == obj_id)[0].mid)
@@ -68,6 +69,7 @@ class EventBackend(Backend):
         It's deprecated, and can disappear at any time!
         """
         return EventBackend(
+            session,
             session.query(Event).order_by(Event.date, Event.time)[0].mid)
 
     @classmethod
@@ -82,12 +84,12 @@ class EventBackend(Backend):
         """
         return session.query(Event).filter_by(mid=id_)[0]
 
-    def __init__(self, id_):
+    def __init__(self, session, id_):
         """Set model id (does not connect to database).
 
         id -- model id (int)
         """
-        Backend.__init__(self, id_)
+        Backend.__init__(self, session, id_)
 
     def update(self, session, timestamp):
         """Update timestamp on encapsulated model.

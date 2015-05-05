@@ -107,8 +107,8 @@ class TestTime(object):
 
             time = Time(session)
             now = time.get_time_stamp(session)
-            HorseBackend(1).get_events(session, now)
-            StableBackend(1).get_events(session, now)
+            HorseBackend(session, 1).get_events(session, now)
+            StableBackend(session, 1).get_events(session, now)
 
             now.add_min(480)
             time.pass_time(session, now)

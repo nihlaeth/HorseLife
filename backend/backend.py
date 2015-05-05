@@ -21,14 +21,15 @@ class Backend(object):
         """Fetch unencapsulated instance from database."""
         pass
 
-    def __init__(self, id_):
+    def __init__(self, session, id_):
         """Set the model identifier.
 
         _id indicates id of model in database.
-        _str is used to indicate inherited class id in shared method.
+        _cls is used to indicate inherited class id in shared method.
         """
         self.id_ = id_
-        self._str = "Backend"
+        self._cls = "Backend"
+        self._str = str(self._one_id(session, id_))
 
     def get(self, session, t_stamp, key):
         """Get an attribute from the encapsulated db model.
@@ -84,7 +85,7 @@ class Backend(object):
                 events[e_info["subject"]] = {
                     "obj_id": self.id_,
                     "t_stamp": e_info["t_stamp"],
-                    "callbacks": [[self._str, self.id_]]}
+                    "callbacks": [[self._cls, self.id_]]}
         EventGenerator.gen_many(session, events)
 
     def _update_event(self, session, e_info):
@@ -129,3 +130,7 @@ class Backend(object):
         e_info = instance.event(subject, t_stamp)
         # self._update_event(session, e_info)
         return e_info
+
+    def __str__(self):
+        """Return str representation of encapsulated model."""
+        return self._str

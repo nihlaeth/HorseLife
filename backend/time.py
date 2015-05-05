@@ -32,12 +32,12 @@ class Time(object):
 
     def get_day(self, session):
         """Return day of the week."""
-        date = SettingBackend(self._date_id)
+        date = SettingBackend(session, self._date_id)
         return DAY[date.get(session, None, "numeric") % 7]
 
     def get_time(self, session):
         """Deprecated -- use get_time_stamp."""
-        time_ = SettingBackend(self._time_id)
+        time_ = SettingBackend(session, self._time_id)
         total_minutes = time_.get(session, None, "numeric")
         hours = total_minutes / 60
         minutes = total_minutes % 60
@@ -50,8 +50,12 @@ class Time(object):
 
         session -- sqlalchemy session
         """
-        date = SettingBackend(self._date_id).get(session, None, "numeric")
-        time_ = SettingBackend(self._time_id).get(session, None, "numeric")
+        date = SettingBackend(
+            session,
+            self._date_id).get(session, None, "numeric")
+        time_ = SettingBackend(
+            session,
+            self._time_id).get(session, None, "numeric")
         return TimeStamp(date, time_)
 
     def pass_time(self, session, now):

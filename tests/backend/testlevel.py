@@ -34,7 +34,7 @@ class TestLevel(object):
             session.add(SettingFactory(name="Experience"))
             level = Level(session)
             level.add_xp(session, None, 500)
-            setting = SettingBackend(1)
+            setting = SettingBackend(session, 1)
             assert_equals(setting.get(session, None, "numeric"), 500)
 
     def test_level_up(self):
