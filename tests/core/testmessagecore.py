@@ -27,7 +27,8 @@ class TestMessageCore(object):
             session.add_all(messages)
             session.add_all([
                 SettingFactory(name="Date"),
-                SettingFactory(name="Time")])
+                SettingFactory(name="Time"),
+                SettingFactory(name="Experience")])
             quit_ = Quit()
 
             m_debug.return_value = False

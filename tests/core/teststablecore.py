@@ -32,6 +32,7 @@ class TestStableCore(object):
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),
+                SettingFactory(name="Experience"),
                 stable_raw])
 
             m_debug.return_value = False

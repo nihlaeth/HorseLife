@@ -89,7 +89,8 @@ class HorseLife(object):
                     session,
                     {
                         "Date": [0, ""],
-                        "Time": [0, ""]})
+                        "Time": [0, ""],
+                        "Experience": [0, ""]})
                 Time(session).pass_time(session, TimeStamp(0, 420))
 
         choice = MainCore().run()

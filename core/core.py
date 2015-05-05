@@ -1,6 +1,7 @@
 """Interface to inherit from for *Core classes."""
 from backend.storybackend import StoryBackend
 from backend.time import Time
+from backend.level import Level
 from backend.messagebackend import MessageBackend
 from support.messages.action import Action
 
@@ -13,6 +14,7 @@ class Core(object):
         """Get a display."""
         self._display = None
         self.story = None
+        self._level = None
 
     def run(self):
         """Game logic.
@@ -48,17 +50,22 @@ class Core(object):
             str(time.get_time_stamp(session).date),
             "Time:",
             time.get_time(session)]))
+        # Current level
+        # TODO: add meter to show progress towards next level
+        if self._level is None:
+            self._level = Level(session)
+        info.append(" ".join(["Level:", str(self._level.level(session))]))
         # Messages (how many unread?)
         messages = MessageBackend.all(session)
         unread = MessageBackend.unread(session)
-        summary = " ".join([str(len(messages)), "messages"])
+        summary = " ".join(["You have", str(len(messages)), "messages"])
         if unread > 0:
             summary = " ".join([
                 "!!!",
-                str(unread),
-                "unread messages,",
                 summary,
-                "total"])
+                "and",
+                str(unread),
+                "unread messages"])
         info.append(summary)
         info.append(Action("messages", "Read messages"))
         return info

@@ -111,8 +111,6 @@ class Backend(object):
         event = EventBackend.one(session, e_info["subject"], self.id_)
         event.update(session, e_info["t_stamp"])
         if e_info["msg"] is not None:
-            # TODO: get this ugly import out of here... for now
-            # it's preventing a circular / dependency problem.
             from generators.messagegenerator import MessageGenerator
             MessageGenerator.gen_many(session, [e_info["msg"]])
 

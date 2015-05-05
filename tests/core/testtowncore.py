@@ -26,7 +26,8 @@ class TestTownCore(object):
             m_db.return_value = session
             session.add_all([
                 SettingFactory(name="Date"),
-                SettingFactory(name="Time")])
+                SettingFactory(name="Time"),
+                SettingFactory(name="Experience")])
 
             m_debug.return_value = False
 

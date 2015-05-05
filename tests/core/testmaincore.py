@@ -25,7 +25,8 @@ class TestMainCore(object):
         with DummyDB() as session:
             session.add_all([
                 SettingFactory(name="Date"),
-                SettingFactory(name="Time")])
+                SettingFactory(name="Time"),
+                SettingFactory(name="Experience")])
             m_session.return_value = session
             m_debug.return_value = False
             quit_ = Quit()
