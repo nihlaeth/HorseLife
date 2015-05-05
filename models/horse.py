@@ -195,6 +195,8 @@ class Horse(BASE):
         self.food_date = now.date
         self.food_time = now.time
 
+        # TODO have stable handle it's own items. Don't mess around
+        # in there!
         if self.food < 25 and not self.food_msg:
             msg = {
                 "subject": "%s is hungry!" % self.name,

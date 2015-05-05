@@ -5,6 +5,7 @@ import mock
 from tests.tools.stablefactory import StableFactory
 from tests.tools.settingfactory import SettingFactory
 from tests.tools.horsefactory import HorseFactory
+from tests.tools.stableitemfactory import StableItemFactory
 from tests.tools.dummydb import DummyDB
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
@@ -28,7 +29,9 @@ class TestStableCore(object):
         """Test StableCore.run()."""
         with DummyDB() as session:
             m_db.return_value = session
-            stable_raw = StableFactory()
+            stable_raw = StableFactory(items=[
+                StableItemFactory(name="food"),
+                StableItemFactory(name="water")])
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),

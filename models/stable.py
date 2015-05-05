@@ -128,6 +128,34 @@ class Stable(BASE):
                        cleanliness_decay_time)
         return {"subject": "cleanliness", "t_stamp": t_next, "msg": None}
 
+    def _get_food(self, now):
+        """Get up to date food value."""
+        food = []
+        for item in self.items:
+            if item.name == "food":
+                food.append(item)
+        # For now, there's only one food item.
+        # In the future, there will be different types here.
+        # See if the horse wants to eat.
+        events = []
+        for horse in self.horses:
+            events.append(horse.get(now, "food")["e_info"][0])
+        return {"attr": food[0].value, "e_info": events}
+
+    def _get_water(self, now):
+        """Get up to date water value."""
+        water = []
+        for item in self.items:
+            if item.name == "water":
+                water.append(item)
+        # In the future, there will be multiple options here, horse
+        # will have to choose from them somehow.
+        # See if horse wants to drink.
+        events = []
+        for horse in self.horses:
+            events.append(horse.get(now, "water")["e_info"][0])
+        return {"attr": water[0].value, "e_info": events}
+
     def get(self, now, key):
         """Get attribute.
 
@@ -138,6 +166,14 @@ class Stable(BASE):
         if key == "cleanliness":
             e_info = [self._ch_cleanliness(now)]
             result = self.cleanliness
+        elif key == "food":
+            data = self._get_food(now)
+            e_info = data["e_info"]
+            result = data["attr"]
+        elif key == "water":
+            data = self._get_water(now)
+            e_info = data["e_info"]
+            result = data["attr"]
         else:
             e_info = None
             result = getattr(self, key)

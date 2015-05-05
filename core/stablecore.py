@@ -107,6 +107,10 @@ class StableCore(Core):
                     session,
                     now,
                     "cleanliness")))
+                info.append("Food tray:")
+                info.append(Meter(self._stable.get(session, now, "food")))
+                info.append("Water bucket:")
+                info.append(Meter(self._stable.get(session, now, "water")))
 
                 if self._horse is not None:
                     # Lists are passed by reference by default
