@@ -66,7 +66,15 @@ class Display(object):
             print self._separator
 
         for action in self._data:
-            if action.min_level <= level:
+            if isinstance(action, Action):
+                if action.min_level <= level:
+                    print self._wrap_text(''.join([
+                        str(count),
+                        ") ",
+                        str(action)]))
+                    call_list.append(action)
+                    count += 1
+            else:
                 print self._wrap_text(''.join([
                     str(count),
                     ") ",

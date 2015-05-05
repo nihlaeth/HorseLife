@@ -34,21 +34,26 @@ class TownCore(Core):
 
                 actions = [
                     Action("bank", "Bank"),
-                    Action("horses", "Horse market"),
-                    Action("contracter", "Contracter"),
+                    Action("horses", "Horse market", level=5),
+                    Action("contracter", "Contracter", level=5),
                     Action("tack", "Saddle maker"),
                     Action("food", "Horse supplies"),
-                    Action("newspaper", "News agency"),
                     Action("veterinarian", "Veterinarian"),
                     Action("farrier", "Farrier"),
-                    Action("competitions",
-                           "National equine sports association"),
-                    Action("employment", "Employment agency"),
-                    Action("education", "College")]
+                    Action(
+                        "competitions",
+                        "National equine sports association",
+                        level=15),
+                    Action(
+                        "employment",
+                        "Employment agency",
+                        level=20),
+                    Action("newspaper", "News agency", level=20),
+                    Action("education", "College", level=25)]
                 menu = [Back(), Quit()]
                 story = self.get_story(session)
                 self._display.init(actions, menu, info, story)
-                choice = self._display.display()
+                choice = self._display.display(self._level.level(session))
                 if debug():
                     pdb.set_trace()
                 result = None
