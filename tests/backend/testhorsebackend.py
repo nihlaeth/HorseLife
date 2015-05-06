@@ -6,6 +6,7 @@ import datetime
 from backend.horsebackend import HorseBackend
 from backend.eventbackend import EventBackend
 from backend.stablebackend import StableBackend
+from backend.messagebackend import MessageBackend
 from backend.time import Time
 from models.horse import Horse
 from support.messages.timestamp import TimeStamp
@@ -70,8 +71,12 @@ class TestHorseBackend(object):
             t = TimeStamp
             assert_equals(backend.get(session, t(0, 0), "food"), 100)
             assert_less(backend.get(session, t(0, 120), "food"), 100)
+            assert_equals(backend.get(session, t(1, 120), "food"), 0)
+            assert_equals(len(MessageBackend.all(session)), 1)
             assert_equals(backend.get(session, t(0, 0), "water"), 100)
             assert_less(backend.get(session, t(0, 120), "water"), 100)
+            assert_equals(backend.get(session, t(1, 120), "water"), 0)
+            assert_equals(len(MessageBackend.all(session)), 2)
             assert_equals(backend.get(session, t(0, 0), "energy"), 100)
             # It was just night, energy should be restored.
             assert_equals(backend.get(session, t(0, 120), "energy"), 100)
@@ -91,14 +96,22 @@ class TestHorseBackend(object):
                 session,
                 t(0, 120),
                 "stimulation"), 100)
+            assert_equals(backend.get(session, t(0, 800), "stimulation"), 0)
+            assert_equals(len(MessageBackend.all(session)), 3)
             assert_equals(backend2.get(session, t(0, 0), "stimulation"), 100)
             assert_equals(backend2.get(session, t(0, 120), "stimulation"), 100)
             assert_equals(backend.get(session, t(0, 0), "social"), 100)
             assert_less(backend.get(session, t(0, 120), "social"), 100)
+            assert_equals(backend.get(session, t(1, 800), "social"), 0)
+            assert_equals(len(MessageBackend.all(session)), 4)
             assert_equals(backend.get(session, t(0, 0), "exercise"), 100)
             assert_less(backend.get(session, t(0, 120), "exercise"), 100)
+            assert_equals(backend.get(session, t(1, 120), "exercise"), 0)
+            assert_equals(len(MessageBackend.all(session)), 5)
             assert_equals(backend.get(session, t(0, 0), "hygiene"), 100)
             assert_less(backend.get(session, t(0, 120), "hygiene"), 100)
+            assert_equals(backend.get(session, t(1, 120), "hygiene"), 0)
+            assert_equals(len(MessageBackend.all(session)), 6)
 
     def test_environment(self):
         """Test Horse._update_environment()."""

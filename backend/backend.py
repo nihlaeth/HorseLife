@@ -87,6 +87,9 @@ class Backend(object):
                     "obj_id": self.id_,
                     "t_stamp": e_info["t_stamp"],
                     "callbacks": [[self._cls, self.id_]]}
+                if e_info["msg"] is not None:
+                    from generators.messagegenerator import MessageGenerator
+                    MessageGenerator.gen_many(session, [e_info["msg"]])
         EventGenerator.gen_many(session, events)
 
     def _update_event(self, session, e_info):

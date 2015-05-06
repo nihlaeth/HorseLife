@@ -6,6 +6,7 @@ from horsebackend import HorseBackend
 from stablebackend import StableBackend
 from eventbackend import EventBackend
 from support.messages.timestamp import TimeStamp
+from generators.messagegenerator import MessageGenerator
 
 
 class Time(object):
@@ -68,7 +69,7 @@ class Time(object):
         for stable in stables_temp:
             stables[str(stable.mid)] = stable
 
-        self._process_events(now, events, stables, horses)
+        self._process_events(session, now, events, stables, horses)
 
         if now.is_night():
             # It's between 22:00 and 07:00 - night time!
@@ -77,7 +78,7 @@ class Time(object):
             now.end_of_night()
             self.pass_time(session, now)
 
-    def _process_events(self, now, events, stables, horses):
+    def _process_events(self, session, now, events, stables, horses):
         """Do event callbacks, update timestamps, etc."""
         while events[0].t_stamp <= now:
             t_stamp = events[0].t_stamp
@@ -96,6 +97,8 @@ class Time(object):
                         t_stamp)
                 # Update event
                 events[0].update(e_info["t_stamp"])
+                if e_info["msg"] is not None:
+                    MessageGenerator.gen_many(session, [e_info["msg"]])
             # Events will have changed timestamp by now
             events = sorted(
                 events,

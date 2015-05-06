@@ -172,6 +172,8 @@ class Horse(BASE):
         """
         # stable is an attribute created by sqlalchemy (backref)
         # pylint: disable=no-member
+        # TODO have stable handle it's own items. Don't mess around
+        # in there!
         items = self.stable.items
         for item in items:
             if item.name == "food" and self.location == "Stable":
@@ -195,8 +197,9 @@ class Horse(BASE):
         self.food_date = now.date
         self.food_time = now.time
 
-        # TODO have stable handle it's own items. Don't mess around
-        # in there!
+        if self.food < 0:
+            self.food = 0
+
         if self.food <= 25 and not self.food_msg:
             msg = {
                 "subject": "%s is hungry!" % self.name,
@@ -255,6 +258,9 @@ class Horse(BASE):
         self.water -= time_passed.get_min() / float(water_decay_time)
         self.water_date = now.date
         self.water_time = now.time
+
+        if self.water < 0:
+            self.water = 0
 
         if self.water <= 25 and not self.water_msg:
             msg = {
@@ -338,7 +344,6 @@ class Horse(BASE):
             # This method can't raise it above a hundred, but some other
             # method might.
             self.stimulation = 100
-
         # See if there's a message to be delivered
         if self.stimulation <= 25 and not self.stimulation_msg:
             msg = {
@@ -369,7 +374,7 @@ class Horse(BASE):
                        stimulation_decay_time)
         if t_next.is_night() != night:
             # Passed a day/night change, put the next event at
-            # the exact change to ensure correct energy decay.
+            # the exact change to ensure correct stimulation decay.
             # Reset t_next
             t_next = copy.copy(now)
             if night:
@@ -388,6 +393,9 @@ class Horse(BASE):
         self.social -= time_passed.get_min() / float(social_decay_time)
         self.social_date = now.date
         self.social_time = now.time
+
+        if self.social < 0:
+            self.social = 0
 
         if self.social <= 25 and not self.social_msg:
             msg = {
@@ -424,6 +432,9 @@ class Horse(BASE):
         self.exercise_date = now.date
         self.exercise_time = now.time
 
+        if self.exercise < 0:
+            self.exercise = 0
+
         if self.exercise <= 25 and not self.exercise_msg:
             msg = {
                 "subject": "%s is getting resless!" % self.name,
@@ -454,6 +465,9 @@ class Horse(BASE):
         self.hygiene -= time_passed.get_min() / float(hygiene_decay_time)
         self.hygiene_date = now.date
         self.hygiene_time = now.time
+
+        if self.hygiene < 0:
+            self.hygiene = 0
 
         if self.hygiene <= 25 and not self.hygiene_msg:
             msg = {

@@ -91,7 +91,7 @@ class TestTimeStamp(object):
         assert_equals(t_stamp4 / 5, 1)
 
         assert_equals(t_stamp1.get_min(), 0)
-        assert_equals(t_stamp3.get_min(), 300)
+        assert_equals(t_stamp3.get_min(), 7200)
         assert_equals(t_stamp4.get_min(), 5)
 
         t_stamp1.add_min(10)

@@ -58,7 +58,8 @@ class TestTime(object):
                 t_stamp = TimeStamp(1000, 0)
                 m_event.return_value = {
                     "subject": "food",
-                    "t_stamp": t_stamp}
+                    "t_stamp": t_stamp,
+                    "msg": None}
                 session.add(EventFactory(
                     subject="food",
                     callbacks=[CallbackFactory(

@@ -24,7 +24,7 @@ class TimeStamp(Message):
 
     def get_min(self):
         """Return the date/time as total amount of minutes (int)."""
-        return self.time + self.date * 60
+        return self.time + self.date * 1440
 
     def add_min(self, minutes):
         """Add minutes to date/time."""
