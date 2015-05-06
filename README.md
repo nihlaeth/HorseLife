@@ -36,12 +36,12 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Decide on a format to use for returning loads of data and stick with it, this "use a dict this time, but a list the next, and some other combination the third time" is NOT working positively for your workflow...
 * Implement health need.
 * Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
-* Implement money (plus a transaction tracking system).
 * Look at performance of TestStableCore.
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
 * Figure out why Horse model isn't firing messages
+* Implement Transactions
 
 ## Code style
 So far, I've been keeping the code up to the pep8 and pep257 standard. I've been pretty religious about this (even providing docstrings for self evident methods like __str__ and such), so I'd like any contributions to adhere to those as well.
