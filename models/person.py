@@ -3,6 +3,8 @@ from base import BASE
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
+from models.transaction import Transaction
+
 
 # Sqlalchemy takes care of __init__
 # pylint: disable=no-init
@@ -20,13 +22,18 @@ class Person(BASE):
     money = Column(Integer)
 
     horses = relationship("Horse", backref="owner")
+    transactions = relationship("Transaction", backref="person")
 
     def spend_money(self, transaction):
         """Spend some of that hard earned money."""
         if self.money < transaction["amount"]:
             return False
         self.money -= transaction["amount"]
-        # TODO create transaction
+        self.transactions.append(Transaction(
+            subject=transaction["subject"],
+            date=transaction["t_stamp"].date,
+            time=transaction["t_stamp"].time,
+            amount=int(transaction["amount"])))
         return True
 
     def get(self, _, key):

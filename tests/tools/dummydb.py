@@ -13,6 +13,7 @@ from models.stable import Stable
 from models.stableitem import StableItem
 from models.message import Message
 from models.story import Story
+from models.transaction import Transaction
 
 
 class DummyDB(object):
