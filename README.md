@@ -40,8 +40,6 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
-* Figure out why Horse model isn't firing messages
-* Implement Transactions
 
 ## Code style
 So far, I've been keeping the code up to the pep8 and pep257 standard. I've been pretty religious about this (even providing docstrings for self evident methods like __str__ and such), so I'd like any contributions to adhere to those as well.
