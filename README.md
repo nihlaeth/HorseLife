@@ -33,10 +33,8 @@ For planned features, see above. This is about stuff that NEEDS to happen
 in the codebase as it is right now. More a list for myself than for anyone
 else's benefit, but I need to dump it somewhere (where I will see it).
 
-* Decide on a format to use for returning loads of data and stick with it, this "use a dict this time, but a list the next, and some other combination the third time" is NOT working positively for your workflow...
 * Implement health need.
 * Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
-* Look at performance of TestStableCore.
 * Add other building types (pastures, tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
