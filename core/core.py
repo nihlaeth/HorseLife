@@ -3,6 +3,7 @@ from backend.storybackend import StoryBackend
 from backend.time import Time
 from backend.level import Level
 from backend.messagebackend import MessageBackend
+from backend.personbackend import PersonBackend
 from support.messages.action import Action
 from support.messages.meter import Meter
 
@@ -16,6 +17,7 @@ class Core(object):
         self._display = None
         self.story = None
         self._level = None
+        self._player = None
 
     def run(self):
         """Game logic.
@@ -64,6 +66,12 @@ class Core(object):
             "Progress:"]))
         info.append(Meter(self._level.progress(session)))
         info.append("")
+        # Money
+        if self._player is None:
+            self._player = PersonBackend.active_player(session)
+        info.append(" ".join([
+            "Money:",
+            str(self._player.get(session, None, "money"))]))
         # Messages (how many unread?)
         messages = MessageBackend.all(session)
         unread = MessageBackend.unread(session)

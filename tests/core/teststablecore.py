@@ -6,6 +6,7 @@ from tests.tools.stablefactory import StableFactory
 from tests.tools.settingfactory import SettingFactory
 from tests.tools.horsefactory import HorseFactory
 from tests.tools.stableitemfactory import StableItemFactory
+from tests.tools.personfactory import PersonFactory
 from tests.tools.dummydb import DummyDB
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
@@ -36,6 +37,7 @@ class TestStableCore(object):
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),
                 SettingFactory(name="Experience"),
+                PersonFactory(),
                 stable_raw])
 
             m_debug.return_value = False

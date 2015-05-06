@@ -5,6 +5,7 @@ import mock
 from tests.tools.dummydb import DummyDB
 from tests.tools.settingfactory import SettingFactory
 from tests.tools.stablefactory import StableFactory
+from tests.tools.personfactory import PersonFactory
 from generators.stablegenerator import StableGenerator
 from interface.cli.contracterdisplay import ContracterDisplay
 from backend.session import SessionScope
@@ -30,6 +31,7 @@ class TestContracterCore(object):
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),
                 SettingFactory(name="Experience")])
+            session.add(PersonFactory())
 
             # Turn off pdb
             m_debug.return_value = False
@@ -47,7 +49,7 @@ class TestContracterCore(object):
             m_stablegen.return_value = [stable]
             m_display.side_effect = [
                 Action("stables", ""),
-                Action("buy-stable", "", ["Shed"]),
+                Action("buy-stable", "", ["Shed", "500"]),
                 Action("home", ""),
                 quit_]
             result = core.run()

@@ -5,6 +5,7 @@ import mock
 from tests.tools.dummydb import DummyDB
 from tests.tools.settingfactory import SettingFactory
 from tests.tools.stablefactory import StableFactory
+from tests.tools.personfactory import PersonFactory
 from core.maincore import MainCore
 from core.buildingcore import BuildingCore
 from support.messages.quit import Quit
@@ -26,7 +27,8 @@ class TestMainCore(object):
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),
-                SettingFactory(name="Experience")])
+                SettingFactory(name="Experience"),
+                PersonFactory()])
             m_session.return_value = session
             m_debug.return_value = False
             quit_ = Quit()

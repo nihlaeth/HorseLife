@@ -24,6 +24,7 @@ from generators.horsegenerator import HorseGenerator
 from generators.settinggenerator import SettingGenerator
 from generators.storygenerator import StoryGenerator
 from generators.messagegenerator import MessageGenerator
+from generators.persongenerator import PersonGenerator
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
 from backend.time import Time
@@ -90,7 +91,10 @@ class HorseLife(object):
                     {
                         "Date": [0, ""],
                         "Time": [0, ""],
-                        "Experience": [0, ""]})
+                        "Experience": [
+                            0 if database != ":memory:" else 1000000,
+                            ""]})
+                PersonGenerator.gen_many(session, 1, 18, 2000, None)
                 Time(session).pass_time(session, TimeStamp(0, 420))
 
         choice = MainCore().run()

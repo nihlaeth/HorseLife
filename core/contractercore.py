@@ -12,6 +12,7 @@ from support.messages.action import Action
 from backend.session import SessionScope
 from backend.time import Time
 from backend.stablebackend import StableBackend
+from backend.personbackend import PersonBackend
 from generators.stablegenerator import StableGenerator
 
 
@@ -28,6 +29,7 @@ class ContracterCore(Core):
         Core.__init__(self)
         self._display = ContracterDisplay()
         self._screen = "home"
+        self._msg = None
 
     def run(self):
         """Run with it."""
@@ -36,6 +38,12 @@ class ContracterCore(Core):
                 time = Time(session)
                 now = time.get_time_stamp(session)
                 info = self._info(session)
+
+                if self._msg is not None:
+                    info.append("")
+                    info.append(self._msg)
+                    info.append("")
+                    self._msg = None
 
                 if self._screen == "home":
                     info.append("What do you want constructed?")
@@ -67,18 +75,17 @@ class ContracterCore(Core):
                         info.append(" ".join([
                             "Base rent:",
                             config.get(section, "rent")]))
+                        price = config.get(section, "price")
                         info.append(" ".join([
                             "Price:",
-                            config.get(section, "price")]))
+                            price]))
                         actions.append(Action("buy-stable",
                                               " ".join([
                                                   "Buy",
                                                   section,
                                                   "for",
-                                                  config.get(
-                                                      section,
-                                                      "price")]),
-                                              [section]))
+                                                  price]),
+                                              [section, price]))
                     actions.append(Action("home",
                                           "Look at other building types"))
                 menu = [Back(), Quit()]
@@ -110,16 +117,22 @@ class ContracterCore(Core):
                     "tack-feed"]:
                 self._screen = choice.action
             elif choice.action == "buy-stable":
-                # TODO once you have money implemented, check if
-                # you have enough cash and decrease it with the
-                # price.
-                stable_id = StableGenerator().gen_many(
-                    session,
-                    1,
-                    choice.arguments[0],
-                    now)[0].mid
-                stable = StableBackend(session, stable_id)
-                stable.get_events(session, now)
+                person = PersonBackend.active_player(session)
+                transaction = {
+                    "subject": "Buy %s at contracter" % choice.arguments[0],
+                    "t_stamp": now,
+                    "amount": int(choice.arguments[1])}
+                if person.spend_money(session, transaction):
+                    stable_id = StableGenerator().gen_many(
+                        session,
+                        1,
+                        choice.arguments[0],
+                        now)[0].mid
+                    stable = StableBackend(session, stable_id)
+                    stable.get_events(session, now)
+                    self._msg = "You successfully bought a stable!"
+                else:
+                    self._msg = "You don't have enough money for that!"
             elif choice.action == "story":
                 self.mark_story(session, now)
             elif choice.action == "messages":

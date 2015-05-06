@@ -5,6 +5,7 @@ import mock
 from tests.tools.dummydb import DummyDB
 from tests.tools.messagefactory import MessageFactory
 from tests.tools.settingfactory import SettingFactory
+from tests.tools.personfactory import PersonFactory
 from support.messages.action import Action
 from support.messages.quit import Quit
 from support.messages.back import Back
@@ -28,7 +29,8 @@ class TestMessageCore(object):
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),
-                SettingFactory(name="Experience")])
+                SettingFactory(name="Experience"),
+                PersonFactory()])
             quit_ = Quit()
 
             m_debug.return_value = False

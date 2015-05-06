@@ -10,6 +10,7 @@ from core.contractercore import ContracterCore
 from core.towncore import TownCore
 from tests.tools.dummydb import DummyDB
 from tests.tools.settingfactory import SettingFactory
+from tests.tools.personfactory import PersonFactory
 
 
 class TestTownCore(object):
@@ -27,7 +28,8 @@ class TestTownCore(object):
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),
-                SettingFactory(name="Experience")])
+                SettingFactory(name="Experience"),
+                PersonFactory()])
 
             m_debug.return_value = False
 
