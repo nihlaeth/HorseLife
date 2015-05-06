@@ -563,13 +563,16 @@ class Horse(BASE):
         # As there are 5 dependencies, every one of them should be
         # on a scale of 0 to 20.
         result = []
-        result.append(self._ch_exercise(now))
+        if now != TimeStamp(self.exercise_date, self.exercise_time):
+            result.append(self._ch_exercise(now))
         exercise_score = self.exercise / 5.
 
-        result.append(self._ch_hygiene(now))
+        if now != TimeStamp(self.hygiene_date, self.hygiene_time):
+            result.append(self._ch_hygiene(now))
         hygiene_score = self.hygiene / 5.
 
-        result.append(self._ch_stimulation(now))
+        if now != TimeStamp(self.stimulation_date, self.stimulation_time):
+            result.append(self._ch_stimulation(now))
         stimulation_score = self.stimulation / 5.
 
         data = self._update_environment(now)
@@ -577,7 +580,8 @@ class Horse(BASE):
             result.append(data[0])
         environment_score = self.environment / 5.
 
-        result.append(self._ch_social(now))
+        if now != TimeStamp(self.social_date, self.social_time):
+            result.append(self._ch_social(now))
         social_score = self.social / 5.
 
         self.happiness = (
@@ -589,8 +593,10 @@ class Horse(BASE):
 
         # food and water are primal needs, they influence the entire
         # happiness scale.
-        result.append(self._ch_food(now))
-        result.append(self._ch_water(now))
+        if now != TimeStamp(self.food_date, self.food_time):
+            result.append(self._ch_food(now))
+        if now != TimeStamp(self.water_date, self.water_time):
+            result.append(self._ch_water(now))
         if self.food < 10 or self.water < 10:
             self.happiness = 0
         elif self.food < 30 or self.water < 30:

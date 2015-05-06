@@ -33,7 +33,6 @@ class Stable(BASE):
 
     def food(self, now):
         """Fill the food tray in the stable."""
-        print str(now)
         for item in self.items:
             if item.name == "food":
                 item.value = 100

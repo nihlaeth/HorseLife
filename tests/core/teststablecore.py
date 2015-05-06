@@ -1,6 +1,7 @@
 """Test StableCore."""
 from nose.tools import assert_equals
 import mock
+import datetime
 
 from tests.tools.stablefactory import StableFactory
 from tests.tools.settingfactory import SettingFactory
@@ -8,6 +9,7 @@ from tests.tools.horsefactory import HorseFactory
 from tests.tools.stableitemfactory import StableItemFactory
 from tests.tools.personfactory import PersonFactory
 from tests.tools.dummydb import DummyDB
+from tests.tools.profiled import profiled
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
@@ -51,7 +53,10 @@ class TestStableCore(object):
 
             core = StableCore(StableBackend(session, 1))
 
+            # pylint: disable=invalid-name
+            t1 = datetime.datetime.now()
             result = core.run()
+            t2 = datetime.datetime.now()
 
             m_display.assert_called_once_with()
             assert_equals(result, quit_)
@@ -79,5 +84,16 @@ class TestStableCore(object):
                 Action("pedigree", ""),
                 Action("change name", ""),
                 quit_]
-            result = core.run()
+
+            t3 = datetime.datetime.now()
+            with profiled(False):
+                result = core.run()
+            t4 = datetime.datetime.now()
             assert_equals(result, quit_)
+
+            print "Test1:"
+            print (t2 - t1).total_seconds()
+            print "Test2:"
+            print (t4 - t3).total_seconds()
+
+            # assert False
