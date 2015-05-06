@@ -29,10 +29,22 @@ class TestEventGenerator(object):
         """Test EventGenerator.gen_many(session, events)."""
         with DummyDB() as session:
             time1 = TimeStamp(0, 0)
-            e_info = {
-                "test1": {"obj_id": 1, "t_stamp": time1, "callbacks": []},
-                "test2": {"obj_id": 2, "t_stamp": time1, "callbacks": []},
-                "test3": {"obj_id": 3, "t_stamp": time1, "callbacks": []}}
+            e_info = [
+                {
+                    "subject": "test1",
+                    "obj_id": 1,
+                    "t_stamp": time1,
+                    "callbacks": []},
+                {
+                    "subject": "test2",
+                    "obj_id": 2,
+                    "t_stamp": time1,
+                    "callbacks": []},
+                {
+                    "subject": "test3",
+                    "obj_id": 3,
+                    "t_stamp": time1,
+                    "callbacks": []}]
             EventGenerator.gen_many(session, e_info)
             events = EventBackend.all(session)
             assert_equals(len(events), 3)

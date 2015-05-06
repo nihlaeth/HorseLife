@@ -79,14 +79,15 @@ class Backend(object):
         """
         instance = self._one_id(session, self.id_)
 
-        events = {}
+        events = []
         result = instance.get_events(now)
         for e_info in result:
             if e_info is not None:
-                events[e_info["subject"]] = {
+                events.append({
+                    "subject": e_info["subject"],
                     "obj_id": self.id_,
                     "t_stamp": e_info["t_stamp"],
-                    "callbacks": [[self._cls, self.id_]]}
+                    "callbacks": [[self._cls, self.id_]]})
                 if e_info["msg"] is not None:
                     from generators.messagegenerator import MessageGenerator
                     MessageGenerator.gen_many(session, [e_info["msg"]])

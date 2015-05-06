@@ -37,12 +37,12 @@ class EventGenerator(Generator):
     def gen_many(cls, session, events):
         """Generate 1 or more events and add them to the session."""
         result = []
-        for subject in events:
+        for event in events:
             result.append(cls._gen_one(
-                subject,
-                events[subject]["obj_id"],
-                events[subject]["t_stamp"],
-                events[subject]["callbacks"]))
+                event["subject"],
+                event["obj_id"],
+                event["t_stamp"],
+                event["callbacks"]))
         session.add_all(result)
         session.flush()
         return result
