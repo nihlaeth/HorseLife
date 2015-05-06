@@ -89,12 +89,14 @@ class HorseLife(object):
                      "text": "Welcome to HorseLife! Have fun!"}])
                 SettingGenerator.gen_many(
                     session,
-                    {
-                        "Date": [0, ""],
-                        "Time": [0, ""],
-                        "Experience": [
-                            0 if database != ":memory:" else 1000000,
-                            ""]})
+                    [
+                        {"name": "Date", "numeric": 0, "text": ""},
+                        {"name": "Time", "numeric": 0, "text": ""},
+                        {
+                            "name": "Experience",
+                            "numeric":
+                                0 if database != ":memory:" else 1000000,
+                            "text": ""}])
                 PersonGenerator.gen_many(session, 1, 18, 2000, None)
                 Time(session).pass_time(session, TimeStamp(0, 420))
 

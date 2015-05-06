@@ -30,11 +30,11 @@ class SettingGenerator(Generator):
          "Time": [20, ""]}
         """
         result = []
-        for name in settings:
+        for setting in settings:
             result.append(cls._gen_one(
-                name,
-                settings[name][0],
-                settings[name][1]))
+                setting["name"],
+                setting["numeric"],
+                setting["text"]))
         session.add_all(result)
         session.flush()
         return result

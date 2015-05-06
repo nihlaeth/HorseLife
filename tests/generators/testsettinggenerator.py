@@ -22,10 +22,10 @@ class TestSettingGenerator(object):
     def test_gen_many(self):
         """Test SettingGenerator.gen_many(session, settings)."""
         with DummyDB() as session:
-            settings = {
-                "setting1": [0, "blah"],
-                "setting2": [14, ""],
-                "setting3": [-5, "testing123"]}
+            settings = [
+                {"name": "setting1", "numeric": 0, "text": "blah"},
+                {"name": "setting2", "numeric": 14, "text": ""},
+                {"name": "setting3", "numeric": -5, "text": "testing123"}]
             SettingGenerator.gen_many(session, settings)
             settings = SettingBackend.all(session)
             assert_equals(len(settings), 3)
