@@ -66,6 +66,15 @@ class Pasture(CleanlinessMixin, BASE):
 
         return events
 
+    def remove_horse(self, horse):
+        """Remove horse from pasture."""
+        horse.location = "Stable"
+        if horse.pasture_id == self.mid:
+            self.horses.remove(horse)
+        else:
+            # Horse is not in this pasture!
+            raise
+
     def __repr__(self):
         """Return string representation."""
         return " ".join([
@@ -83,4 +92,10 @@ class Pasture(CleanlinessMixin, BASE):
             "Cleanliness msg:",
             str(self.cleanliness_msg),
             "Horses:",
+            str(self.horses)])
+
+    def __str__(self):
+        """Return string representation."""
+        return " ".join([
+            self.name,
             str(self.horses)])

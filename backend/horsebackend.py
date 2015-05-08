@@ -36,6 +36,10 @@ class HorseBackend(Backend):
         Backend.__init__(self, session, id_)
         self._cls = "HorseBackend"
 
+    def raw(self, session):
+        """Return raw horse model - be careful with this."""
+        return self._one_id(session, self.id_)
+
     def groom(self, session, now):
         """Groom encapsulated horse and return the current time.
 

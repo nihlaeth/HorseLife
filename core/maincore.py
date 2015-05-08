@@ -5,6 +5,7 @@ from interface.cli.maindisplay import MainDisplay
 from core import Core
 from buildingcore import BuildingCore
 from towncore import TownCore
+from pasturecore import PastureCore
 from messagecore import MessageCore
 from support.debug import debug
 from support.messages.quit import Quit
@@ -12,6 +13,7 @@ from support.messages.action import Action
 from backend.time import Time
 from backend.session import SessionScope
 from backend.stablebackend import StableBackend
+from backend.pasturebackend import PastureBackend
 
 
 class MainCore(Core):
@@ -27,11 +29,15 @@ class MainCore(Core):
         """Run with it."""
         while True:
             with SessionScope() as session:
-                stables = StableBackend.all(session)
-
                 actions = [TownCore()]
+
+                stables = StableBackend.all(session)
                 for stable in stables:
                     actions.append(BuildingCore(stable))
+
+                pastures = PastureBackend.all(session)
+                for pasture in pastures:
+                    actions.append(PastureCore(pasture))
 
                 menu = []
                 menu.append(Quit())
@@ -46,6 +52,8 @@ class MainCore(Core):
                 elif isinstance(choice, BuildingCore):
                     result = choice.run()
                 elif isinstance(choice, TownCore):
+                    result = choice.run()
+                elif isinstance(choice, PastureCore):
                     result = choice.run()
                 elif isinstance(choice, Action):
                     if choice.action == "story":

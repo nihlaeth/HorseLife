@@ -27,8 +27,10 @@ from generators.settinggenerator import SettingGenerator
 from generators.storygenerator import StoryGenerator
 from generators.messagegenerator import MessageGenerator
 from generators.persongenerator import PersonGenerator
+from generators.pasturegenerator import PastureGenerator
 from backend.stablebackend import StableBackend
 from backend.horsebackend import HorseBackend
+from backend.pasturebackend import PastureBackend
 from backend.time import Time
 
 
@@ -83,11 +85,17 @@ class HorseLife(object):
                 # Generate events for these objects
                 StableBackend(session, 1).get_events(session, TimeStamp(0, 0))
                 HorseBackend(session, 1).get_events(session, TimeStamp(0, 0))
+
+                PastureGenerator().gen_many(session, 1, "Small Pasture")
+                PastureBackend(session, 1).get_events(session, TimeStamp(0, 0))
+
                 StoryGenerator().gen_many(session)
+
                 MessageGenerator.gen_many(session, [
                     {"subject": "Welcome",
                      "t_stamp": TimeStamp(0, 0),
                      "text": "Welcome to HorseLife! Have fun!"}])
+
                 SettingGenerator.gen_many(
                     session,
                     [
@@ -98,7 +106,9 @@ class HorseLife(object):
                             "numeric":
                                 0 if database != ":memory:" else 1000000,
                             "text": ""}])
+
                 PersonGenerator.gen_many(session, 1, 18, 2000, None)
+
                 Time(session).pass_time(session, TimeStamp(0, 420))
 
         choice = MainCore().run()

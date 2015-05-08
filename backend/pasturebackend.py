@@ -38,3 +38,16 @@ class PastureBackend(Backend):
             self._level = Level(session)
         self._level.add_xp(session, now, 20)
         return result["clock"]
+
+    def remove_horse(self, session, horse):
+        """Remove horse from pasture.
+
+        session -- sqlalchemy session
+        horse -- HorseBackend object
+        """
+        pasture = self._one_id(session, self.id_)
+
+        # we need to pass the raw horse model to the pasture
+        horse_raw = horse.raw(session)
+
+        pasture.remove_horse(horse_raw)
