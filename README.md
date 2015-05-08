@@ -35,9 +35,12 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 
 * Implement health need.
 * Add random 'events' - not the events already built-in. Happenings - finding something on the ground, a horse injuring itself, that kind of thing.
-* Add other building types (pastures, tack/feed rooms, headquarters, etc.)
+* Add other building types (tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
+* Only allow actions when they're actually needed (e.g. you can't spend 15 minutes cleaning a clean stable)
+* Fix location checking in pasture & stable - mixin should get location match from child class.
+* Make it possible to put a horse in a pasture or paddock.
 
 ## Code style
 So far, I've been keeping the code up to the pep8 and pep257 standard. I've been pretty religious about this (even providing docstrings for self evident methods like __str__ and such), so I'd like any contributions to adhere to those as well.
