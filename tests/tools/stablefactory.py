@@ -23,6 +23,7 @@ class StableFactory(factory.Factory):
     cleanliness = 100
     cleanliness_date = 0
     cleanliness_time = 0
+    cleanliness_msg = False
 
     # pylint: disable=unused-argument
     @factory.post_generation

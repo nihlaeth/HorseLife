@@ -20,6 +20,7 @@ from models.person import Person
 from models.story import Story
 from models.message import Message
 from models.transaction import Transaction
+from models.pasture import Pasture
 from generators.stablegenerator import StableGenerator
 from generators.horsegenerator import HorseGenerator
 from generators.settinggenerator import SettingGenerator

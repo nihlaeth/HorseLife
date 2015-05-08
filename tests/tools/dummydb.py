@@ -14,6 +14,7 @@ from models.stableitem import StableItem
 from models.message import Message
 from models.story import Story
 from models.transaction import Transaction
+from models.pasture import Pasture
 
 
 class DummyDB(object):

@@ -99,6 +99,7 @@ class Horse(BASE):
 
     stable_id = Column(Integer, ForeignKey('stables.mid'))
     owner_id = Column(Integer, ForeignKey('people.mid'))
+    pasture_id = Column(Integer, ForeignKey('pastures.mid'))
 
     def groom(self, now, skill="normal"):
         """Groom the horse (clean, brush).

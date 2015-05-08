@@ -38,6 +38,7 @@ class StableGenerator(Generator):
             cleanliness=100,
             cleanliness_date=t_stamp.date,
             cleanliness_time=t_stamp.time,
+            cleanliness_msg=False,
             items=items,
             horses=[])
 

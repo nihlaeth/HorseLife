@@ -1,15 +1,15 @@
 """Stable model."""
-import copy
-from sqlalchemy import Column, Integer, Float, String, Boolean
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from base import BASE
+from support.cleanlinessmixin import CleanlinessMixin
 from support.messages.timestamp import TimeStamp
 
 
 # Sqlalchemy takes care of __init__
 # pylint: disable=no-init
-class Stable(BASE):
+class Stable(CleanlinessMixin, BASE):
 
     """Represents a stable."""
 
@@ -23,13 +23,11 @@ class Stable(BASE):
     light = Column(Integer)
     capacity = Column(Integer)
 
-    cleanliness = Column(Float)
-    cleanliness_date = Column(Integer)
-    cleanliness_time = Column(Integer)
-    cleanliness_msg = Column(Boolean)
-
     items = relationship("StableItem", backref="stableitems")
     horses = relationship("Horse", backref="stable")
+
+    cleanliness_decay_time = 28
+    cleaning_time = 15
 
     def food(self, now):
         """Fill the food tray in the stable."""
@@ -44,18 +42,6 @@ class Stable(BASE):
             if item.name == "water":
                 item.value = 100
         return {"clock": now.add_min(5)}
-
-    def clean(self, now):
-        """Clean stable (takes about 15 minutes)."""
-        # Cleaning the stable takes about 15 minutes
-        now.add_min(15)
-
-        # Regardless of current state, update cleanliness of stable.
-        self.cleanliness = 100
-
-        # Now update the next event time:
-        e_info = self._ch_cleanliness(now)
-        return {"clock": now, "e_info": e_info}
 
     def __repr__(self):
         """Return string representation of object."""
@@ -104,45 +90,6 @@ class Stable(BASE):
             return 0
         else:
             return -1
-
-    def _ch_cleanliness(self, now):
-        """Calculate current value of the cleanliness meter."""
-        last_updated = TimeStamp(self.cleanliness_date,
-                                 self.cleanliness_time)
-        time_passed = now - last_updated
-
-        cleanliness_decay_time = 28
-        if len(self.horses) > 0:
-            self.cleanliness -= (time_passed.get_min() /
-                                 float(cleanliness_decay_time))
-            self.cleanliness_date = now.date
-            self.cleanliness_time = now.time
-
-        if self.cleanliness <= 25 and not self.cleanliness_msg:
-            msg = {
-                "subject": "%s is getting dirty!" % self.__str__(),
-                "t_stamp": now,
-                "text": (
-                    "Stables need regular cleaning, both for the health"
-                    " of the horse(s) inside, and the integrity of the"
-                    " building. Plus waste attracts vermin, and we don't"
-                    " want that, do we? So go get your hands dirty and"
-                    " clean that stable!")}
-            self.cleanliness_msg = True
-        else:
-            msg = None
-            if self.cleanliness > 25:
-                self.cleanliness_msg = False
-
-        t_next = copy.copy(now)
-        next_limit = self._get_limit(self.cleanliness)
-        if next_limit < 0:
-            t_next.add_min(1440)
-            return {"subject": "cleanliness", "t_stamp": t_next, "msg": msg}
-
-        t_next.add_min((self.cleanliness - next_limit) *
-                       cleanliness_decay_time)
-        return {"subject": "cleanliness", "t_stamp": t_next, "msg": msg}
 
     def _get_food(self, now):
         """Get up to date food value."""
