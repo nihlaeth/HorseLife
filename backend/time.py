@@ -4,6 +4,7 @@ from operator import attrgetter
 from settingbackend import SettingBackend
 from horsebackend import HorseBackend
 from stablebackend import StableBackend
+from pasturebackend import PastureBackend
 from eventbackend import EventBackend
 from support.messages.timestamp import TimeStamp
 from generators.messagegenerator import MessageGenerator
@@ -56,20 +57,24 @@ class Time(object):
             "numeric",
             now.date)
 
-        # valid_classes = [HorseBackend, StableBackend]
-        # valid_map = dict(((c.__name__, c) for c in validClasses))
         events = list(EventBackend.all_raw(session))
         horses_temp = HorseBackend.all_raw(session)
         # Now organize the horses for easy access.
         horses = {}
         for horse in horses_temp:
             horses[str(horse.mid)] = horse
+
         stables_temp = StableBackend.all_raw(session)
         stables = {}
         for stable in stables_temp:
             stables[str(stable.mid)] = stable
 
-        self._process_events(session, now, events, stables, horses)
+        pastures_temp = PastureBackend.all_raw(session)
+        pastures = {}
+        for pasture in pastures_temp:
+            pastures[str(pasture.mid)] = pasture
+
+        self._process_events(session, now, events, stables, pastures, horses)
 
         if now.is_night():
             # It's between 22:00 and 07:00 - night time!
@@ -78,7 +83,7 @@ class Time(object):
             now.end_of_night()
             self.pass_time(session, now)
 
-    def _process_events(self, session, now, events, stables, horses):
+    def _process_events(self, session, now, events, stables, pastures, horses):
         """Do event callbacks, update timestamps, etc."""
         while events[0].t_stamp <= now:
             t_stamp = events[0].t_stamp
@@ -89,6 +94,10 @@ class Time(object):
                 obj_id = callback.obj_id
                 if obj == "StableBackend":
                     e_info = stables[str(obj_id)].event(
+                        subject,
+                        t_stamp)
+                elif obj == "PastureBackend":
+                    e_info = pastures[str(obj_id)].event(
                         subject,
                         t_stamp)
                 elif obj == "HorseBackend":
