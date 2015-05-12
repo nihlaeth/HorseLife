@@ -1,6 +1,7 @@
 """Horse model."""
 import copy
 from sqlalchemy import Column, Integer, Float, String, ForeignKey, Boolean
+from sqlalchemy.orm import relationship
 
 from base import BASE
 from support.messages.timestamp import TimeStamp
@@ -100,6 +101,8 @@ class Horse(BASE):
     stable_id = Column(Integer, ForeignKey('stables.mid'))
     owner_id = Column(Integer, ForeignKey('people.mid'))
     pasture_id = Column(Integer, ForeignKey('pastures.mid'))
+
+    skills = relationship("HorseSkill", backref="horse")
 
     def groom(self, now, skill="normal"):
         """Groom the horse (clean, brush).
