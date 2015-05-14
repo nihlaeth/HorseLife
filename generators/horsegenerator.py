@@ -3,6 +3,7 @@ import random
 import ConfigParser
 
 from generator import Generator
+from horseskillgenerator import HorseSkillGenerator
 from support.messages.timestamp import TimeStamp
 from models.horse import Horse
 
@@ -118,6 +119,9 @@ class HorseGenerator(Generator):
         result = []
         for _ in range(num):
             result.append(self._gen_one(breed, t_stamp=t_stamp))
+        # generate skills for horses
+        for horse in result:
+            horse.skills = HorseSkillGenerator().gen_many(session, [horse.mid])
         session.add_all(result)
         session.flush()
         return result
