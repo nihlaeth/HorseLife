@@ -1,4 +1,6 @@
 """Display for Main screen."""
+import pdb
+
 from errors.invalidchoice import InvalidChoice
 from display import Display
 from pasturedisplay import PastureDisplay
@@ -11,6 +13,7 @@ from core.pasturecore import PastureCore
 from core.towncore import TownCore
 from core.messagecore import MessageCore
 from backend.session import SessionScope
+from support.debug import debug
 from support.messages.quit import Quit
 from support.messages.back import Back
 
@@ -37,13 +40,16 @@ class MainDisplay(Display):
         with SessionScope() as session:
             self._info = self._core.get_info(session)
             self._menu = self._core.get_menu(session)
-            self._data = self._core.get_data(session)
+            self._actions = self._core.get_actions(session)
             self._story = self._core.get_story(session)
             self._level = self._core.get_level(session)
 
             choice = Display.display(self, self._level)
 
             result = self._core.choice(session, choice)
+
+            if debug():
+                pdb.set_trace()
 
             if result is None:
                 return self.display()

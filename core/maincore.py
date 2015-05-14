@@ -1,17 +1,12 @@
 """Game logic for Main screen."""
-import pdb
-
-from interface.cli.maindisplay import MainDisplay
 from core import Core
 from stablecore import StableCore
 from towncore import TownCore
 from pasturecore import PastureCore
 from messagecore import MessageCore
-from support.debug import debug
 from support.messages.quit import Quit
 from support.messages.action import Action
 from backend.time import Time
-from backend.session import SessionScope
 from backend.stablebackend import StableBackend
 from backend.pasturebackend import PastureBackend
 
@@ -25,51 +20,33 @@ class MainCore(Core):
         Core.__init__(self)
         # self._display = MainDisplay()
 
-    def run(self):
-        """Run with it."""
-        while True:
-            with SessionScope() as session:
-                actions = [TownCore()]
+    def get_actions(self, session):
+        """Return actions for display."""
+        actions = [TownCore()]
 
-                stables = StableBackend.all(session)
-                for stable in stables:
-                    actions.append(StableCore(stable))
+        stables = StableBackend.all(session)
+        for stable in stables:
+            actions.append(StableCore(stable))
 
-                pastures = PastureBackend.all(session)
-                for pasture in pastures:
-                    actions.append(PastureCore(pasture))
+        pastures = PastureBackend.all(session)
+        for pasture in pastures:
+            actions.append(PastureCore(pasture))
 
-                menu = []
-                menu.append(Quit())
-                story = self.get_story(session)
-                self._display.init(actions, menu, self._info(session), story)
-                choice = self._display.display()
-                if debug():
-                    pdb.set_trace()
-                result = None
-                if isinstance(choice, Quit):
-                    return choice
-                elif isinstance(choice, StableCore):
-                    result = choice.run()
-                elif isinstance(choice, TownCore):
-                    result = choice.run()
-                elif isinstance(choice, PastureCore):
-                    result = choice.run()
-                elif isinstance(choice, Action):
-                    if choice.action == "story":
-                        self.mark_story(
-                            session,
-                            Time(session).get_time_stamp(session))
-                    if choice.action == "messages":
-                        core = MessageCore()
-                        result = core.run()
+        return actions
 
-                if result is not None:
-                    if isinstance(result, Quit):
-                        return result
-                    # if it's of type Back, just display
-                    # this screen again - continue loop.
-                session.commit()
+    def choice(self, session, choice):
+        """Handle user choice."""
+        if isinstance(choice, Quit):
+            return choice
+        elif isinstance(choice, Core):
+            return choice
+        elif isinstance(choice, Action):
+            if choice.action == "story":
+                self.mark_story(
+                    session,
+                    Time(session).get_time_stamp(session))
+            if choice.action == "messages":
+                return MessageCore()
 
     def __str__(self):
         """Return string representation of object."""

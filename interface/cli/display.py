@@ -16,21 +16,21 @@ class Display(object):
         self._separator = self._repeat('-', self._screen_width)
         self._title = "You should not be seeing this"
         self._description = "This class is not to be called directly."
-        self._data = None
+        self._actions = None
         self._menu = None
         self._info = None
         self._story = None
         self._level = None
 
-    def init(self, data, menu, info=None, story=None):
+    def init(self, actions, menu, info=None, story=None):
         """Initialize with backend data.
 
         Arguments:
-        data -- list of classes to be displayed
+        actions -- list of classes to be displayed
         menu -- menu options (quit, back to main, etc)
         info -- list of strings to display
         """
-        self._data = data
+        self._actions = actions
         self._menu = menu
         if info is None:
             info = []
@@ -66,7 +66,7 @@ class Display(object):
             count += 1
             print self._separator
 
-        for action in self._data:
+        for action in self._actions:
             if isinstance(action, Action):
                 if action.min_level <= level:
                     print self._wrap_text(''.join([

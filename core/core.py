@@ -6,6 +6,8 @@ from backend.messagebackend import MessageBackend
 from backend.personbackend import PersonBackend
 from support.messages.action import Action
 from support.messages.meter import Meter
+from support.messages.back import Back
+from support.messages.quit import Quit
 
 
 class Core(object):
@@ -50,7 +52,7 @@ class Core(object):
             self._level = Level(session)
         self._level.add_xp(session, now, 10)
 
-    def _info(self, session):
+    def get_info(self, session):
         """Construct info block."""
         time = Time(session)
         now = time.get_time_stamp(session)
@@ -88,16 +90,19 @@ class Core(object):
         return info
 
     def get_level(self, session):
-        pass
+        """Return level(int)."""
+        if self._level is None:
+            self._level = Level(session)
+        return self._level.level(session)
 
     def get_data(self, session):
+        """Implemented in child."""
         pass
 
-    def get_menu(self, session):
-        pass
-
-    def get_info(self, session):
-        pass
+    def get_menu(self):
+        """Return menu list."""
+        return [Back(), Quit()]
 
     def choice(self, session, choice):
+        """Implemented in child, though could partially be handled here."""
         pass

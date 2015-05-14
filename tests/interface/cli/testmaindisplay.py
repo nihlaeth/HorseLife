@@ -33,6 +33,7 @@ class TestMaiDisplay(object):
     # Too many mocks in a test does qualify as a code smell, but in this
     # case I think it's ok. MainDisplay is not meant to be isolated.
     # pylint: disable=too-many-arguments,too-many-locals
+    @mock.patch("interface.cli.maindisplay.debug")
     @mock.patch.object(StableDisplay, "display")
     @mock.patch.object(PastureDisplay, "display")
     @mock.patch.object(TownDisplay, "display")
@@ -40,7 +41,7 @@ class TestMaiDisplay(object):
     @mock.patch.object(MainCore, "choice")
     @mock.patch.object(MainCore, "get_info")
     @mock.patch.object(MainCore, "get_menu")
-    @mock.patch.object(MainCore, "get_data")
+    @mock.patch.object(MainCore, "get_actions")
     @mock.patch.object(MainCore, "get_story")
     @mock.patch.object(MainCore, "get_level")
     @mock.patch.object(Display, "display")
@@ -51,20 +52,23 @@ class TestMaiDisplay(object):
             m_display,
             m_lvl,
             m_story,
-            m_data,
+            m_actions,
             m_menu,
             m_info,
             m_choice,
             m_msg,
             m_town,
             m_pasture,
-            m_stable):
+            m_stable,
+            m_debug):
         """Test MainCore.display()."""
         with DummyDB() as session:
+            m_debug.return_value = False
+
             m_db.return_value = session
             m_lvl.return_value = 0
             m_story.return_value = []
-            m_data.return_value = []
+            m_actions.return_value = []
             m_menu.return_value = []
             m_info.return_value = []
 
