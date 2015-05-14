@@ -86,3 +86,18 @@ class Core(object):
         info.append(summary)
         info.append(Action("messages", "Read messages"))
         return info
+
+    def get_level(self, session):
+        pass
+
+    def get_data(self, session):
+        pass
+
+    def get_menu(self, session):
+        pass
+
+    def get_info(self, session):
+        pass
+
+    def choice(self, session, choice):
+        pass

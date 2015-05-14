@@ -23,7 +23,7 @@ class MainCore(Core):
     def __init__(self):
         """Set display."""
         Core.__init__(self)
-        self._display = MainDisplay()
+        # self._display = MainDisplay()
 
     def run(self):
         """Run with it."""

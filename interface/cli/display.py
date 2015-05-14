@@ -20,6 +20,7 @@ class Display(object):
         self._menu = None
         self._info = None
         self._story = None
+        self._level = None
 
     def init(self, data, menu, info=None, story=None):
         """Initialize with backend data.
