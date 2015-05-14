@@ -20,6 +20,7 @@ class Core(object):
         self.story = None
         self._level = None
         self._player = None
+        self._msg = None
 
     def run(self):
         """Game logic.
@@ -87,6 +88,13 @@ class Core(object):
                 "unread messages"])
         info.append(summary)
         info.append(Action("messages", "Read messages"))
+
+        # Different kind of message, the kind that displays instantly.
+        if self._msg is not None:
+            info.append("")
+            info.append(self._msg)
+            info.append("")
+            self._msg = None
         return info
 
     def get_level(self, session):
@@ -103,7 +111,7 @@ class Core(object):
         """Return menu list."""
         return [Back(), Quit()]
 
-    def choice(self, session, choice):
+    def choice(self, session, choice, noback=False):
         """Handle standard choices here, leave the rest to the child.
 
         If this returns None, choice is unhandled, and should be
@@ -111,8 +119,13 @@ class Core(object):
         that the choice has been dealt with, but has no return value to
         match (child should return None). If it returns anything else,
         just parrot it.
+
+        noback indicates if the child wants to handle Back objects itself,
+        for example if the child has multiple screens. noback set to True
+        lets the child take care ot this.
         """
-        if isinstance(choice, Quit) or isinstance(choice, Back):
+        if isinstance(choice, Quit) or (
+                isinstance(choice, Back) and not noback):
             return choice
         elif isinstance(choice, Core):
             return choice

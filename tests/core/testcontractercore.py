@@ -4,67 +4,86 @@ import mock
 
 from tests.tools.dummydb import DummyDB
 from tests.tools.settingfactory import SettingFactory
-from tests.tools.stablefactory import StableFactory
 from tests.tools.personfactory import PersonFactory
-from generators.stablegenerator import StableGenerator
-from interface.cli.contracterdisplay import ContracterDisplay
-from backend.session import SessionScope
+from backend.stablebackend import StableBackend
+from core.core import Core
 from core.contractercore import ContracterCore
-from support.messages.quit import Quit
+from support.messages.back import Back
 from support.messages.action import Action
-from support.messages.timestamp import TimeStamp
 
 
 class TestContracterCore(object):
 
     """Test ContracterCore."""
 
-    @mock.patch("core.contractercore.debug")
-    @mock.patch.object(StableGenerator, "gen_many")
-    @mock.patch.object(ContracterDisplay, "display")
-    @mock.patch.object(SessionScope, "__enter__")
-    def test_run(self, m_db, m_display, m_stablegen, m_debug):
-        """Test ContracterCore.run()."""
+    def test_init(self):
+        """Test ContracterCore.__init__()."""
+        # If it dies, there's a problem. Or something like that.
+        ContracterCore()
+
+    @mock.patch.object(Core, "get_info")
+    def test_get_info(self, m_info):
+        """Test ContracterCore.get_info(session)."""
         with DummyDB() as session:
-            m_db.return_value = session
-            session.add_all([
-                SettingFactory(name="Date"),
-                SettingFactory(name="Time"),
-                SettingFactory(name="Experience")])
-            session.add(PersonFactory())
-
-            # Turn off pdb
-            m_debug.return_value = False
-
-            # Test quit_
-            quit_ = Quit()
-            m_display.return_value = quit_
             core = ContracterCore()
-            result = core.run()
-            assert_equals(result, quit_)
 
-            # Test buying a stable
-            stable = StableFactory()
-            session.add(stable)
-            m_stablegen.return_value = [stable]
-            m_display.side_effect = [
-                Action("stables", ""),
-                Action("buy-stable", "", ["Shed", "500"]),
-                Action("home", ""),
-                quit_]
-            result = core.run()
-            m_stablegen.assert_called_once_with(
-                session,
-                1,
-                "Shed",
-                TimeStamp(0, 0))
-            assert_equals(result, quit_)
+            # test home screen
+            m_info.return_value = []
+            info = core.get_info(session)
 
-            # Test other (unimplemented) actions:
-            m_display.side_effect = [
-                Action("pastures", ""),
-                Action("arenas", ""),
-                Action("tack-feed", ""),
-                quit_]
-            result = core.run()
-            assert_equals(result, quit_)
+            assert_equals(info[0], "What do you want constructed?")
+
+            # test stables screen
+            # pylint: disable=protected-access
+            core._screen = "stables"
+            # get fresh list
+            m_info.return_value = []
+            info = core.get_info(session)
+
+            assert_equals(info[0], "")
+            assert_equals(info[1], "Shed")
+
+    def test_get_actions(self):
+        """Test ContracterCore.get_actions(session)."""
+        core = ContracterCore()
+
+        # test home screen
+        actions = core.get_actions(None)
+
+        assert_equals(actions[0].action, "stables")
+        assert_equals(actions[1].action, "pastures")
+        assert_equals(actions[2].action, "arenas")
+        assert_equals(actions[3].action, "tack-feed")
+
+        # test stables screen
+        # pylint: disable=protected-access
+        core._screen = "stables"
+        actions = core.get_actions(None)
+
+        assert_equals(actions[0].action, "buy-stable")
+        assert_equals(actions[0].arguments[0], "Shed")
+
+    def test_choice(self):
+        """Test ContracterCore.choice(session, choice)."""
+        with DummyDB() as session:
+            session.add_all([
+                SettingFactory(name="Time"),
+                SettingFactory(name="Date")])
+            core = ContracterCore()
+
+            # test back
+            # pylint: disable=protected-access
+            core._screen = "not-home"
+            assert_equals(core.choice(session, Back()), None)
+            assert_equals(core._screen, "home")
+
+            # test switching screens
+            assert_equals(core.choice(session, Action("arenas", "")), None)
+            assert_equals(core._screen, "arenas")
+
+            # test buying a stable
+            session.add(PersonFactory())
+            assert_equals(
+                core.choice(session, Action("buy-stable", "", ["Shed", 500])),
+                None)
+            assert_equals(len(StableBackend.all(session)), 1)
