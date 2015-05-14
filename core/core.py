@@ -104,5 +104,24 @@ class Core(object):
         return [Back(), Quit()]
 
     def choice(self, session, choice):
-        """Implemented in child, though could partially be handled here."""
-        pass
+        """Handle standard choices here, leave the rest to the child.
+
+        If this returns None, choice is unhandled, and should be
+        dealt with by the child. If it returns "handled", it indicates
+        that the choice has been dealt with, but has no return value to
+        match (child should return None). If it returns anything else,
+        just parrot it.
+        """
+        if isinstance(choice, Quit) or isinstance(choice, Back):
+            return choice
+        elif isinstance(choice, Core):
+            return choice
+        elif isinstance(choice, Action):
+            if choice.action == "story":
+                self.mark_story(
+                    session,
+                    Time(session).get_time_stamp(session))
+                return "handled"
+            elif choice.action == "messages":
+                from messagecore import MessageCore
+                return MessageCore()

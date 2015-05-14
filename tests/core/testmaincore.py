@@ -40,7 +40,7 @@ class TestMainCore(object):
         with DummyDB() as session:
             core = MainCore()
 
-            assert_equals(core.choice(session, Back()), None)
+            assert_equals(isinstance(core.choice(session, Back()), Back), True)
             assert_equals(isinstance(core.choice(session, Quit()), Quit), True)
             assert_equals(isinstance(
                 core.choice(session, StableCore(2)),

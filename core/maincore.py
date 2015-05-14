@@ -3,10 +3,6 @@ from core import Core
 from stablecore import StableCore
 from towncore import TownCore
 from pasturecore import PastureCore
-from messagecore import MessageCore
-from support.messages.quit import Quit
-from support.messages.action import Action
-from backend.time import Time
 from backend.stablebackend import StableBackend
 from backend.pasturebackend import PastureBackend
 
@@ -36,17 +32,16 @@ class MainCore(Core):
 
     def choice(self, session, choice):
         """Handle user choice."""
-        if isinstance(choice, Quit):
-            return choice
-        elif isinstance(choice, Core):
-            return choice
-        elif isinstance(choice, Action):
-            if choice.action == "story":
-                self.mark_story(
-                    session,
-                    Time(session).get_time_stamp(session))
-            if choice.action == "messages":
-                return MessageCore()
+        result = Core.choice(self, session, choice)
+        if result == "handled":
+            return None
+        elif result is None:
+            # Normally, this would mean a non-standard choice, to be handled
+            # by this class. However, there are no non-standard choices in
+            # this case.
+            return None
+        else:
+            return result
 
     def __str__(self):
         """Return string representation of object."""
