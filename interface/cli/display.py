@@ -21,21 +21,18 @@ class Display(object):
         self._info = None
         self._story = None
         self._level = None
+        self._core = None
+        self._choice = None
 
-    def init(self, actions, menu, info=None, story=None):
-        """Initialize with backend data.
+    def init(self, session):
+        """Get data from core."""
+        self._info = self._core.get_info(session)
+        self._level = self._core.get_level(session)
+        self._story = self._core.get_story(session)
+        self._actions = self._core.get_actions(session)
+        self._menu = self._core.get_menu()
 
-        Arguments:
-        actions -- list of classes to be displayed
-        menu -- menu options (quit, back to main, etc)
-        info -- list of strings to display
-        """
-        self._actions = actions
-        self._menu = menu
-        if info is None:
-            info = []
-        self._info = info
-        self._story = story
+        self._choice = Display.display(self, self._level)
 
     def display(self, level=0):
         """Display screen and return user choice (class)."""

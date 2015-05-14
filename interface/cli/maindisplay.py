@@ -38,15 +38,9 @@ class MainDisplay(Display):
     def display(self):
         """Do some displaying."""
         with SessionScope() as session:
-            self._info = self._core.get_info(session)
-            self._menu = self._core.get_menu(session)
-            self._actions = self._core.get_actions(session)
-            self._story = self._core.get_story(session)
-            self._level = self._core.get_level(session)
+            self.init(session)
 
-            choice = Display.display(self, self._level)
-
-            result = self._core.choice(session, choice)
+            result = self._core.choice(session, self._choice)
 
             if debug():
                 pdb.set_trace()
