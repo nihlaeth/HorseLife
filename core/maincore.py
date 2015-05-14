@@ -3,7 +3,7 @@ import pdb
 
 from interface.cli.maindisplay import MainDisplay
 from core import Core
-from buildingcore import BuildingCore
+from stablecore import StableCore
 from towncore import TownCore
 from pasturecore import PastureCore
 from messagecore import MessageCore
@@ -33,7 +33,7 @@ class MainCore(Core):
 
                 stables = StableBackend.all(session)
                 for stable in stables:
-                    actions.append(BuildingCore(stable))
+                    actions.append(StableCore(stable))
 
                 pastures = PastureBackend.all(session)
                 for pasture in pastures:
@@ -49,7 +49,7 @@ class MainCore(Core):
                 result = None
                 if isinstance(choice, Quit):
                     return choice
-                elif isinstance(choice, BuildingCore):
+                elif isinstance(choice, StableCore):
                     result = choice.run()
                 elif isinstance(choice, TownCore):
                     result = choice.run()
