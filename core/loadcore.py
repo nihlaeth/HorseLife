@@ -1,13 +1,10 @@
 """Game logic for loading a saved or new game."""
 import os
-import pdb
 
 from core import Core
-from interface.cli.loaddisplay import LoadDisplay
-from support.debug import debug
+from errors.invalidchoice import InvalidChoice
 from support.messages.savedgame import SavedGame
 from support.messages.newgame import NewGame
-from support.messages.quit import Quit
 
 
 class LoadCore(Core):
@@ -17,31 +14,33 @@ class LoadCore(Core):
     def __init__(self):
         """Set display."""
         Core.__init__(self)
-        self._display = LoadDisplay()
 
-    def run(self):
-        """Run with it."""
-        while True:
-            files = os.listdir("./saves/")
-            actions = []
-            for file_ in files:
-                actions.append(SavedGame(file_))
-            menu = []
-            menu.append(NewGame())
-            menu.append(Quit())
+    def get_actions(self, _):
+        """Return action list."""
+        files = os.listdir("./saves/")
+        actions = []
+        for file_ in files:
+            actions.append(SavedGame(file_))
+        return actions
 
-            self._display.init(actions, menu)
-            choice = self._display.display()
-            if debug():
-                pdb.set_trace()
-            if isinstance(choice, NewGame):
-                name = self._display.get_string(4, "Name your game: ")
-                choice.file_name = name
+    def get_menu(self):
+        """Return menu list."""
+        menu = [NewGame()] + Core.get_menu(self)
+        return menu
+
+    # pylint: disable=arguments-differ
+    def choice(self, _, choice):
+        """Handle user choice."""
+        result = Core.choice(self, None, choice)
+        if result == "handled":
+            return None
+        elif result is None:
+            if isinstance(choice, NewGame) or isinstance(choice, SavedGame):
                 return choice
-            elif isinstance(choice, SavedGame):
-                return choice
-            elif isinstance(choice, Quit):
-                return choice
+            else:
+                raise InvalidChoice(choice)
+        else:
+            return result
 
     def __str__(self):
         """Return string interpretation of object."""
