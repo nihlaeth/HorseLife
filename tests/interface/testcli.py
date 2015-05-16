@@ -86,9 +86,10 @@ class TestDisplay(object):
         # pylint: disable=protected-access
         option_zero = Action("option zero", "")
         option_one = Action("option one", "")
-        data = [option_zero, option_one]
-        menu = ["quit", "save"]
-        self.display.init(data, menu)
+        self.display._actions = [option_zero, option_one]
+        self.display._menu = ["quit", "save"]
+        self.display._info = []
+        # self.display.init(data, menu)
         self.display._title = "test"
         self.display._screen_width = 20
 

@@ -180,10 +180,10 @@ class Display(object):
         elif isinstance(result, Core):
             if isinstance(result, StableCore):
                 from stabledisplay import StableDisplay
-                next_display = StableDisplay()
+                next_display = StableDisplay(result)
             elif isinstance(result, TownCore):
                 from towndisplay import TownDisplay
-                next_display = TownDisplay()
+                next_display = TownDisplay(result)
             elif isinstance(result, PastureCore):
                 from pasturedisplay import PastureDisplay
                 next_display = PastureDisplay(result)
