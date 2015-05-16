@@ -8,6 +8,8 @@ from support.messages.newgame import NewGame
 from support.messages.savedgame import SavedGame
 from support.messages.quit import Quit
 from support.messages.timestamp import TimeStamp
+from interface.cli.loaddisplay import LoadDisplay
+from interface.cli.maindisplay import MainDisplay
 from models.base import BASE
 # The imports below appear unused, but are necessary to create the
 # models in the database, so we have pylint ignore them.
@@ -60,7 +62,7 @@ class HorseLife(object):
         #    self.quit()
 
         # now get some user input about which db to load
-        choice = LoadCore().run()
+        choice = LoadDisplay(LoadCore()).display()
 
         if isinstance(choice, NewGame):
             self.load_game(choice.file_name, True)
@@ -112,7 +114,7 @@ class HorseLife(object):
 
                 Time(session).pass_time(session, TimeStamp(0, 420))
 
-        choice = MainCore().run()
+        choice = MainDisplay(MainCore()).display()
 
         if isinstance(choice, Quit):
             self.quit()

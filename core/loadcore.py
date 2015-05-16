@@ -15,6 +15,29 @@ class LoadCore(Core):
         """Set display."""
         Core.__init__(self)
 
+    def get_info(self, _):
+        """Return an empty list.
+
+        There is no database at this point, do not call parent get_info
+        method.
+        """
+        return []
+
+    def get_level(self, _):
+        """Return 0.
+
+        Again, no database at this point, do not call parent get_level
+        method.
+        """
+        return 0
+
+    def get_story(self, _):
+        """Return None.
+
+        No database at this point.
+        """
+        return None
+
     def get_actions(self, _):
         """Return action list."""
         files = os.listdir("./saves/")

@@ -42,6 +42,8 @@ class StableDisplay(Display):
                     if result.action == "change name":
                         name = self.get_string(4, "Name: ")
                         self._core.change_name(session, name)
+                        # TODO: figure out why this is needed...
+                        session.commit()
                         return self.display()
                     else:
                         raise InvalidChoice(result)
