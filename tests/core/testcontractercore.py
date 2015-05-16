@@ -8,7 +8,6 @@ from tests.tools.personfactory import PersonFactory
 from backend.stablebackend import StableBackend
 from core.core import Core
 from core.contractercore import ContracterCore
-from support.messages.back import Back
 from support.messages.action import Action
 
 
@@ -50,16 +49,20 @@ class TestContracterCore(object):
         # test home screen
         actions = core.get_actions(None)
 
-        assert_equals(actions[0].action, "stables")
-        assert_equals(actions[1].action, "pastures")
-        assert_equals(actions[2].action, "arenas")
-        assert_equals(actions[3].action, "tack-feed")
+        # pylint: disable=protected-access
+        assert_equals(actions[0]._screen, "stables")
+        assert_equals(actions[1]._screen, "pastures")
+        assert_equals(actions[2]._screen, "arenas")
+        assert_equals(actions[3]._screen, "tack-feed")
 
         # test stables screen
         # pylint: disable=protected-access
         core._screen = "stables"
         actions = core.get_actions(None)
 
+        # Don't know what pylint's on about here, but Action instances,
+        # which is what we're dealing with, in fact have these members...
+        # pylint: disable=no-member
         assert_equals(actions[0].action, "buy-stable")
         assert_equals(actions[0].arguments[0], "Shed")
 
@@ -70,16 +73,6 @@ class TestContracterCore(object):
                 SettingFactory(name="Time"),
                 SettingFactory(name="Date")])
             core = ContracterCore()
-
-            # test back
-            # pylint: disable=protected-access
-            core._screen = "not-home"
-            assert_equals(core.choice(session, Back()), None)
-            assert_equals(core._screen, "home")
-
-            # test switching screens
-            assert_equals(core.choice(session, Action("arenas", "")), None)
-            assert_equals(core._screen, "arenas")
 
             # test buying a stable
             session.add(PersonFactory())

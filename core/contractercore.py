@@ -2,12 +2,12 @@
 import ConfigParser
 
 from core import Core
-from support.messages.back import Back
 from support.messages.action import Action
 from backend.time import Time
 from backend.stablebackend import StableBackend
 from backend.personbackend import PersonBackend
 from generators.stablegenerator import StableGenerator
+from errors.invalidchoice import InvalidChoice
 
 
 class ContracterCore(Core):
@@ -18,10 +18,10 @@ class ContracterCore(Core):
     except for initial construction when starting a new game.
     """
 
-    def __init__(self):
+    def __init__(self, screen="home"):
         """Set display and screen."""
         Core.__init__(self)
-        self._screen = "home"
+        self._screen = screen
 
     def get_info(self, session):
         """Return information block."""
@@ -61,10 +61,10 @@ class ContracterCore(Core):
         """Return action block."""
         if self._screen == "home":
             actions = [
-                Action("stables", "Stables"),
-                Action("pastures", "Pastures"),
-                Action("arenas", "Arenas"),
-                Action("tack-feed", "Tack and feed rooms")]
+                ContracterCore("stables"),
+                ContracterCore("pastures"),
+                ContracterCore("arenas"),
+                ContracterCore("tack-feed")]
         elif self._screen == "stables":
             actions = []
             config = ConfigParser.SafeConfigParser()
@@ -86,24 +86,12 @@ class ContracterCore(Core):
         """Handle user choice."""
         time = Time(session)
         now = time.get_time_stamp(session)
-        result = Core.choice(self, session, choice, noback=True)
+        result = Core.choice(self, session, choice)
         if result == "handled":
             return None
         elif result is None:
-            if isinstance(choice, Back):
-                if self._screen != "home":
-                    self._screen = "home"
-                else:
-                    return choice
-            elif isinstance(choice, Action):
-                if choice.action in [
-                        "home",
-                        "stables",
-                        "pastures",
-                        "arenas",
-                        "tack-feed"]:
-                    self._screen = choice.action
-                elif choice.action == "buy-stable":
+            if isinstance(choice, Action):
+                if choice.action == "buy-stable":
                     person = PersonBackend.active_player(session)
                     subject = "Buy %s at contracter" % choice.arguments[0]
                     transaction = {
@@ -121,9 +109,22 @@ class ContracterCore(Core):
                         self._msg = "You successfully bought a stable!"
                     else:
                         self._msg = "You don't have enough money for that!"
+                else:
+                    raise InvalidChoice(choice)
             else:
-                return result
+                raise InvalidChoice(choice)
+        else:
+            return result
 
     def __str__(self):
         """Return string representation of object."""
-        return "Contracter"
+        if self._screen == "home":
+            return "Contracter"
+        elif self._screen == "stables":
+            return "Stables"
+        elif self._screen == "pastures":
+            return "Pastures"
+        elif self._screen == "arenas":
+            return "Arenas"
+        elif self._screen == "tack-feed":
+            return "Tack and feed rooms."

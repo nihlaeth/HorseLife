@@ -6,6 +6,7 @@ from core.messagecore import MessageCore
 from core.stablecore import StableCore
 from core.pasturecore import PastureCore
 from core.towncore import TownCore
+from core.contractercore import ContracterCore
 from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.meter import Meter
@@ -190,6 +191,11 @@ class Display(object):
             elif isinstance(result, MessageCore):
                 from messagedisplay import MessageDisplay
                 next_display = MessageDisplay(result)
+            elif isinstance(result, ContracterCore):
+                from contracterdisplay import ContracterDisplay
+                next_display = ContracterDisplay(result)
+            else:
+                raise InvalidChoice(result)
             next_action = next_display.display()
             if isinstance(next_action, Back):
                 return self.display()
