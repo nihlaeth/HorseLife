@@ -186,7 +186,7 @@ class Display(object):
                 next_display = TownDisplay()
             elif isinstance(result, PastureCore):
                 from pasturedisplay import PastureDisplay
-                next_display = PastureDisplay()
+                next_display = PastureDisplay(result)
             elif isinstance(result, MessageCore):
                 from messagedisplay import MessageDisplay
                 next_display = MessageDisplay(result)

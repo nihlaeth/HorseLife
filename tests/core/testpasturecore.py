@@ -1,19 +1,16 @@
 """Test PastureCore."""
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_is_none, assert_greater
 import mock
 
 from tests.tools.pasturefactory import PastureFactory
 from tests.tools.settingfactory import SettingFactory
 from tests.tools.horsefactory import HorseFactory
-from tests.tools.personfactory import PersonFactory
 from tests.tools.dummydb import DummyDB
-from backend.session import SessionScope
 from backend.pasturebackend import PastureBackend
 from backend.horsebackend import HorseBackend
-from interface.cli.pasturedisplay import PastureDisplay
-from support.messages.quit import Quit
+from backend.time import Time
 from support.messages.action import Action
-from support.messages.timestamp import TimeStamp
+from core.core import Core
 from core.pasturecore import PastureCore
 
 
@@ -21,56 +18,59 @@ class TestPastureCore(object):
 
     """Test PastureCore."""
 
-    @mock.patch("core.pasturecore.debug")
-    @mock.patch.object(PastureDisplay, "display")
-    @mock.patch.object(SessionScope, "__enter__")
-    def test_run(self, m_db, m_display, m_debug):
-        """Test PastureCore.run()."""
+    def test_init(self):
+        """Test PastureCore.__init__()."""
+        core = PastureCore("pasture")
+        # pylint: disable=protected-access
+        assert_equals(core._pasture, "pasture")
+
+    @mock.patch.object(Core, "get_info")
+    def test_get_info(self, m_info):
+        """Test PastureCore.get_info(session)."""
         with DummyDB() as session:
-            m_db.return_value = session
-            pasture_raw = PastureFactory()
+            m_info.return_value = []
+            session.add_all([
+                PastureFactory(),
+                SettingFactory(name="Date"),
+                SettingFactory(name="Time")])
+            core = PastureCore(PastureBackend(session, 1))
+            info = core.get_info(session)
+
+            assert_equals(len(info), 3)
+
+    def test_get_actions(self):
+        """Test PastureCore.get_actions(session)."""
+        with DummyDB() as session:
+            session.add(PastureFactory(horses=HorseFactory.build_batch(5)))
+            core = PastureCore(PastureBackend(session, 1))
+            actions = core.get_actions(session)
+
+            assert_equals(len(actions), 6)
+
+    def test_choice(self):
+        """Test PastureCore.choice(session, choice)."""
+        with DummyDB() as session:
             session.add_all([
                 SettingFactory(name="Date"),
                 SettingFactory(name="Time"),
-                SettingFactory(name="Experience"),
-                PersonFactory(),
-                pasture_raw])
-
-            m_debug.return_value = False
-
-            pasture = PastureBackend(session, 1)
-            pasture.get_events(session, TimeStamp(0, 0))
-
-            # Test Quit
-            quit_ = Quit()
-            m_display.return_value = quit_
-
+                PastureFactory(horses=HorseFactory.build_batch(5)),
+                SettingFactory(name="Experience")])
+            time = Time(session)
+            now = time.get_time_stamp(session)
+            horses = HorseBackend.all(session)
+            for horse in horses:
+                horse.get_events(session, now)
+            PastureBackend(session, 1).get_events(session, now)
             core = PastureCore(PastureBackend(session, 1))
 
-            # pylint: disable=invalid-name
-            result = core.run()
+            result = core.choice(session, Action("clean", ""))
+            assert_is_none(result)
+            now = time.get_time_stamp(session)
+            assert_greater(now.time, 0)
 
-            m_display.assert_called_once_with()
-            assert_equals(result, quit_)
+            result = core.choice(
+                session,
+                Action("stable", "", [HorseBackend(session, 1)]))
 
-            # Now test actions
-            # Get a horse in that pasture!
-            session.add(HorseFactory(pasture=pasture_raw))
-            HorseBackend(session, 1).get_events(session, TimeStamp(0, 0))
-
-            # Get a fresh core instance, to make sure it processes the
-            # horse we put in the pasture.
-            core = PastureCore(PastureBackend(session, 1))
-
-            # For now, just make sure nothing dies when performing
-            # these actions. We're not testing their effect (yet).
-            m_display.side_effect = [
-                Action("clean", ""),
-                Action("stable", "", [HorseBackend(session, 1)]),
-                quit_]
-
-            result = core.run()
-            assert_equals(
-                len(PastureBackend(session, 1).get(session, None, "horses")),
-                0)
-            assert_equals(result, quit_)
+            horses = PastureBackend(session, 1).get(session, now, "horses")
+            assert_equals(len(horses), 4)
