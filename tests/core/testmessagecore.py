@@ -4,16 +4,11 @@ import mock
 
 from tests.tools.dummydb import DummyDB
 from tests.tools.messagefactory import MessageFactory
-from tests.tools.settingfactory import SettingFactory
-from tests.tools.personfactory import PersonFactory
 from support.messages.action import Action
-from support.messages.quit import Quit
 from support.messages.back import Back
-from backend.session import SessionScope
 from backend.messagebackend import MessageBackend
 from core.core import Core
 from core.messagecore import MessageCore
-from interface.cli.messagedisplay import MessageDisplay
 
 
 class TestMessageCore(object):
@@ -63,25 +58,17 @@ class TestMessageCore(object):
     def test_choice(self):
         """Test MessageCore.choice(session, choice)."""
         with DummyDB() as session:
-            core = MessageCore()
-            
-            # Back testing
-            back = Back()
-            assert_equals(core.choice(session, back), back)
-            # pylint: disable=protected-access
-            core._screen = "message"
-            assert_is_none(core.choice(session, back))
-            assert_equals(core._screen, "list")
-
             session.add(MessageFactory())
-            # Action testing
-            assert_is_none(core.choice(session, Action("message", "", [1])))
-            assert_equals(core._screen, "message")
+            core = MessageCore(MessageBackend(session, 1))
 
+            # Action testing
             assert_is_none(core.choice(session, Action("mark-unread", "")))
             assert_equals(
                 MessageBackend(session, 1).get(session, None, "read"),
                 False)
 
-            assert_is_none(core.choice(session, Action("delete", "")))
+            assert_equals(
+                isinstance(
+                    core.choice(session, Action("delete", "")),
+                    Back), True)
             assert_equals(len(MessageBackend.all(session)), 0)
