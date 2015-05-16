@@ -2,61 +2,45 @@
 from nose.tools import assert_equals
 import mock
 
-from support.messages.quit import Quit
 from support.messages.action import Action
-from backend.session import SessionScope
-from interface.cli.towndisplay import TownDisplay
+from core.core import Core
 from core.contractercore import ContracterCore
 from core.towncore import TownCore
-from tests.tools.dummydb import DummyDB
-from tests.tools.settingfactory import SettingFactory
-from tests.tools.personfactory import PersonFactory
+from errors.invalidchoice import InvalidChoice
 
 
 class TestTownCore(object):
 
     """Test TownCore."""
 
-    @mock.patch("core.towncore.debug")
-    @mock.patch.object(ContracterCore, "run")
-    @mock.patch.object(TownDisplay, "display")
-    @mock.patch.object(SessionScope, "__enter__")
-    def test_run(self, m_db, m_display, m_contracter, m_debug):
-        """Test TownCore.run()."""
-        with DummyDB() as session:
-            m_db.return_value = session
-            session.add_all([
-                SettingFactory(name="Date"),
-                SettingFactory(name="Time"),
-                SettingFactory(name="Experience"),
-                PersonFactory()])
+    def test_init(self):
+        """Test TownCore.__init__()."""
+        # If it doesn't die, we're good.
+        TownCore()
 
-            m_debug.return_value = False
+    @mock.patch.object(Core, "get_info")
+    def test_get_info(self, m_info):
+        """Test TownCore.get_info(session)."""
+        m_info.return_value = []
+        core = TownCore()
+        info = core.get_info(None)
+        assert_equals(info[0], "Where do you want to visit?")
 
-            # Test quit_
-            quit_ = Quit()
-            m_display.return_value = quit_
-            core = TownCore()
-            result = core.run()
-            assert_equals(result, quit_)
+    def test_get_actions(self):
+        """Test TownCore.get_actions(session)."""
+        core = TownCore()
+        actions = core.get_actions(None)
+        assert_equals(len(actions), 11)
 
-            # Test actions
-            # For now, just test that nothing dies when picking these
-            # actions.
-            m_contracter.return_value = quit_
-            m_display.side_effect = [
-                Action("bank", ""),
-                Action("horses", ""),
-                Action("contracter", ""),
-                Action("tack", ""),
-                Action("food", ""),
-                Action("newspaper", ""),
-                Action("veterinarian", ""),
-                Action("farrier", ""),
-                Action("competitions", ""),
-                Action("employment", ""),
-                Action("education", ""),
-                quit_]
-            result = core.run()
-            m_contracter.assert_called_once_with()
-            assert_equals(result, quit_)
+    def test_choice(self):
+        """Test TownCore.choice(session, choice)."""
+        core = TownCore()
+        result = core.choice(None, Action("contracter", ""))
+        assert_equals(isinstance(result, ContracterCore), True)
+
+        try:
+            result = core.choice(None, Action("unknown", ""))
+        except InvalidChoice:
+            assert True
+        else:
+            assert False
