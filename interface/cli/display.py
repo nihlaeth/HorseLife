@@ -1,8 +1,16 @@
 """Interface to inherit from for *Display classes."""
 from textwrap import fill
 
+from core.core import Core
+from core.messagecore import MessageCore
+from core.stablecore import StableCore
+from core.pasturecore import PastureCore
+from core.towncore import TownCore
+from support.messages.quit import Quit
+from support.messages.back import Back
 from support.messages.meter import Meter
 from support.messages.action import Action
+from errors.invalidchoice import InvalidChoice
 
 
 # pylint: disable=too-many-instance-attributes
@@ -164,3 +172,32 @@ class Display(object):
             self._repeat("=", columnsfilled),
             self._repeat(" ", self._screen_width - columnsfilled - 2),
             "]"])
+
+    def choice(self, result):
+        """Handle user choice on this end."""
+        if result is None:
+            return self.display()
+        elif isinstance(result, Core):
+            if isinstance(result, StableCore):
+                from stabledisplay import StableDisplay
+                next_display = StableDisplay()
+            elif isinstance(result, TownCore):
+                from towndisplay import TownDisplay
+                next_display = TownDisplay()
+            elif isinstance(result, PastureCore):
+                from pasturedisplay import PastureDisplay
+                next_display = PastureDisplay()
+            elif isinstance(result, MessageCore):
+                from messagedisplay import MessageDisplay
+                next_display = MessageDisplay(result)
+            next_action = next_display.display()
+            if isinstance(next_action, Back):
+                return self.display()
+            elif isinstance(next_action, Quit):
+                return next_action
+            else:
+                raise InvalidChoice(result)
+        elif isinstance(result, Back) or isinstance(result, Quit):
+            return result
+        else:
+            raise InvalidChoice(result)

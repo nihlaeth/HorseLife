@@ -1,7 +1,7 @@
 """Game logic for Town screen."""
 import pdb
 
-from interface.cli.towndisplay import TownDisplay
+# from interface.cli.towndisplay import TownDisplay
 from core import Core
 from contractercore import ContracterCore
 from messagecore import MessageCore
@@ -24,7 +24,8 @@ class TownCore(Core):
     def __init__(self):
         """Set display."""
         Core.__init__(self)
-        self._display = TownDisplay()
+        # self._display = TownDisplay()
+        self._display = None
 
     def run(self):
         """Run with it."""

@@ -8,7 +8,7 @@ from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.meter import Meter
 from support.messages.action import Action
-from interface.cli.stabledisplay import StableDisplay
+# from interface.cli.stabledisplay import StableDisplay
 from backend.session import SessionScope
 from backend.horsebackend import HorseBackend
 from backend.time import Time
@@ -29,7 +29,8 @@ class StableCore(Core):
         """
         Core.__init__(self)
         self._stable = stable
-        self._display = StableDisplay()
+        # self._display = StableDisplay()
+        self._display = None
         self._horse = None
 
     def _horse_info(self, session, info, now):

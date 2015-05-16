@@ -50,7 +50,7 @@ class TestLoadDisplay(object):
         m_getstr.return_value = "newgame"
         result = display.display()
         assert_equals(isinstance(result, NewGame), True)
-        m_getstr.assert_called_once_with("Name your game: ", 4)
+        m_getstr.assert_called_once_with(4, "Name your game: ")
         assert_equals(result.file_name, "newgame")
 
         result = display.display()

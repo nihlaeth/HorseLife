@@ -4,6 +4,8 @@ import pdb
 from support.debug import debug
 from display import Display
 from support.messages.newgame import NewGame
+from support.messages.savedgame import SavedGame
+from errors.invalidchoice import InvalidChoice
 
 
 class LoadDisplay(Display):
@@ -29,11 +31,13 @@ class LoadDisplay(Display):
         if debug():
             pdb.set_trace()
 
-        if result is None:
-            return self.display()
-        elif isinstance(result, NewGame):
-            result.file_name = self.get_string(4, "Name your game: ")
-            return result
-        else:
-            # Hanlde SavedGame, Back and Quit the same way.
-            return result
+        try:
+            return self.choice(result)
+        except InvalidChoice:
+            if isinstance(result, NewGame):
+                result.file_name = self.get_string(4, "Name your game: ")
+                return result
+            elif isinstance(result, SavedGame):
+                return result
+            else:
+                raise InvalidChoice(result)

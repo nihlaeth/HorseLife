@@ -39,3 +39,8 @@ class MessageBackend(Backend):
         """Set attribute on encapsulated model."""
         message = MessageBackend._one_id(session, self.id_)
         message.set(key, value)
+
+    def delete(self, session):
+        """Delete message."""
+        message = MessageBackend._one_id(session, self.id_)
+        session.delete(message)

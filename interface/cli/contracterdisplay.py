@@ -2,12 +2,8 @@
 import pdb
 
 from display import Display
-from messagedisplay import MessageDisplay
 from backend.session import SessionScope
-from core.messagecore import MessageCore
 from support.debug import debug
-from support.messages.back import Back
-from support.messages.quit import Quit
 
 
 class ContracterDisplay(Display):
@@ -38,13 +34,4 @@ class ContracterDisplay(Display):
             if debug():
                 pdb.set_trace()
 
-            if result is None:
-                return self.display()
-            elif isinstance(result, MessageCore):
-                next_action = MessageDisplay().display()
-                if isinstance(next_action, Back):
-                    return self.display()
-                elif isinstance(next_action, Quit):
-                    return next_action
-            elif isinstance(result, Back) or isinstance(result, Quit):
-                return result
+            return self.choice(result)

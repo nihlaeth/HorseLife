@@ -8,7 +8,7 @@ from support.messages.quit import Quit
 from support.messages.back import Back
 from support.messages.meter import Meter
 from support.messages.action import Action
-from interface.cli.pasturedisplay import PastureDisplay
+# from interface.cli.pasturedisplay import PastureDisplay
 from backend.session import SessionScope
 from backend.horsebackend import HorseBackend
 from backend.time import Time
@@ -29,7 +29,8 @@ class PastureCore(Core):
         """
         Core.__init__(self)
         self._pasture = pasture
-        self._display = PastureDisplay()
+        # self._display = PastureDisplay()
+        self._display = None
 
     def run(self):
         """Run with it."""
