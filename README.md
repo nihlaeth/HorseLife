@@ -38,10 +38,12 @@ else's benefit, but I need to dump it somewhere (where I will see it).
 * Add other building types (tack/feed rooms, headquarters, etc.)
 * Implement horsemarket
 * Start working on training system
-* Only allow actions when they're actually needed (e.g. you can't spend 15 minutes cleaning a clean stable)
+* Only allow actions when they're actually needed (e.g. you can't spend 15 minutes cleaning a clean stable) -> make xp and time spent dependent on state of meter
 * Fix location checking in pasture & stable - mixin should get location match from child class.
 * Make it possible to put a horse in a pasture or paddock.
-* Make interface the active part in the game, move session to interface - to accomodate a web interface, and other future interfaces
+* Start working on a more complicated feeding / energy system
+* make screen attribute for core classes an init argument
+* refactor display method in Display classes, wrong name, overwrites parent with different functionality and a lot of duplicate code.
 
 ## Code style
 So far, I've been keeping the code up to the pep8 and pep257 standard. I've been pretty religious about this (even providing docstrings for self evident methods like __str__ and such), so I'd like any contributions to adhere to those as well.
