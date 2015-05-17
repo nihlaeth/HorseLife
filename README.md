@@ -101,3 +101,19 @@ either interface, core or backend.
 
 ### tests
 Well... Tests.
+
+## Interfaces
+
+### Command line interface
+A single player interface for the game with no graphics (or mouse support) whatsoever.
+
+It's started by issuing:
+  python HorseLife.py
+
+### Web interface (pyramid)
+A multi-player http game, built on the pyramid framework. For now, it's started by running:
+  pserve development.ini
+
+When running for the first time, you need to issue:
+  ../bin/initialize_testpyramid_db development.ini
+Later on there will also be a script to populate the database with some basics, but that's not ready yet at this point.
